@@ -1,0 +1,345 @@
+:root {
+    --vt-primary: #86A8E7;
+    /* Soft Blue */
+    --vt-secondary: #91EAE4;
+    /* Soft Cyan */
+    --vt-accent-green: #7FDBCA;
+    /* Soft Green */
+    --vt-accent-yellow: #FADB5F;
+    /* Soft Yellow */
+    --vt-accent-coral: #F78C6B;
+    /* Soft Coral */
+    --vt-text-dark: #2D3748;
+    --vt-text-light: #F7FAFC;
+    --vt-purple: #7B84D1;
+    /* Sleep health purple */
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+    color: var(--vt-text-dark);
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* Full screen Sections with Scroll Snapping */
+.scroll-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.fullscreen-section {
+    height: 100vh;
+    width: 100vw;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Tracking */
+.tracking-wide {
+    letter-spacing: 0.1em;
+}
+
+/* Custom placeholder color */
+.placeholder-white::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+}
+
+.glass-card img {
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.glass-card h5 {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--vt-text-dark);
+}
+
+.glass-card p {
+    font-size: 0.85rem;
+    color: #4A5568;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+/* Header Specific */
+.header-bg {
+    background: url('/img/bg.png') no-repeat center center;
+    background-size: cover;
+}
+
+.slogan-text {
+    font-weight: 800;
+    font-size: 4.5rem;
+    color: white;
+    line-height: 1.1;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.sub-slogan {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Category Icons underneath header */
+.category-icons-wrapper {
+    position: absolute;
+    bottom: 2rem;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.5rem 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.cat-icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--vt-text-dark);
+    height: 100%;
+    position: relative;
+    padding: 0.5rem;
+}
+
+/* Border separator between items */
+.col-6:not(:last-child) .cat-icon-card::after {
+    content: '';
+    position: absolute;
+    right: -12px;
+    /* Adjust based on gap */
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 767px) {
+    .col-6:nth-child(even) .cat-icon-card::after {
+        display: none;
+        /* Hide every 2nd border on mobile */
+    }
+}
+
+.cat-icon-card:hover {
+    transform: translateY(-5px);
+    color: var(--vt-primary);
+}
+
+.cat-icon-card i,
+.cat-icon-card img {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--vt-primary);
+    transition: transform 0.3s ease;
+}
+
+.cat-icon-card:hover i {
+    transform: scale(1.1);
+}
+
+.cat-icon-card span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Section Backgrounds */
+.bg-cilt {
+    background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+}
+
+.bg-uyku {
+    background: linear-gradient(135deg, #1C3364 0%, #7B84D1 100%);
+}
+
+.bg-zihin {
+    background: linear-gradient(135deg, #FBEB98 0%, #F8D072 100%);
+}
+
+.bg-bagisiklik {
+    background: linear-gradient(135deg, #D4FC79 0%, #96E6A1 100%);
+}
+
+.section-title {
+    font-weight: 800;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.dark-section .section-title,
+.dark-section ul li {
+    color: white;
+}
+
+.feature-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.feature-list li {
+    font-size: 1.25rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.feature-list li::before {
+    content: "•";
+    color: inherit;
+    font-size: 2rem;
+    margin-right: 0.8rem;
+    line-height: 1;
+}
+
+/* Model Viewer */
+model-viewer {
+    width: 100%;
+    height: 60vh;
+    --poster-color: transparent;
+    outline: none !important;
+}
+
+model-viewer:focus-visible {
+    outline: none !important;
+}
+
+/* Animations */
+.animate-fade-up {
+    animation: fadeUp 1s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* New Section Backgrounds */
+.bg-biz-kimiz {
+    background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+    /* You mentioned a watercolor aesthetic, so this soft pink/blue gradient fits */
+}
+
+.bg-urunler {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Elegant purple/blue gradient for products */
+}
+
+.bg-iletisim {
+    background: #1A202C;
+    /* Dark blue/gray */
+}
+
+/* Contact Styles */
+.text-accent-green {
+    color: var(--vt-accent-green);
+}
+
+.text-accent-yellow {
+    color: var(--vt-accent-yellow);
+}
+
+.text-accent-coral {
+    color: var(--vt-accent-coral);
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.social-icon:hover {
+    background: white;
+    color: #1A202C;
+    transform: translateY(-3px);
+}
+
+.contact-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.contact-input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.contact-input::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.contact-input:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1) !important;
+}

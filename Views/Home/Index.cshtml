@@ -1,0 +1,418 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="scroll-container">
+    <!-- HERO SECTION -->
+    <section id="hero" class="fullscreen-section header-bg text-white">
+        <div class="row w-100 m-0 pt-4 px-4 position-absolute top-0 start-0 z-index-10 d-flex justify-content-between align-items-center">
+            <!-- Logo area -->
+            <div class="col-auto">
+                <h1 class="text-white fw-bold mb-0">VitaCure</h1>
+            </div>
+            <!-- Nav Menu area -->
+            <div class="col-auto">
+                <nav class="d-flex gap-4">
+                    <a href="#bizkimiz" class="text-white text-decoration-none fw-semibold tracking-wide">BİZ KİMİZ</a>
+                    <a href="#urunler" class="text-white text-decoration-none fw-semibold tracking-wide">TÜM ÜRÜNLERİMİZ</a>
+                    <a href="#iletisim" class="text-white text-decoration-none fw-semibold tracking-wide">İLETİŞİM</a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="container h-100 position-relative z-index-1 mt-5">
+            <div class="row h-100">  <!-- Left: Slogan -->
+                <div class="col-lg-6 animate-fade-up">
+                    <h1 class="slogan-text mb-3">Bir Dünya Sağlık!</h1>
+                    <h2 class="sub-slogan">Peki Senin İhtiyacın Ne?</h2>
+                </div>
+                <!-- Right: 3D Model -->
+                <div class="col-lg-6 d-flex justify-content-center align-items-center h-100">
+                    <model-viewer src="/img/dunya.glb" 
+                                  auto-rotate 
+                                  rotation-per-second="20deg"
+                                  camera-orbit="0deg 90deg auto" 
+                                  interaction-prompt="none"
+                                  disable-zoom 
+                                  alt="3D Earth Model">
+                    </model-viewer>
+                </div>
+            </div>
+
+            <!-- Category Links -->
+            <div class="category-icons-wrapper">
+                <div class="row g-4 justify-content-center">
+                    <div class="col-6 col-md-3">
+                        <a href="#cilt-bakimi" class="cat-icon-card shadow">
+                            <i class="fa-solid fa-droplet"></i>
+                            <span>Cilt Bakımı</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="#uyku-sagligi" class="cat-icon-card shadow">
+                            <i class="fa-solid fa-moon"></i>
+                            <span>Uyku Sağlığı</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="#zihin-hafiza" class="cat-icon-card shadow">
+                            <i class="fa-solid fa-brain"></i>
+                            <span>Zihin ve Hafıza Güçlendirme</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="#hastalik-koruma" class="cat-icon-card shadow">
+                            <i class="fa-solid fa-shield-virus"></i>
+                            <span>Hastalıklara Karşı Koruma</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 1: CİLT BAKIMI -->
+    <section id="cilt-bakimi" class="fullscreen-section bg-cilt">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Left: Title & Features -->
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <h2 class="section-title">Cilt Bakımı</h2>
+                    <ul class="feature-list">
+                        <li>Nemlendirme</li>
+                        <li>Yaşlanma Karşıtı</li>
+                        <li>Canlı Görünüm</li>
+                    </ul>
+                </div>
+                <!-- Right: Products -->
+                <div class="col-lg-8">
+                    <div class="row g-4 d-flex align-items-end">
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-bottle-droplet fa-3x text-warning"></i>
+                                </div>
+                                <h5>Glow Boost Serum</h5>
+                                <p>Glows casaevenimentino glow boost serum</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4" style="transform: translateY(-20px);">
+                            <a href="#" class="glass-card text-center shadow-lg border-white">
+                                <div class="bg-light rounded mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-jar fa-3x text-primary"></i>
+                                </div>
+                                <h5>Night Repair Cream</h5>
+                                <p>Moistnmiare daily moisturizes and moisturizer</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-eye fa-3x text-info"></i>
+                                </div>
+                                <h5>Eye Cream</h5>
+                                <p>Eye cream to repare wrink deauin in eye cream</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2: UYKU SAĞLIĞI -->
+    <section id="uyku-sagligi" class="fullscreen-section bg-uyku dark-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <h2 class="section-title text-white">Uyku Sağlığı</h2>
+                    <ul class="feature-list text-white-50">
+                        <li>Derin Uyku</li>
+                        <li>Hızlı Dalma</li>
+                        <li>Dinlenmiş Uyanma</li>
+                    </ul>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row g-4 d-flex align-items-end">
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white bg-opacity-25 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-mug-hot fa-3x text-white"></i>
+                                </div>
+                                <h5 class="text-white">Calm Night Tea</h5>
+                                <p class="text-white-50">Tackiwnrn meimnisations tepos calm night tea</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4" style="transform: translateY(-20px);">
+                            <a href="#" class="glass-card text-center shadow-lg border-white">
+                                <div class="bg-white bg-opacity-25 rounded mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-pills fa-3x text-white"></i>
+                                </div>
+                                <h5 class="text-white">Melatonin Gummies</h5>
+                                <p class="text-white-50">Deses the magnesium glyeinate glyolnate</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white bg-opacity-25 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-mask fa-3x text-white"></i>
+                                </div>
+                                <h5 class="text-white">Sleep Mask</h5>
+                                <p class="text-white-50">Enables your mask with sleep maek</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3: ZİHİN VE HAFIZA -->
+    <section id="zihin-hafiza" class="fullscreen-section bg-zihin">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <h2 class="section-title">Zihin ve Hafıza Güçlendirme</h2>
+                    <ul class="feature-list">
+                        <li>Odaklanma</li>
+                        <li>Hafıza Gücü</li>
+                        <li>Bilişsel Fonksiyonlar</li>
+                    </ul>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row g-4 d-flex align-items-end">
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-fish fa-3x text-info"></i>
+                                </div>
+                                <h5>Omega-3 Fish Oil</h5>
+                                <p>Omega-3 Rish oll hangini bilişsel benefits</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4" style="transform: translateY(-20px);">
+                            <a href="#" class="glass-card text-center shadow-lg border-white">
+                                <div class="bg-white rounded mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-capsules fa-3x text-primary"></i>
+                                </div>
+                                <h5>Cognitive Boost Capsule</h5>
+                                <p>Complex vitamins ve complex benefits</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-leaf fa-3x text-success"></i>
+                                </div>
+                                <h5>Lion's Mane Mushroom</h5>
+                                <p>Lion's Mane Manere mushroom bsatirr.</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4: HASTALIKLARA KARŞI KORUMA -->
+    <section id="hastalik-koruma" class="fullscreen-section bg-bagisiklik">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <h2 class="section-title">Hastalıklara Karşı Koruma</h2>
+                    <ul class="feature-list">
+                        <li>Bağışıklık Desteği</li>
+                        <li>Hücre Koruması</li>
+                        <li>Antioksidan Etki</li>
+                    </ul>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row g-4 d-flex align-items-end">
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-tablets fa-3x text-secondary"></i>
+                                </div>
+                                <h5>Zinc Tablets</h5>
+                                <p>Cempax l zick to promote zinc tablets</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4" style="transform: translateY(-20px);">
+                            <a href="#" class="glass-card text-center shadow-lg border-white">
+                                <div class="bg-white rounded mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-bottle-water fa-3x text-warning"></i>
+                                </div>
+                                <h5>Vitamin C Complex</h5>
+                                <p>Eilrichsol woreles with elderberry syrup</p>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="#" class="glass-card text-center">
+                                <div class="bg-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width:120px; height:120px;">
+                                    <i class="fa-solid fa-bacteria fa-3x text-info"></i>
+                                </div>
+                                <h5>Probiotics</h5>
+                                <p>Immune winv. prebiotic and probiotics</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5: BİZ KİMİZ -->
+    <section id="biz-kimiz" class="fullscreen-section bg-biz-kimiz">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0 animate-fade-up">
+                    <img src="https://images.unsplash.com/photo-1550831107-1553da8c8464?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Biz Kimiz" class="img-fluid rounded-4 shadow-lg border border-3 border-white">
+                </div>
+                <div class="col-lg-6 ps-lg-5">
+                    <h2 class="section-title">Biz Kimiz?</h2>
+                    <h4 class="mb-4 text-secondary">Sağlıklı Bir Yaşam İçin Doğal Çözümler</h4>
+                    <p class="fs-5 mb-4 text-dark" style="line-height:1.8;">
+                        VitaCure olarak doğanın sunduğu mucizeleri bilimle harmanlıyor, sağlığınızı en saf ve etkili şekilde desteklemeyi hedefliyoruz. En kaliteli hammaddeleri kullanarak ürettiğimiz vitamin ve takviyelerle, kendinizi her gün daha enerjik ve zinde hissetmeniz için yanınızdayız.
+                    </p>
+                    <a href="#" class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm text-primary">
+                        Hikayemizi Keşfet <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6: TÜM ÜRÜNLERİMİZ -->
+    <section id="tum-urunlerimiz" class="fullscreen-section bg-urunler">
+        <div class="container h-100 d-flex flex-column justify-content-center">
+            <div class="text-center mb-5">
+                <h2 class="section-title text-white">Öne Çıkan Ürünlerimiz</h2>
+                <p class="fs-5 text-white-50">Sizin için en çok tercih edilen ürünleri derledik.</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <!-- Product 1 -->
+                <div class="col-6 col-md-3">
+                    <div class="glass-card text-center p-4">
+                        <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vitamin C" class="img-fluid rounded-circle mb-3 shadow-sm" style="width:120px; height:120px; object-fit:cover;">
+                        <h5 class="text-white">Vitamin C Complex</h5>
+                        <p class="text-white-50 mb-3">Bağışıklık Güçlendirici</p>
+                        <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-4">İncele</a>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="col-6 col-md-3" style="transform: translateY(20px);">
+                    <div class="glass-card text-center p-4">
+                        <img src="https://images.unsplash.com/photo-1550831106-0994fe8abcfe?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Omega 3" class="img-fluid rounded-circle mb-3 shadow-sm" style="width:120px; height:120px; object-fit:cover;">
+                        <h5 class="text-white">Omega-3 Plus</h5>
+                        <p class="text-white-50 mb-3">Kalp ve Beyin Dostu</p>
+                        <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-4">İncele</a>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="col-6 col-md-3">
+                    <div class="glass-card text-center p-4">
+                        <img src="https://images.unsplash.com/photo-1584017911766-d451b3d0e843?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Vegan Protein" class="img-fluid rounded-circle mb-3 shadow-sm" style="width:120px; height:120px; object-fit:cover;">
+                        <h5 class="text-white">Vegan Protein</h5>
+                        <p class="text-white-50 mb-3">Bitkisel Güç</p>
+                        <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-4">İncele</a>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="col-6 col-md-3" style="transform: translateY(20px);">
+                    <div class="glass-card text-center p-4 border-warning shadow-lg">
+                        <div class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-warning text-dark py-2 px-3">
+                            Yeni
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1610444583161-0b5c1c045b37?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Collagen" class="img-fluid rounded-circle mb-3 shadow-sm" style="width:120px; height:120px; object-fit:cover;">
+                        <h5 class="text-white">Pure Collagen</h5>
+                        <p class="text-white-50 mb-3">Cilt Yenileyici</p>
+                        <a href="#" class="btn btn-sm btn-outline-light rounded-pill px-4">İncele</a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3">Tüm Ürünleri Gör</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7: İLETİŞİM & FOOTER -->
+    <section id="iletisim" class="fullscreen-section bg-iletisim position-relative">
+        <div class="container h-100 d-flex flex-column justify-content-center">
+            <div class="row align-items-center flex-grow-1 pt-5">
+                <!-- Contact Info -->
+                <div class="col-lg-5 mb-5 mb-lg-0">
+                    <h2 class="section-title text-white mb-4">İletişime Geçin</h2>
+                    <p class="text-white-50 fs-5 mb-5">Sorularınız, önerileriniz veya destek için bizimle her zaman iletişime geçebilirsiniz.</p>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-location-dot fs-4 text-accent-green"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1">Adres</h6>
+                            <p class="text-white-50 mb-0">Sağlık Mah. Vitamin Cad. No:1, İstanbul</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-phone fs-4 text-accent-yellow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1">Telefon</h6>
+                            <p class="text-white-50 mb-0">+90 (555) 123 45 67</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-envelope fs-4 text-accent-coral"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-1">E-posta</h6>
+                            <p class="text-white-50 mb-0">merhaba@vitacure.com</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="col-lg-6 offset-lg-1">
+                    <div class="contact-card">
+                        <h4 class="text-white mb-4">Bize Yazın</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50">Adınız Soyadınız</label>
+                                <input type="text" class="form-control rounded-pill contact-input px-4" placeholder="Adınız Soyadınız">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50">E-posta Adresi</label>
+                                <input type="email" class="form-control rounded-pill contact-input px-4" placeholder="ornek@email.com">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-white-50">Mesajınız</label>
+                                <textarea class="form-control rounded-4 contact-input p-3" rows="4" placeholder="Size nasıl yardımcı olabiliriz?"></textarea>
+                            </div>
+                            <button class="btn btn-light w-100 rounded-pill py-3 fw-bold text-dark fs-5 shadow-sm">
+                                Gönder <i class="fa-solid fa-paper-plane ms-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Minimal Footer at the bottom of the section -->
+            <footer class="w-100 py-4 mt-auto border-top border-secondary border-opacity-25 text-center">
+                <p class="text-white-50 mb-0 small">&copy; 2026 VitaCure. Tüm hakları saklıdır. Doğal ve sağlıklı yaşamın adresi.</p>
+            </footer>
+        </div>
+    </section>
+
+</div>
