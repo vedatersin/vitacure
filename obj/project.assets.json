@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vedat\\Desktop\\vitacure\\vitacure.csproj",
+      "projectUniqueName": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\vitacure.csproj",
       "projectName": "vitacure",
-      "projectPath": "C:\\Users\\vedat\\Desktop\\vitacure\\vitacure.csproj",
+      "projectPath": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\vitacure.csproj",
       "packagesPath": "C:\\Users\\vedat\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vedat\\Desktop\\vitacure\\obj\\",
+      "outputPath": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\vedat\\AppData\\Roaming\\NuGet\\NuGet.Config",

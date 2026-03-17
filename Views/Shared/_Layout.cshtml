@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
@@ -15,34 +15,48 @@
 </head>
 <body>
     <header class="vitacure-header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-transparent w-100 position-absolute z-3">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-leaf me-2 fs-3"></i>
-                    <span class="fw-bold fs-4 ms-1 tracking-wide">VITACURE</span>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-transparent w-100 position-absolute z-3 ag-navbar">
+                <div class="container">
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index" style="cursor:pointer;">
+                    <img src="~/img/logo.png" alt="VitaCure Logo" style="height:38px; width:auto; object-fit:contain;">
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium ag-nav-links">
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#biz-kimiz">Biz Kimiz</a>
+                            <a class="nav-link px-3 text-white" href="#biz-kimiz">Biz Kimiz?</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#tum-urunlerimiz">Tüm Ürünlerimiz</a>
+                            <a class="nav-link px-3 text-white" href="#tum-urunler">Tüm Ürünler</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#iletisim">İletişim</a>
+                            <a class="nav-link px-3 text-white" href="#kategoriler">Kategoriler</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 text-white" href="#markalar">Markalar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 text-white position-relative" href="#vitacure-ai">
+                                Vitacure AI
+                                <span class="badge-new">yeni</span>
+                            </a>
                         </li>
                     </ul>
-                    <div class="d-flex align-items-center ms-lg-4 text-white">
-                        <div class="position-relative me-3 d-none d-lg-block">
-                            <input type="text" class="form-control rounded-pill bg-white bg-opacity-25 border-0 text-white placeholder-white px-4" placeholder="Search" style="width: 200px; padding-right: 40px;">
-                            <i class="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3"></i>
-                        </div>
-                        <a href="#" class="text-white fs-5"><i class="fa-solid fa-shopping-cart"></i></a>
+                    <div class="ag-nav-icons ms-lg-4">
+                        <!-- Kalp İkonu (Solid) -->
+                        <a href="#" class="text-white fs-5 nav-icon-btn no-underline" title="Favoriler" style="cursor:pointer;">
+                            <i class="fa-solid fa-heart"></i>
+                        </a>
+                        <!-- Sepet İkonu ile Rozet (Classical Cart) -->
+                        <a href="#" class="text-white fs-5 nav-icon-btn position-relative" title="Sepetim" style="cursor:pointer;">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span class="cart-badge">0</span>
+                        </a>
+                        <!-- Giriş Yap Butonu -->
+                        <a href="#" class="btn btn-giris-yap" style="cursor:pointer;">Giriş Yap</a>
                     </div>
                 </div>
             </div>

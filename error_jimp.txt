@@ -1,0 +1,4 @@
+TypeError: Jimp.read is not a function
+    at processImage (C:\Users\vedat\Documents\GitHub\vitacure\process_images.js:16:34)
+    at main (C:\Users\vedat\Documents\GitHub\vitacure\process_images.js:61:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

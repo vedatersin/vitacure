@@ -25,32 +25,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Full screen Sections with Scroll Snapping */
-.scroll-container {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scrollbar-width: none;
-    /* Firefox */
-}
-
-.scroll-container::-webkit-scrollbar {
-    display: none;
-    /* Chrome/Safari */
-}
-
-.fullscreen-section {
-    height: 100vh;
-    width: 100vw;
-    scroll-snap-align: start;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
-
 /* Tracking */
 .tracking-wide {
     letter-spacing: 0.1em;
@@ -107,6 +81,97 @@ body {
     background-size: cover;
 }
 
+/* Nav Icon Buttons */
+.nav-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.9;
+}
+
+.nav-icon-btn:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* Cart Badge */
+.cart-badge {
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    background: #e53e3e;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid transparent;
+}
+
+/* Giriş Yap Butonu */
+.btn-giris-yap {
+    background: white;
+    color: #2D3748 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.45rem 1.2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.btn-giris-yap:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Antigravity Minimal Navbar */
+/* Antigravity Minimal Navbar */
+.ag-navbar {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ag-navbar .container {
+    max-width: 1500px;
+    width: 92%;
+    padding-right: 0 !important; /* Giriş yap butonunu sağa yaslamak için */
+}
+
+.ag-nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* İkonlar ve buton arası eşit boşluk */
+}
+
+.ag-nav-links {
+    gap: 0px;
+    /* Menü itemleri arası boşluk 10px daraltıldı (0.65rem ~10px) */
+}
+
+.ag-nav-links .nav-link {
+    font-size: 1.05rem;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+    cursor: pointer;
+}
+
+.ag-nav-links .nav-link:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
 .slogan-text {
     font-weight: 800;
     font-size: 4.5rem;
@@ -119,6 +184,32 @@ body {
     font-size: 1.8rem;
     font-weight: 400;
     color: rgba(255, 255, 255, 0.9);
+}
+
+/* No Underline for Icons */
+.no-underline {
+    text-decoration: none !important;
+}
+
+.no-underline:hover {
+    text-decoration: none !important;
+}
+
+/* Badge New */
+.badge-new {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    transform: translate(100%, -100%); /* Genişliği kadar sağa kaydırıldı (Sol alt köşesi I'nın sağına geldi) */
+    background: #e53e3e; /* Rozet kırmızısı */
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    line-height: 1;
+    pointer-events: none;
 }
 
 /* Category Icons underneath header */
@@ -239,17 +330,7 @@ body {
     line-height: 1;
 }
 
-/* Model Viewer */
-model-viewer {
-    width: 100%;
-    height: 60vh;
-    --poster-color: transparent;
-    outline: none !important;
-}
 
-model-viewer:focus-visible {
-    outline: none !important;
-}
 
 /* Animations */
 .animate-fade-up {

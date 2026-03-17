@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+61fcbc4320e364752fa1c098e3d1412cf49b5b7c")]
 [assembly: System.Reflection.AssemblyProductAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
