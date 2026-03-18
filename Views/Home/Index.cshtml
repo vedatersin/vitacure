@@ -35,7 +35,7 @@
     .ag-hero {
         position: relative;
         width: 100vw;
-        height: calc(80vh - 100px); /* Yükseklik 100px azaltıldı */
+        height: calc(80vh - 150px);
         background: transparent;
         overflow: visible;
         margin: 0;
@@ -46,11 +46,11 @@
     /* General Positions (Percentage based on 100% width/height of Hero) */
     .ag-title {
         position: absolute;
-        top: calc(22% - 30px); /* Kırmızı işaretli alan (başlıklar) 30px yukarı (-50px + 20px -> -30px) */
+        top: calc(22% - 20px); /* 10px aşağı kaydırıldı (üst boşluk için) */
         left: 50%;
         transform: translate(-50%, -50%);
         color: white;
-        font-size: 4rem; /* 3.5rem -> 4rem büyütüldü */
+        font-size: 4rem;
         font-weight: 700;
         letter-spacing: 2px;
         z-index: 10;
@@ -59,12 +59,12 @@
 
     .ag-subtitle {
         position: absolute;
-        top: calc(22% + 55px); /* Başlıkla beraber (eski + 20px -> 55px) */
+        top: calc(22% + 65px); /* 10px yukarı çekildi (başlığa yaklaşması için) */
         left: 50%;
         transform: translate(-50%, -50%);
         color: rgba(255, 255, 255, 0.9);
-        font-size: 2.1rem; /* %25 daha artırıldı (1.68 -> 2.1) */
-        font-weight: 500; /* Kalınlaştırıldı (300 -> 500) */
+        font-size: 2.1rem;
+        font-weight: 500;
         z-index: 10;
         white-space: nowrap;
         text-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -134,18 +134,18 @@
     /* Gemini-Style Chat Interface Updates */
     .ag-chat-panel {
         position: absolute;
-        top: calc(61% + 70px); /* 30px aşağı, 20px aşağı -> toplam 50px artış (eski: 20px) */
+        top: calc(61% + 90px); /* Üstteki kaymalardan dolayı +20px aşağı alındı */
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 70%; /* 60% -> 70% Orantılı Büyütüldü */
-        min-height: 100px; /* İçeriğin 2 katına çıkması için min-height artırıldı (60 -> 100) */
+        width: 70%;
+        min-height: 100px;
         background: rgba(35, 40, 48, 0.42);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 30px;
-        padding: 24px 24px; /* Padding genişletildi ve boşluk artırıldı */
-        z-index: 1040; /* Navbar'dan (1050) bir alt kademe */
+        padding: 24px 24px;
+        z-index: 1040;
         box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         display: flex;
         flex-direction: column;
@@ -627,8 +627,7 @@
     /* Featured Products Carousel */
     .featured-wrapper {
         background-color: #f3f4f6; /* Gri arka plan tam sayfa genişliğinde */
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
+        width: 100%;
         padding: 2rem 0 3rem 0; /* Üstten ve alttan boşluk azaltıldı */
         position: relative;
         z-index: 20;
@@ -640,154 +639,235 @@
         position: relative;
     }
     .featured-title {
-        color: #2d3748; /* Koyu gri, diğer başlıklarla uyumlu */
-        font-size: 2rem; /* Başlık boyutu biraz büyütüldü */
-        font-weight: 600; /* 800'den 600'e (kalın ama hafifletildi) */
+        color: #2d3748;
+        font-size: 2rem;
+        font-weight: 600;
         text-align: left; 
-        margin-bottom: 0rem; /* Altındaki carousel ile olan boşluk tamamen kaldırıldı */
-        padding-left: 0; /* Hizalamayı wrapper baz alacak şekilde sıfırlandı */
-        margin-left: 5px; /* Oklar için padding eklendiğine swiper ile aynı hizada kalması sağlandı */
+        margin-bottom: 0rem;
+        padding-left: 0;
+        margin-left: 0px;
+    }
+    .btn-tum-urunler {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 0;
+        background: none;
+        border: none;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+    }
+    .btn-tum-urunler:hover {
+        color: #1e3a5f;
+        text-decoration: none;
     }
     .featured-swiper {
         padding-top: 30px !important; /* Puan düşürülerek carouselin ve içindeki taşan kartların başlığa daha da yaklaşması sağlandı (fazladan boşluk alındı) */
         padding-bottom: 50px !important; /* Noktalama işaretleri için alan */
-        padding-left: 5px !important; /* Sol çizgiye tam yaslanması için yan paddingler iyice kısıldı */
-        padding-right: 5px !important;
+        padding-left: 0 !important; /* Hizalama sıfırlandı */
+        padding-right: 0 !important;
+        overflow: visible !important; /* Okların dışarı taşabilmesi için */
     }
+    /* ===== PRODUCT CARD - YENİ TASARIM ===== */
     .product-glass-card {
         background: white;
         border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: left;
-        color: #1a202c; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: 14px;
+        padding: 0;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
         height: 100%;
         transition: box-shadow 0.3s ease, transform 0.3s ease;
         position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
     }
     .product-glass-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: inherit;
+    }
+    /* Ürün görseli alanı */
+    .product-glass-img-wrap {
+        position: relative;
+        padding: 18px 18px 12px;
+        background: #f8f9fa;
+        border-radius: 14px 14px 0 0;
     }
     .product-glass-card img {
         height: 180px;
         width: 100%;
         object-fit: contain;
-        margin-bottom: 1rem;
+        display: block;
         transition: transform 0.3s ease;
     }
     .product-glass-card:hover img {
-        transform: scale(1.05);
+        transform: scale(1.04);
     }
+    /* Favori kalp butonu - sağ üst */
+    .pc-heart-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: white;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #a0aec0;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        z-index: 5;
+    }
+    .pc-heart-btn:hover { color: #ef4444; transform: scale(1.1); }
+    .pc-heart-btn.active { color: #ef4444; border-color: #e2e8f0; }
+    .pc-heart-btn.active i { font-weight: 900; }
+
+    /* İçerik bölümü */
+    .product-glass-body {
+        padding: 14px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    /* Ürün başlığı */
     .product-glass-title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 6px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
-        width: 100%;
-        color: #2d3748;
-    }
-    .product-glass-desc {
-        font-size: 0.8rem;
-        color: #718096;
-        margin-bottom: 1rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .product-glass-bottom {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: auto;
-    }
-    .product-glass-bottom-left {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .product-glass-price {
-        font-size: 1.2rem;
-        font-weight: 700;
-        line-height: 1.2;
-        color: #2d3748; 
-    }
-    .product-glass-icons {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px; 
-        align-items: center;
-        z-index: 10;
-    }
-    .product-glass-icon-btn {
-        background: white;
-        border: 1px solid #e2e8f0;
-        color: #a0aec0;
-        width: 32px; 
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem; 
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .product-glass-icon-btn:hover {
-        background: #f8f9fa;
-        transform: scale(1.1);
-    }
-    .product-glass-icon-btn.heart:hover {
-        color: #ef4444; 
-        border-color: #ef4444;
-    }
-    .product-glass-icon-btn.cart {
-        position: relative;
-    }
-    .product-glass-icon-btn.cart:hover {
-        color: #10b981;
-        border-color: #10b981;
+        line-height: 1.4;
     }
 
-    .swiper-button-next, .swiper-button-prev {
-        color: #2d3748 !important; /* Koyu oklar */
+    /* Yıldız + puan (Decimal support) */
+    .pc-stars-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+    .pc-stars-wrapper {
+        display: inline-flex;
+        position: relative;
+        font-size: 0.85rem;
+        color: #e2e8f0; /* Empty color */
+    }
+    .pc-stars-filled {
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        color: #f59e0b;
+    }
+    .pc-stars-row .score {
+        font-size: 0.78rem;
+        color: #718096;
+    }
+
+    /* Fiyatlar - Yan Yana */
+    .pc-prices {
+        margin-bottom: 12px;
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pc-price-new {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1a202c;
+    }
+    .pc-price-old {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        text-decoration: line-through;
+    }
+
+    /* Sepete Ekle butonu - Sağ Alt Pill */
+    .pc-add-btn-row {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+    .pc-add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center; /* Merkeze hizalama */
+        gap: 8px;
+        padding: 8px 18px;
+        background: #1e5e78; /* Görsele daha yakın canlı teal tonu */
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    .pc-add-btn:hover { background: #16465a; color: white; text-decoration: none; }
+    .pc-add-btn.added { background: #10b981; } 
+
+    .featured-swiper {
+        padding-top: 30px !important;
+        padding-bottom: 50px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        overflow: hidden !important; /* Taşan slaytları gizle */
+    }
+    /* Nav butonları .featured-section'a göre konumlandırılacak */
+    .featured-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        color: #2d3748 !important;
         background: white !important;
         backdrop-filter: blur(5px);
-        width: 50px !important;
-        height: 50px !important;
+        width: 60px !important;
+        height: 60px !important;
         border-radius: 50%;
-        border: 1px solid rgba(0, 0, 0, 0.1); /* Seçilebilir açık gri sınır */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Hafif gölge */
-        margin-top: 20px; 
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
     }
-    .swiper-button-next:hover, .swiper-button-prev:hover {
-        background: #f8f9fa !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        transform: scale(1.05);
+    .featured-nav-btn:hover {
+        background: #17a2b8 !important;
+        color: white !important;
+        border-color: #17a2b8 !important;
+        box-shadow: 0 6px 20px rgba(23, 162, 184, 0.3);
+        transform: translateY(-50%) scale(1.1);
     }
-    .swiper-button-prev {
-        left: -15px !important;  /* Ok dışarı çekildi ki ilk ürün tam çizgiye yaslansın */
+    .swiper-button-prev.featured-nav-btn {
+        left: -50px !important;
     }
-    .swiper-button-next {
-        right: -15px !important; 
+    .swiper-button-next.featured-nav-btn {
+        right: -50px !important;
     }
-    .swiper-button-next::after, .swiper-button-prev::after {
-        font-size: 1.5rem !important;
+    .swiper-button-next.featured-nav-btn::after,
+    .swiper-button-prev.featured-nav-btn::after {
+        font-size: 1.2rem !important;
         font-weight: bold;
     }
     .swiper-pagination-bullet {
@@ -808,7 +888,7 @@
     
     <!-- ANTIGRAVITY FULLSCREEN HERO SECTION & CAROUSEL -->
     <div class="hero-gradient-wrapper">
-    <div class="ag-hero">
+        <div class="ag-hero">
 
         <h1 class="ag-title hero-element">Bir Dünya Sağlık</h1>
         <h2 class="ag-subtitle hero-element">Peki senin ihtiyacın ne?</h2>
@@ -892,390 +972,307 @@
     <!-- FEATURED PRODUCTS CAROUSEL -->
     <div class="featured-wrapper">
     <div class="featured-section">
-        <h2 class="featured-title">Öne Çıkan Ürünler</h2>
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <h2 class="featured-title mb-0">Öne Çıkan Ürünler</h2>
+            <a href="#tum-urunler" class="btn-tum-urunler">Tümünü Gör <i class="fa-solid fa-arrow-right fa-sm"></i></a>
+        </div>
         
         <div class="swiper featured-swiper pb-5">
             <div class="swiper-wrapper">
                 <!-- Slide 1 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_multi_nobg.png" alt="Multi Vitamin">
-                        <h3 class="product-glass-title">Daily Multivitamin</h3>
-                        <div class="product-glass-desc">Enerji ve bağışıklık desteği</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺299</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_multi_nobg.png" alt="Daily Multivitamin">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Daily Multivitamin</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 96%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.8)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 299,00</span>
+                                <span class="pc-price-old">₺ 399,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 2 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_omega_nobg.png" alt="Omega 3">
-                        <h3 class="product-glass-title">Omega 3</h3>
-                        <div class="product-glass-desc">Kalp ve beyin sağlığı</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺349</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_omega_nobg.png" alt="Omega 3">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Omega 3</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 98%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.9)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 349,00</span>
+                                <span class="pc-price-old">₺ 499,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 3 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_d3_nobg.png" alt="Vitamin D3">
-                        <h3 class="product-glass-title">Vitamin D3</h3>
-                        <div class="product-glass-desc">Kemik ve bağışıklık</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺199</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_d3_nobg.png" alt="Vitamin D3">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Vitamin D3</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 94%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.7)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 199,00</span>
+                                <span class="pc-price-old">₺ 279,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 4 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_mag_nobg.png" alt="Magnezyum">
-                        <h3 class="product-glass-title">Magnezyum</h3>
-                        <div class="product-glass-desc">Kas ve sinir sistemi</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺249</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_mag_nobg.png" alt="Magnezyum">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Magnezyum</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 86%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.3)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 249,00</span>
+                                <span class="pc-price-old">₺ 349,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 5 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_multi_nobg.png" alt="C Vitamini">
-                        <h3 class="product-glass-title">C Vitamini Complex</h3>
-                        <div class="product-glass-desc">Güçlü antioksidan etki</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺179</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_multi_nobg.png" alt="C Vitamini Complex">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">C Vitamini Complex</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 92%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.6)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 179,00</span>
+                                <span class="pc-price-old">₺ 249,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 6 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_omega_nobg.png" alt="Kolajen">
-                        <h3 class="product-glass-title">Kolajen Peptit</h3>
-                        <div class="product-glass-desc">Cilt ve eklem sağlığı</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺499</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_omega_nobg.png" alt="Kolajen Peptit">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Kolajen Peptit</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 98%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.9)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 499,00</span>
+                                <span class="pc-price-old">₺ 699,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 7 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_d3_nobg.png" alt="B12">
-                        <h3 class="product-glass-title">B12 Vitamini</h3>
-                        <div class="product-glass-desc">Hücre yenilenmesi</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺149</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_d3_nobg.png" alt="B12 Vitamini">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">B12 Vitamini</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 88%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.4)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 149,00</span>
+                                <span class="pc-price-old">₺ 199,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 8 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_mag_nobg.png" alt="Çinko">
-                        <h3 class="product-glass-title">Çinko Pikolinat</h3>
-                        <div class="product-glass-desc">Saç ve tırnak sağlığı</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺189</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_mag_nobg.png" alt="Çinko Pikolinat">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Çinko Pikolinat</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 90%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.5)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 189,00</span>
+                                <span class="pc-price-old">₺ 259,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 9 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_multi_nobg.png" alt="Probiyotik">
-                        <h3 class="product-glass-title">Probiyotik 10B</h3>
-                        <div class="product-glass-desc">Sindirim sistemi düzeni</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺329</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_multi_nobg.png" alt="Probiyotik 10B">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Probiyotik 10B</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 84%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.2)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 329,00</span>
+                                <span class="pc-price-old">₺ 449,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <!-- Slide 10 -->
                 <div class="swiper-slide">
-                    <div class="product-glass-card">
-                        <img src="~/img/bottle_omega_nobg.png" alt="Demir">
-                        <h3 class="product-glass-title">Demir + C Vitamini</h3>
-                        <div class="product-glass-desc">Enerji metabolizması</div>
-                        <div class="product-glass-bottom">
-                            <div class="product-glass-bottom-left">
-                                <span style="font-size: 0.8rem; opacity: 0.8;">Fiyat</span>
-                                <div class="product-glass-price">₺159</div>
+                    <a href="#" class="product-glass-card">
+                        <div class="product-glass-img-wrap">
+                            <img src="~/img/bottle_omega_nobg.png" alt="Demir + C Vitamini">
+                            <button class="pc-heart-btn" title="Favorilere Ekle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <div class="product-glass-body">
+                            <h3 class="product-glass-title">Demir + C Vitamini</h3>
+                            <div class="pc-stars-row">
+                                <div class="pc-stars-wrapper">
+                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-filled" style="width: 82%;">★★★★★</div>
+                                </div>
+                                <span class="score">(4.1)</span>
                             </div>
-                            <div class="product-glass-icons">
-                                <div class="product-glass-icon-btn heart" title="Favorilere Ekle"><i class="fa-solid fa-heart"></i></div>
-                                <div class="product-glass-icon-btn" title="Sepete Ekle"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="pc-prices">
+                                <span class="pc-price-new">₺ 159,00</span>
+                                <span class="pc-price-old">₺ 219,00</span>
+                            </div>
+                            <div class="pc-add-btn-row">
+                                <button class="pc-add-btn" onclick="event.preventDefault()">
+                                    <i class="fa-solid fa-cart-shopping"></i> Sepete Ekle
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
-            <!-- Pagination -->
-            <div class="swiper-pagination mt-4"></div>
-            
-            <!-- Navigation buttons -->
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-        </div>
-    </div>
-    </div>
+        </div><!-- end .featured-swiper -->
 
-    <!-- CİLT BAKIMI -->
-    <div class="category-section bg-cilt-bakimi">
-        <div class="row mb-5 align-items-center">
-            <div class="col-md-6">
-                <h2 class="category-title dark-text">Cilt Bakımı</h2>
-                <ul class="feature-list-clean dark-text">
-                    <li>Nemlendirme</li>
-                    <li>Yaşlanma Karşıtı</li>
-                    <li>Canlı Görünüm</li>
-                </ul>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                <i class="fa-solid fa-head-side-mask fa-5x text-black-50 opacity-25"></i>
-            </div>
-        </div>
-        
-        <div class="row g-4 flex-grow-1">
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-orange">
-                        <i class="fa-solid fa-bottle-droplet fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Glow Boost Serum</h5>
-                    <p class="product-desc">Glows casevanmenting x glow boost serum</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue">
-                        <i class="fa-solid fa-jar fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Daily Moisturizer</h5>
-                    <p class="product-desc">Moisture daily moisturizes and moisturizer</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-brown">
-                        <i class="fa-solid fa-eye fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Eye Cream</h5>
-                    <p class="product-desc">Eye cream to repare wrink deauin in eye cream</p>
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <!-- UYKU SAĞLIĞI -->
-    <div class="category-section bg-uyku-sagligi">
-        <div class="row mb-5 align-items-center">
-            <div class="col-md-6">
-                <h2 class="category-title light-text">Uyku Sağlığı</h2>
-                <ul class="feature-list-clean light-text">
-                    <li>Derin Uyku</li>
-                    <li>Hızlı Dalma</li>
-                    <li>Dinlenmiş Uyanma</li>
-                </ul>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                 <i class="fa-solid fa-moon fa-5x text-white opacity-25"></i>
-            </div>
-        </div>
-        
-        <div class="row g-4 flex-grow-1">
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue">
-                        <i class="fa-solid fa-mug-hot fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Calm Night Tea</h5>
-                    <p class="product-desc">Tuckwron moonirations tepos calm night tea</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue" style="background-color: #e6e6fa; color: #8a2be2;">
-                        <i class="fa-solid fa-pills fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Magnesium Glycinate</h5>
-                    <p class="product-desc">Deses the magnesium glycinate glycinate</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue" style="background-color: #2c3e50; color: white;">
-                        <i class="fa-solid fa-mask fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Sleep Mask</h5>
-                    <p class="product-desc">Enables your mask with deep mask</p>
-                </a>
-            </div>
-        </div>
-    </div>
+            <!-- Navigation buttons (outside swiper to avoid clipping) -->
+            <div class="swiper-button-prev featured-nav-btn"></div>
+            <div class="swiper-button-next featured-nav-btn"></div>
+        </div><!-- end .featured-section -->
+    </div><!-- end .featured-wrapper -->
 
-    <!-- ZİHİN VE HAFIZA GÜÇLENDİRME -->
-    <div class="category-section bg-zihin-hafiza">
-        <div class="row mb-5 align-items-center">
-            <div class="col-md-6">
-                <h2 class="category-title dark-text">Zihin ve Hafıza<br/>Güçlendirme</h2>
-                <ul class="feature-list-clean dark-text">
-                    <li>Odaklanma</li>
-                    <li>Hafıza Gücü</li>
-                    <li>Bilişsel Fonksiyonlar</li>
-                </ul>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                 <i class="fa-solid fa-brain fa-5x text-black-50 opacity-25"></i>
-            </div>
-        </div>
-        
-        <div class="row g-4 flex-grow-1">
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue">
-                        <i class="fa-solid fa-fish fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Omega-3 Fish Oil</h5>
-                    <p class="product-desc">Omega-3 fish oil hangini bilişsel benefits</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-brown">
-                        <i class="fa-solid fa-capsules fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">B-Complex Vitamins</h5>
-                    <p class="product-desc">Complex vitamins ve complex benefits</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-brown" style="background-color: #e8dcc5; color: #5c4033;">
-                        <i class="fa-solid fa-leaf fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Lion's Mane Mushroom</h5>
-                    <p class="product-desc">Lion's Mane Manere mushroom bsatirr.</p>
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <!-- HASTALIKLARA KARŞI KORUMA -->
-    <div class="category-section bg-hastalik-koruma">
-        <div class="row mb-5 align-items-center">
-            <div class="col-md-6">
-                <h2 class="category-title dark-text">Hastalıklara<br/>Karşı Koruma</h2>
-                <ul class="feature-list-clean dark-text">
-                    <li>Bağışıklık Desteği</li>
-                    <li>Hücre Koruması</li>
-                    <li>Antioksidan Etki</li>
-                </ul>
-            </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-center">
-                 <i class="fa-solid fa-shield-virus fa-5x text-black-50 opacity-25"></i>
-            </div>
-        </div>
-        
-        <div class="row g-4 flex-grow-1">
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue" style="background-color: #e2e8f0; color: #718096;">
-                        <i class="fa-solid fa-tablets fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Zinc Tablets</h5>
-                    <p class="product-desc">Cempax l zick to promote zinc tablets</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue" style="background-color: #feebc8; color: #ed8936;">
-                        <i class="fa-solid fa-bottle-water fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Elderberry Syrup</h5>
-                    <p class="product-desc">Eilrichsol woreles with elderberry syrup</p>
-                </a>
-            </div>
-            <div class="col-12 col-md-4">
-                <a href="#" class="product-card">
-                    <div class="product-icon-wrapper bg-icon-blue" style="background-color: #e6fffa; color: #319795;">
-                        <i class="fa-solid fa-bacteria fa-2x"></i>
-                    </div>
-                    <h5 class="product-title">Probiotics</h5>
-                    <p class="product-desc">Immune winv. prebiotic and probiotics</p>
-                </a>
-            </div>
-        </div>
-    </div>
 
 </div>
+
 
     <input type="file" id="fileUploadInput" multiple style="display: none;" accept=".pdf,.doc,.docx,.txt" />
     <input type="file" id="imageUploadInput" multiple style="display: none;" accept="image/*" />
@@ -1285,6 +1282,46 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Kalp butonları — tıklanınca içi kırmızı dolsun
+            document.querySelectorAll('.pc-heart-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const icon = this.querySelector('i');
+                    this.classList.toggle('active');
+                    if (this.classList.contains('active')) {
+                        icon.classList.remove('fa-regular');
+                        icon.classList.add('fa-solid');
+                    } else {
+                        icon.classList.remove('fa-solid');
+                        icon.classList.add('fa-regular');
+                    }
+                });
+            });
+            // Sepete Ekle butonları — tıklanınca "Eklendi" olsun
+            document.querySelectorAll('.pc-add-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (this.classList.contains('processing')) return;
+                    
+                    const originalHTML = this.innerHTML;
+                    this.classList.add('processing');
+                    this.style.width = this.offsetWidth + 'px'; // Genişliği sabitle ki yazı değişince zıplamasın
+                    
+                    this.innerHTML = '<i class="fa-solid fa-check"></i> Eklendi';
+                    this.style.background = "#10b981"; // Geçici yeşil renk
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.style.background = ""; // Orijinal CSS rengine dön
+                        this.classList.remove('processing');
+                        this.style.width = "";
+                    }, 1500);
+                });
+            });
+
             const chatInput = document.getElementById('chatInput');
             const btnFullscreen = document.getElementById('btnFullscreen');
             const btnAddFile = document.getElementById('btnAddFile');
@@ -1486,10 +1523,6 @@
                 slidesPerView: 1,
                 spaceBetween: 10,
                 loop: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
                 navigation: {
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
@@ -1497,7 +1530,7 @@
                 breakpoints: {
                     640: { slidesPerView: 3, spaceBetween: 15 },
                     768: { slidesPerView: 4, spaceBetween: 15 },
-                    1024: { slidesPerView: 6, spaceBetween: 15 }, /* 5 yerine 6 yapıldı ve aralık biraz kısılıp sığdırıldı */
+                    1024: { slidesPerView: 5, spaceBetween: 20 },
                 }
             });
         });
