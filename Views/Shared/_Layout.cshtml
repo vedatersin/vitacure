@@ -27,19 +27,19 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-medium ag-nav-links">
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#biz-kimiz">Biz Kimiz?</a>
+                            <a class="nav-link px-3 text-white" href="#biz-kimiz" style="font-size: 1.1rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.25);">Biz Kimiz?</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#tum-urunler">Tüm Ürünler</a>
+                            <a class="nav-link px-3 text-white" href="#tum-urunler" style="font-size: 1.1rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.25);">Tüm Ürünler</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#kategoriler">Kategoriler</a>
+                            <a class="nav-link px-3 text-white" href="#kategoriler" style="font-size: 1.1rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.25);">Kategoriler</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white" href="#markalar">Markalar</a>
+                            <a class="nav-link px-3 text-white" href="#markalar" style="font-size: 1.1rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.25);">Markalar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 text-white position-relative" href="#vitacure-ai">
+                            <a class="nav-link px-3 text-white position-relative" href="#vitacure-ai" style="font-size: 1.1rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.25);">
                                 Vitacure AI
                                 <span class="badge-new">yeni</span>
                             </a>
@@ -68,6 +68,56 @@
     <main role="main">
         @RenderBody()
     </main>
+
+    <footer class="vitacure-footer" style="background: linear-gradient(135deg, #1e5e78 0%, #0d3a4d 100%); color: #cbd5e1; padding: 4rem 0 2rem 0; margin-top: auto; box-shadow: 0 -10px 30px rgba(0,0,0,0.1);">
+        <div class="container" style="max-width: 1500px; width: 92%;">
+            <div class="row g-4 mb-4 d-flex justify-content-between">
+                <div class="col-lg-3 col-md-12 pe-lg-4">
+                    <img src="~/img/logo.png" alt="VitaCure Logo" style="height: 45px; margin-bottom: 1.5rem; filter: brightness(0) invert(1);" />
+                    <p style="font-size: 0.95rem; line-height: 1.6; color: #cbd5e1;">
+                        Vitacure, sağlığınıza değer veren, bilim ve doğanın gücüyle tasarlanmış, kişiselleştirilmiş en kaliteli vitamin ve gıda takviyelerini sunan %100 güvenilir platformdur.
+                    </p>
+                </div>
+                
+                <div class="col-lg-auto col-md-4">
+                    <h4 style="color: white; font-weight: 600; margin-bottom: 1.5rem; font-size: 1.2rem;">Kategoriler</h4>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Uyku Sağlığı</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Multivitamin & Enerji</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Zihin & Hafıza Güçlendirme</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Hastalıklara Karşı Koruma</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Kas ve İskelet Sağlığı</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Zayıflama Desteği</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-auto col-md-4">
+                    <h4 style="color: white; font-weight: 600; margin-bottom: 1.5rem; font-size: 1.2rem;">Hızlı Linkler</h4>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="#biz-kimiz" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Biz Kimiz?</a></li>
+                        <li><a href="#tum-urunler" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Tüm Ürünler</a></li>
+                        <li><a href="#markalar" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Markalar</a></li>
+                        <li><a href="#vitacure-ai" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Vitacure AI</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-auto col-md-4">
+                    <h4 style="color: white; font-weight: 600; margin-bottom: 1.5rem; font-size: 1.2rem;">Kurumsal</h4>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Mesafeli Satış Sözleşmesi</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">Gizlilik ve Güvenlik politikası</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">İade ve İptal Koşulları</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">KVKK Aydınlatma Metni</a></li>
+                        <li><a href="#" style="color: #cbd5e1; text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">İletişim</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: 1.5rem;" />
+            <div class="text-center" style="color: #cbd5e1; font-size: 0.9rem;">
+                &copy; 2026 VitaCure. Tüm Hakları Saklıdır.
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
