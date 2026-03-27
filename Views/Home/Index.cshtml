@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
@@ -74,12 +74,12 @@
         max-width: 1500px !important;
         margin-top: 100px !important; /* Menüyle üst üste binmemesi için artırıldı */
         margin-bottom: 0 !important;
-        background: rgba(0, 0, 0, 0.4) !important; 
-        border-radius: 15px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+        background: rgba(20, 20, 30, 0.75) !important;
+        border-radius: 24px !important;
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3) !important;
     }
     
     body.uyku-mode .ag-chat-header {
@@ -511,6 +511,46 @@
     .ag-mode-btn:hover:not(.active) {
         background: rgba(255,255,255,0.06);
         color: rgba(255,255,255,0.8);
+    }
+
+    .uyku-tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding-bottom: 60px;
+    }
+
+    .uyku-tag-btn {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        background: transparent !important;
+        border: none !important;
+        color: rgba(255,255,255,0.5) !important;
+        padding: 10px 18px !important;
+        border-radius: 25px !important;
+        font-size: 1.15rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        transition: all 0.2s ease !important;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18) !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        text-decoration: none !important;
+        line-height: 1.2 !important;
+    }
+
+    .uyku-tag-btn i {
+        font-size: 1.1rem;
+    }
+
+    .uyku-tag-btn:hover,
+    .uyku-tag-btn.active {
+        background: rgba(255,255,255,0.12) !important;
+        color: white !important;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
     }
     
     /* Arama Modu Aktifken Uygulanacak Kısıtlamalar */
@@ -1131,7 +1171,7 @@
                     <span id="searchCategoryName">Kategori</span>
                     <button class="ag-search-filter-close" id="btnRemoveSearchFilter"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <textarea class="ag-chat-input" id="chatInput" placeholder="Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.&#10;&#10;" rows="1" autofocus></textarea>
+            <textarea class="ag-chat-input" id="chatInput" placeholder="Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.&#10;&#10;" rows="1" autofocus></textarea>
                 <button class="btn-fullscreen" id="btnFullscreen" title="Tam Ekran"><i class="fa-solid fa-expand"></i></button>
             </div>
             
@@ -1146,17 +1186,17 @@
                             <i class="fa-regular fa-comment-dots"></i> Sohbet Modu
                         </button>
                         <button class="ag-mode-btn" id="btnModeSearch">
-                            <i class="fa-solid fa-magnifying-glass"></i> Ürün Arama Modu
+                        <i class="fa-solid fa-magnifying-glass"></i> Ürün Arama Modu
                         </button>
                     </div>
 
                     <!-- Dosya Yükleme Açılır Menüsü -->
                     <div class="ag-add-file-menu" id="addFileMenu">
                         <div class="ag-add-menu-item" onclick="document.getElementById('fileUploadInput').click()">
-                            <i class="fa-solid fa-paperclip"></i> Dosya yükleyin
+                            <i class="fa-solid fa-paperclip"></i> Dosya Yukleyin
                         </div>
                         <div class="ag-add-menu-item" onclick="document.getElementById('imageUploadInput').click()">
-                            <i class="fa-regular fa-image"></i> Fotoğraflar
+                            <i class="fa-regular fa-image"></i> Fotograflar
                         </div>
                     </div>
                 </div>
@@ -1177,8 +1217,8 @@
     <div class="featured-wrapper">
     <div class="featured-section">
         <div class="d-flex justify-content-between align-items-center mb-0">
-            <h2 class="featured-title mb-0">Öne Çıkan Ürünler</h2>
-            <a href="#tum-urunler" class="btn-tum-urunler">Tümünü Gör <i class="fa-solid fa-arrow-right fa-sm"></i></a>
+        <h2 class="featured-title mb-0">Öne Çıkan Ürünler</h2>
+        <a href="#tum-urunler" class="btn-tum-urunler">Tümünü Gör <i class="fa-solid fa-arrow-right fa-sm"></i></a>
         </div>
         
         <div class="swiper featured-swiper pb-5">
@@ -1477,57 +1517,53 @@
     <div class="category-page d-none pt-0" id="uykuCategoryPage" style="background-color: #f8f9fa;">
         
         <!-- Categorized Detail Banner -->
-        <div class="category-main-banner mb-5" style="width: 100%; height: 640px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden;">
-            <img src="/img/banners/uyku.png" alt="Uyku Sağlığı Kampanya" style="width: 100%; height: 100%; object-fit: cover;" />
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%);">
-                
-                <!-- İçerik hiza olarak diğer container ile aynı (Çizgiler arası), Sohbet kutusundan ayrılması için padding yüksek -->
-                <div class="container h-100 position-relative" style="max-width: 1500px; width: 92%; padding-top: 320px;">
-                    <div class="row align-items-center">
+        <div class="category-main-banner mb-5" style="width: 100%; min-height: 860px; padding-bottom: 24px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <img src="/img/banners/uyku.png" alt="Uyku Sağlığı Kampanya" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 1; top: 0; left: 0;" />
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%); z-index: 2;"></div>
+            
+            <!-- İçerik hiza olarak diğer container ile aynı (Çizgiler arası), Sohbet kutusundan ayrılması için padding yüksek -->
+            <div class="container h-100 position-relative" style="max-width: 1500px; width: 92%; padding-top: 300px; z-index: 3;">
+                <div class="row align-items-center">
+                    
+                    <!-- LEFT SIDE: Title, Desc, Tags -->
+                    <div class="col-lg-5 col-xl-4 pe-lg-4" style="padding-bottom: 60px;">
+                        <h2 style="color: rgba(255,255,255,0.9); font-weight: 800; font-size: 4.8rem; text-shadow: 1px 2px 5px rgba(0,0,0,0.4); margin-bottom: 25px; line-height: 1.1;">Uyku Sağlığı</h2>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 1.6rem; font-weight: 400; text-shadow: 1px 2px 4px rgba(0,0,0,0.4); margin-bottom: 40px; line-height: 1.5;">Derin ve rahat bir uyku için doğanın ve bilimin en iyi destekleri.</p>
                         
-                        <!-- LEFT SIDE: Title, Desc, Tags -->
-                        <div class="col-lg-5 col-xl-4 pe-lg-4">
-                            <h2 style="color: rgba(255,255,255,0.8); font-weight: 800; font-size: 4.8rem; text-shadow: 1px 2px 5px rgba(0,0,0,0.4); margin-bottom: 15px;">Uyku Sağlığı</h2>
-                            <p style="color: rgba(255,255,255,0.76); font-size: 1.5rem; font-weight: 400; text-shadow: 1px 2px 4px rgba(0,0,0,0.4); margin-bottom: 25px; line-height: 1.5;">Derin ve rahat bir uyku için doğanın ve bilimin en iyi destekleri.</p>
-                            
-                            <!-- Etiket Butonları Havuzu (Şeffaf) -->
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-transparent border border-light py-2 px-3 rounded-pill fs-6 shadow-sm" style="cursor: pointer; color: rgba(255,255,255,0.9);"><i class="fa-solid fa-layer-group text-warning me-1"></i> Tümü</span>
-                                <span class="badge bg-transparent border border-light py-2 px-3 rounded-pill fs-6 shadow-sm" style="cursor: pointer; color: rgba(255,255,255,0.9);"><i class="fa-solid fa-moon text-primary me-1"></i> Melatonin</span>
-                                <span class="badge bg-transparent border border-light py-2 px-3 rounded-pill fs-6 shadow-sm" style="cursor: pointer; color: rgba(255,255,255,0.9);"><i class="fa-solid fa-leaf text-success me-1"></i> Bitkisel Ekstreler</span>
-                                <span class="badge bg-transparent border border-light py-2 px-3 rounded-pill fs-6 shadow-sm" style="cursor: pointer; color: rgba(255,255,255,0.9);"><i class="fa-solid fa-child text-info me-1"></i> Çocuklar İçin</span>
-                            </div>
+                        <!-- Etiket Butonları Havuzu (Şeffaf) -->
+                        <div class="uyku-tag-cloud">
+                            <button type="button" class="uyku-tag-btn active"><i class="fa-solid fa-layer-group text-warning"></i> Tümü</button>
+                            <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-moon text-primary"></i> Melatonin</button>
+                            <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-leaf text-success"></i> Bitkisel Ekstreler</button>
+                            <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-child text-info"></i> Çocuklar İçin</button>
                         </div>
+                    </div>
 
-                        <!-- RIGHT SIDE: Product Coverflow Carousel -->
-                        <div class="col-lg-7 col-xl-8 position-relative mt-4 mt-lg-0">
-                            <!-- Yön Okları -->
-                            <div id="uyku-coverflow-prev" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="left: -20px; top: 50%; transform: translateY(-50%); z-index: 10; width: 45px; height: 45px; opacity: 0.9; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i></div>
-                            <div id="uyku-coverflow-next" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="right: -20px; top: 50%; transform: translateY(-50%); z-index: 10; width: 45px; height: 45px; opacity: 0.9; cursor: pointer;"><i class="fa-solid fa-chevron-right"></i></div>
-                            
-                            <div class="swiper uyku-coverflow-swiper" style="width: 100%; padding-top: 20px; padding-bottom: 20px;">
-                                <div class="swiper-wrapper align-items-center">
-                                    <!-- ORİJİNAL 7 ÜRÜN -->
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_multi_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Multi Vitamin">
+                    <!-- RIGHT SIDE: Product Coverflow Carousel -->
+                    <div class="col-lg-7 col-xl-8 position-relative mt-4 mt-lg-0 d-flex flex-column align-items-center justify-content-center" style="min-height: 520px; padding-left: 80px; padding-right: 80px;">
+                        <!-- Yön Okları -->
+                        <div id="uyku-coverflow-prev" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="left: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i></div>
+                        <div id="uyku-coverflow-next" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="right: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-right"></i></div>
+                        
+                        <div id="uykuCoverflowStage" style="position: relative; width: 100%; max-width: 620px; height: 380px; margin: 66px auto 0; overflow: visible;"></div>
+                        <div id="uykuCoverflowInfo" style="width: 100%; color: rgba(255,255,255,0.96); margin-top: -84px; margin-bottom: 50px; position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center;">
+                            <div style="width: 100%; max-width: 480px; padding: 90px 32px 32px; border-radius: 24px; background: rgba(20, 20, 30, 0.55); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
+                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+                                    <div id="uykuCoverflowProductName" style="font-size: 1.6rem; font-weight: 800; line-height: 1.2; text-align: left; margin-bottom: 2px;"></div>
+                                    <div id="uykuCoverflowProductDescription" style="font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.8); text-align: left; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 2px;"></div>
+                                    <div id="uykuCoverflowRating" style="display: flex; align-items: center; gap: 8px;">
+                                        <span id="uykuCoverflowStars" style="color: #facc15; font-size: 1rem; letter-spacing: 2px;"></span>
+                                        <span id="uykuCoverflowRatingValue" style="font-size: 0.85rem; color: rgba(255,255,255,0.7);"></span>
                                     </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_omega_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Omega 3">
-                                    </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_d3_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Vitamin D3">
-                                    </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_mag_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Magnezyum">
-                                    </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_multi_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Melatonin">
-                                    </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_omega_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Omega 3">
-                                    </div>
-                                    <div class="swiper-slide" style="width: 120px; height: 385px; background: transparent; display: flex; align-items: center; justify-content: center; position: relative;">
-                                        <img src="/img/bottle_d3_nobg.png" style="width: 255px; max-width: none; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);" alt="Vitamin D3">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: 8px;">
+                                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                            <span id="uykuCoverflowPriceOld" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: line-through; margin-bottom: 2px;"></span>
+                                            <span id="uykuCoverflowPriceNew" style="font-size: 1.3rem; font-weight: 800; color: #fff;"></span>
+                                        </div>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button id="uykuCoverflowDetailsBtn" type="button" style="padding: 10px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: #ffffff; font-weight: 700; font-size: 0.9rem; transition: background 0.2s ease;">Ürünü İncele</button>
+                                            <button id="uykuCoverflowProductBtn" type="button" style="padding: 10px 18px; border-radius: 50px; border: none; background: #1e5e78; color: #ffffff; font-weight: 700; box-shadow: 0 8px 15px rgba(30, 94, 120, 0.4); font-size: 0.9rem; transition: transform 0.2s ease, background 0.2s ease;">Sepete Ekle</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1538,30 +1574,142 @@
         </div>
 
         <script>
+            let uykuCoverflowItems = [];
+            let uykuCoverflowOrder = [];
+
+            const uykuCoverflowProducts = [
+                { id: 'cals-left', src: '/img/bottle_d3_nobg.png', alt: 'Kalsiyum', name: 'Kalsiyum Kompleks', description: 'Kemik ve diş sağlığını destekler. İleri yaşlarda güçlü kemik yapısını korumaya yardımcı olur.', rating: '4.7', priceNew: '₺199,00', priceOld: '₺259,00' },
+                { id: 'multi-left', src: '/img/bottle_multi_nobg.png', alt: 'Multi Vitamin', name: 'Daily Multivitamin', description: 'Günlük enerji dengesini, bağışıklığı ve temel vitamin desteğini tek kapsülde tamamlamaya yardımcı olur.', rating: '4.8', priceNew: '₺299,00', priceOld: '₺399,00' },
+                { id: 'omega-left', src: '/img/bottle_omega_nobg.png', alt: 'Omega 3', name: 'Omega 3', description: 'Rahat bir gece rutini için bedenin gevşemesine destek olur, zihinsel dinginlik hissini güçlendirmeye yardımcı olur.', rating: '4.9', priceNew: '₺349,00', priceOld: '₺499,00' },
+                { id: 'mag-center', src: '/img/bottle_mag_nobg.png', alt: 'Magnezyum', name: 'Magnezyum', description: 'Kasların gevşemesine destek olur. Uyku öncesi rahatlamayı artırır. Gece rutininde daha sakin bir geçiş sağlar.', rating: '4.7', priceNew: '₺249,00', priceOld: '₺349,00' },
+                { id: 'multi-right', src: '/img/bottle_multi_nobg.png', alt: 'C Vitamini Complex', name: 'C Vitamini Complex', description: 'Yoğun günlerde bağışıklık desteği sunarken vücudun toparlanma sürecine destek olur.', rating: '4.6', priceNew: '₺179,00', priceOld: '₺249,00' },
+                { id: 'd3-right', src: '/img/bottle_d3_nobg.png', alt: 'Vitamin D3', name: 'Vitamin D3', description: 'Kemik ve kas desteği sağlarken düşük güneş maruziyetinde günlük D vitamini ihtiyacını destekler.', rating: '4.8', priceNew: '₺199,00', priceOld: '₺279,00' },
+                { id: 'b12-right', src: '/img/bottle_omega_nobg.png', alt: 'B12 Vitamini', name: 'B12 Vitamini Sprey', description: 'Sinir sistemi sağlığını korur, yorgunluk ve bitkinliğin azalmasına destek olur.', rating: '4.9', priceNew: '₺149,00', priceOld: '₺199,00' }
+            ];
+
+            const uykuCoverflowSlots = [
+                { x: -192, y: -98, scale: 0.74, z: 0, opacity: 1, blur: '2px' },
+                { x: -128, y: -64, scale: 0.84, z: 1, opacity: 1, blur: '2px' },
+                { x: -64, y: -30, scale: 0.94, z: 2, opacity: 1, blur: '2px' },
+                { x: 0, y: 26, scale: 1.18, z: 5, opacity: 1, blur: '0px' },
+                { x: 64, y: -30, scale: 0.94, z: 2, opacity: 1, blur: '2px' },
+                { x: 128, y: -64, scale: 0.84, z: 1, opacity: 1, blur: '2px' },
+                { x: 192, y: -98, scale: 0.74, z: 0, opacity: 1, blur: '2px' }
+            ];
+
+            function createUykuCoverflowItem(product) {
+                const item = document.createElement('div');
+                item.className = 'uyku-coverflow-item';
+                item.style.position = 'absolute';
+                item.style.left = '50%';
+                item.style.top = '50%';
+                item.style.transformOrigin = 'center center';
+                item.style.transition = 'transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease, filter 420ms ease';
+                item.style.willChange = 'transform, opacity, filter';
+
+                const img = document.createElement('img');
+                img.src = product.src;
+                img.alt = product.alt;
+                img.style.width = '250px';
+                img.style.maxWidth = 'none';
+                img.style.height = 'auto';
+                img.style.objectFit = 'contain';
+                img.style.display = 'block';
+                img.style.filter = 'drop-shadow(0 18px 28px rgba(0,0,0,0.45))';
+
+                item.appendChild(img);
+                return item;
+            }
+
+            function applyUykuVShape() {
+                uykuCoverflowItems.forEach((item, productIndex) => {
+                    const slotIndex = uykuCoverflowOrder.indexOf(productIndex);
+                    const slot = uykuCoverflowSlots[slotIndex];
+
+                    item.style.zIndex = String(slot.z);
+                    item.style.opacity = String(slot.opacity);
+                    item.style.filter = `blur(${slot.blur})`;
+                    item.style.transform = `translate(calc(-50% + ${slot.x}px), calc(-50% + ${slot.y}px)) scale(${slot.scale})`;
+                });
+
+                const activeProductIndex = uykuCoverflowOrder[3];
+                const activeProduct = uykuCoverflowProducts[activeProductIndex];
+                const productNameEl = document.getElementById('uykuCoverflowProductName');
+                const productDescriptionEl = document.getElementById('uykuCoverflowProductDescription');
+                const ratingStarsEl = document.getElementById('uykuCoverflowStars');
+                const ratingValueEl = document.getElementById('uykuCoverflowRatingValue');
+                const priceOldEl = document.getElementById('uykuCoverflowPriceOld');
+                const priceNewEl = document.getElementById('uykuCoverflowPriceNew');
+                const productBtnEl = document.getElementById('uykuCoverflowProductBtn');
+
+                if (activeProduct && productNameEl && productDescriptionEl && ratingStarsEl && ratingValueEl && priceOldEl && priceNewEl && productBtnEl) {
+                    productNameEl.textContent = activeProduct.name;
+                    productDescriptionEl.textContent = activeProduct.description;
+                    ratingStarsEl.textContent = '★★★★★';
+                    ratingValueEl.textContent = `${activeProduct.rating}/5 kullanıcı puanı`;
+                    priceOldEl.textContent = activeProduct.priceOld;
+                    priceNewEl.textContent = activeProduct.priceNew;
+                    productBtnEl.setAttribute('aria-label', `${activeProduct.name} ürününü sepete ekle`);
+                }
+            }
+
+            function initUykuCoverflow() {
+                const stage = document.getElementById('uykuCoverflowStage');
+                if (!stage || !document.body.classList.contains('uyku-mode')) {
+                    return;
+                }
+
+                if (uykuCoverflowItems.length === 0) {
+                    uykuCoverflowOrder = uykuCoverflowProducts.map((_, index) => index);
+                    uykuCoverflowItems = uykuCoverflowProducts.map(product => createUykuCoverflowItem(product));
+
+                    uykuCoverflowItems.forEach(item => {
+                        stage.appendChild(item);
+                    });
+                }
+
+                applyUykuVShape();
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
-                if (typeof Swiper !== 'undefined') {
-                    new Swiper('.uyku-coverflow-swiper', {
-                        effect: 'coverflow',
-                        grabCursor: true,
-                        centeredSlides: true,
-                        slidesPerView: 'auto',
-                        initialSlide: 6, /* Vitamin D3 tam merkezde başlasın */
-                        loop: true,
-                        loopedSlides: 7,
-                        observer: true,
-                        observeParents: true,
-                        coverflowEffect: {
-                            rotate: 0, 
-                            stretch: 0, /* Kutuların genişliği (width) artırıldığı için stretch ile ek mesafe ayarına gerek kalmadı */
-                            depth: 160, 
-                            modifier: 1.8, 
-                            slideShadows: false, 
-                        },
-                        navigation: {
-                            nextEl: '#uyku-coverflow-next',
-                            prevEl: '#uyku-coverflow-prev',
+                document.querySelectorAll('.uyku-tag-btn').forEach(function(tag, index) {
+                    if (index === 0) {
+                        tag.classList.add('active');
+                    }
+
+                    tag.addEventListener('click', function() {
+                        document.querySelectorAll('.uyku-tag-btn').forEach(function(otherTag) {
+                            otherTag.classList.remove('active');
+                        });
+                        tag.classList.add('active');
+                    });
+                });
+
+                const prevButton = document.getElementById('uyku-coverflow-prev');
+                const nextButton = document.getElementById('uyku-coverflow-next');
+
+                if (prevButton) {
+                    prevButton.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        if (uykuCoverflowOrder.length > 0) {
+                            uykuCoverflowOrder.push(uykuCoverflowOrder.shift());
+                            applyUykuVShape();
                         }
                     });
+                }
+
+                if (nextButton) {
+                    nextButton.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        if (uykuCoverflowOrder.length > 0) {
+                            uykuCoverflowOrder.unshift(uykuCoverflowOrder.pop());
+                            applyUykuVShape();
+                        }
+                    });
+                }
+
+                if (document.body.classList.contains('uyku-mode')) {
+                    initUykuCoverflow();
                 }
             });
         </script>
@@ -1809,16 +1957,16 @@
         <div class="container" style="max-width: 1500px; width: 92%; text-align: center;">
             <h2 class="mb-4" style="font-weight: 800; font-size: 3rem; color: #1e293b;">Neden Vitacure?</h2>
             <div style="font-size: 1.15rem; color: #475569; line-height: 1.8; max-width: 1200px; margin: 0 auto;">
-                <p class="mb-4">Vitacure olarak amacımız, yoğun yaşam temposunda herkesin günlük ihtiyaç duyduğu vitamin, mineral ve besin desteklerine en güvenilir ve hızlı şekilde ulaşmasını sağlamaktır. Uzmanlık ve inovasyonu bir araya getirerek, sadece ürün satışı değil, aynı zamanda tamamen size özel kişiselleştirilmiş bir sağlık rutini sunmayı hedefliyoruz.</p>
-                <p class="mb-5">Her bir ürünümüz, en yüksek kalite standartlarına uygun olarak üretilmiş ve özenle formüle edilmiştir. Bizim için sağlık, sadece hastalık anında değil hayatın her anında önemsenmesi gereken bir bütündür. Bu vizyonla doğanın gücü ile bilimin ışığını harmanlayarak yepyeni bir dünya sunuyoruz.</p>
+                    <p class="mb-4">Vitacure olarak amacımız, yoğun yaşam temposunda herkesin günlük ihtiyaç duyduğu vitamin, mineral ve besin desteklerine en güvenilir ve hızlı şekilde ulaşmasını sağlamaktır. Uzmanlık ve inovasyonu bir araya getirerek, sadece ürün satışı değil, aynı zamanda tamamen size özel kişiselleştirilmiş bir sağlık rutini sunmayı hedefliyoruz.</p>
+                    <p class="mb-5">Her bir ürünümüz, en yüksek kalite standartlarına uygun olarak üretilmiş ve özenle formüle edilmiştir. Bizim için sağlık, sadece hastalık anında değil hayatın her anında önemsenmesi gereken bir bütündür. Bu vizyonla doğanın gücü ile bilimin ışığını harmanlayarak yepyeni bir dünya sunuyoruz.</p>
                 
                 <!-- Vitacure AI Alt Başlığı ve Açıklaması -->
                 <h3 style="font-size: 2.2rem; font-weight: 700; color: #1e5e78; margin-bottom: 1.5rem;">
-                    <i class="fa-solid fa-wand-magic-sparkles me-2" style="color: #FADB5F;"></i> Vitacure AI ile Geleceğin Sağlık Asistanı
+                        <i class="fa-solid fa-wand-magic-sparkles me-2" style="color: #FADB5F;"></i> Vitacure AI ile Geleceğin Sağlık Asistanı
                 </h3>
-                <p class="mb-0"><strong>Vitacure AI</strong>, sizin için en doğru takviyeleri belirlemek üzere geliştirilmiş yapay zeka destekli akıllı bir algoritmadır. Profilinizi, hedeflerinizi ve özel ihtiyaçlarınızı saniyeler içinde analiz ederek en uygun ürünleri eşleştirir. Ayrıca sistemimizi kullandıkça ve alışveriş yaptıkça biriken özel <strong>Vitacure Puanlarıyla</strong> ekstra fırsatlar elde etmenizi sağlar. Kullanıcılarımıza sunduğumuz <strong>ücretsiz deneme imkanıyla</strong> sağlık yolculuğunuzu kişiselleştirmek ve yenilikçi teknolojinin keyfini çıkarmak artık bir tık uzağınızda!</p>
+                    <p class="mb-0"><strong>Vitacure AI</strong>, sizin için en doğru takviyeleri belirlemek üzere geliştirilmiş yapay zeka destekli akıllı bir algoritmadır. Profilinizi, hedeflerinizi ve özel ihtiyaçlarınızı saniyeler içinde analiz ederek en uygun ürünleri eşleştirir. Ayrıca sistemimizi kullandıkça ve alışveriş yaptıkça biriken özel <strong>Vitacure Puanlarıyla</strong> ekstra fırsatlar elde etmenizi sağlar. Kullanıcılarımıza sunduğumuz <strong>ücretsiz deneme imkanıyla</strong> sağlık yolculuğunuzu kişiselleştirmek ve yenilikçi teknolojinin keyfini çıkarmak artık bir tık uzağınızda!</p>
                 
-                <a href="#vitacure-ai" class="btn mt-5" style="background-color: #1e5e78; font-weight: 700; color: white; padding: 0.8rem 2.5rem; border-radius: 50px; box-shadow: 0 4px 15px rgba(30, 94, 120, 0.3); font-size: 1.1rem; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(30, 94, 120, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(30, 94, 120, 0.3)';">AI Asistanı Ücretsiz Dene <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    <a href="#vitacure-ai" class="btn mt-5" style="background-color: #1e5e78; font-weight: 700; color: white; padding: 0.8rem 2.5rem; border-radius: 50px; box-shadow: 0 4px 15px rgba(30, 94, 120, 0.3); font-size: 1.1rem; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(30, 94, 120, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(30, 94, 120, 0.3)';">AI Asistanı Ücretsiz Dene <i class="fa-solid fa-arrow-right ms-2"></i></a>
             </div>
         </div>
     </div>
@@ -2036,7 +2184,7 @@
             const btnSendIcon = document.querySelector('#btnSend i');
 
             const categoryNames = [
-                "Uyku Sağlığı", "Multivitamin & Enerji", "Zihin & Hafıza Güçlendirme", 
+                "Uyku Sağlığı", "Multivitamin ve Enerji", "Zihin ve Hafıza Güçlendirme",
                 "Hastalıklara Karşı Koruma", "Kas ve İskelet Sağlığı", "Zayıflama Desteği"
             ];
             const searchCategoryFilter = document.getElementById('searchCategoryFilter');
@@ -2094,7 +2242,7 @@
                 if (lockedCatIdx !== -1) {
                     searchCategoryFilter.classList.remove('hidden');
                     searchCategoryName.innerText = categoryNames[lockedCatIdx];
-                    chatInput.placeholder = 'içinde ara...';
+                    chatInput.placeholder = 'İçinde ara...';
                 } else {
                     searchCategoryFilter.classList.add('hidden');
                     clearCategoryActive();
@@ -2104,7 +2252,7 @@
 
             // --- Placeholder Typing Animation (AI Prompts) ---
             const placeholderCategories = [
-                ["Son zamanlarda uykum çok düzensiz, ne yapabilirim?", "Gece sık sık uyanıyorum, önerin var mı?", "Daha kaliteli uyumak için ne kullanmalıyım?", "Sabah yorgun kalkıyorum, sebebi ne olabilir?"],
+                ["Son zamanlarda uykum çok düzensiz, ne yapabilirim?", "Gece sık sık uyanıyorum, öneriniz var mı?", "Daha kaliteli uyumak için ne kullanmalıyım?", "Sabah yorgun kalkıyorum, sebebi ne olabilir?"],
                 ["Gün içinde çok halsiz hissediyorum, ne önerirsin?", "Enerjimi artırmak için hangi vitaminleri almalıyım?", "Yorgunluk için iyi gelen takviyeler neler?", "Bağışıklık ve enerji için ne kullanabilirim?"],
                 ["Odaklanmakta zorlanıyorum, ne yapmalıyım?", "Hafızamı güçlendirmek için ne önerirsin?", "Ders çalışırken dikkatim dağılıyor, çözüm var mı?", "Beyin performansımı artırmak istiyorum"],
                 ["Bağışıklığımı güçlendirmek istiyorum, ne önerirsin?", "Sık hasta oluyorum, nasıl korunabilirim?", "Gripten korunmak için ne kullanmalıyım?", "Genel sağlık için hangi takviyeler iyi?"],
@@ -2117,6 +2265,8 @@
             let isUserTyping = false;
             let globalAnimInterval = null;
             let eraseTimer, typeTimer, initTimer;
+            let placeholderAnimationToken = 0;
+            let shouldResumePlaceholderAnimation = false;
             const categorySelectors = ['.bg-uyku', '.bg-multi', '.bg-zihin', '.bg-koruma', '.bg-kas', '.bg-zayiflama'];
 
             function clearCategoryActive() {
@@ -2128,49 +2278,52 @@
                 clearTimeout(eraseTimer);
                 clearTimeout(typeTimer);
                 clearTimeout(initTimer);
+                globalAnimInterval = null;
+                placeholderAnimationToken += 1;
             }
 
-            function typeText(text, i, cb) {
-                if (isUserTyping) return;
+            function typeText(text, i, cb, token) {
+                if (isUserTyping || document.hidden || token !== placeholderAnimationToken) return;
                 if(i < text.length) {
                     chatInput.placeholder += text.charAt(i);
-                    typeTimer = setTimeout(() => typeText(text, i + 1, cb), 40); 
+                    typeTimer = setTimeout(() => typeText(text, i + 1, cb, token), 40); 
                 } else if(cb) {
                     cb();
                 }
             }
 
-            function eraseText(text, i, cb) {
-                if (isUserTyping) return;
+            function eraseText(text, i, cb, token) {
+                if (isUserTyping || document.hidden || token !== placeholderAnimationToken) return;
                 if(i >= 0) {
                     chatInput.placeholder = text.substring(0, i);
-                    eraseTimer = setTimeout(() => eraseText(text, i - 1, cb), 10); 
+                    eraseTimer = setTimeout(() => eraseText(text, i - 1, cb, token), 10); 
                 } else if(cb) {
                     cb();
                 }
             }
 
             function animateNextPrompt() {
-                if (isUserTyping || chatPanel.classList.contains('search-mode-active')) return;
+                if (isUserTyping || chatPanel.classList.contains('search-mode-active') || document.hidden) return;
 
                 let targetIdx = lockedCatIdx !== -1 ? lockedCatIdx : currentCatIdx;
                 const prompts = placeholderCategories[targetIdx];
                 const selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
                 const currentText = chatInput.placeholder;
+                const token = ++placeholderAnimationToken;
                 
                 clearCategoryActive();
                 const activeEl = document.querySelector(categorySelectors[targetIdx]);
                 if (activeEl && !isUserTyping) activeEl.classList.add('active');
                 
                 eraseText(currentText, currentText.length, () => {
-                    if (isUserTyping) return;
+                    if (isUserTyping || document.hidden || token !== placeholderAnimationToken) return;
                     chatInput.placeholder = ""; 
                     typeText(selectedPrompt, 0, () => {
                         if (lockedCatIdx === -1) {
                             currentCatIdx = (currentCatIdx + 1) % placeholderCategories.length;
                         }
-                    });
-                });
+                    }, token);
+                }, token);
             }
 
             function startAnimations() {
@@ -2183,6 +2336,23 @@
             // Sayfa yüklendiğinde otomatik animasyon döngüsü başlasın
             initTimer = setTimeout(startAnimations, 1000);
 
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    shouldResumePlaceholderAnimation =
+                        !isUserTyping &&
+                        chatInput.value.trim() === '' &&
+                        !chatPanel.classList.contains('search-mode-active');
+                    stopAllAnimations();
+                    return;
+                }
+
+                if (shouldResumePlaceholderAnimation) {
+                chatInput.placeholder = 'Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.';
+                    shouldResumePlaceholderAnimation = false;
+                    startAnimations();
+                }
+            });
+
             // Kullanıcı yazmaya başladığında her şeyi durdur
             chatInput.addEventListener('input', function() {
                 if (this.value !== '') {
@@ -2191,7 +2361,7 @@
                     if (lockedCatIdx === -1) {
                         clearCategoryActive();
                     }
-                    this.placeholder = "Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.";
+                this.placeholder = "Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.";
                 }
             });
 
@@ -2205,8 +2375,17 @@
                         // Vitrin (Showcase) Değişimi
                         if (idx === 0) { // Uyku Sağlığı
                            document.body.classList.add('uyku-mode');
+                           requestAnimationFrame(() => {
+                               initUykuCoverflow();
+                           });
                         } else {
                            document.body.classList.remove('uyku-mode');
+                           uykuCoverflowItems = [];
+                           uykuCoverflowOrder = [];
+                           const uykuStage = document.getElementById('uykuCoverflowStage');
+                           if (uykuStage) {
+                               uykuStage.innerHTML = '';
+                           }
                         }
 
                         // Compact Modu Etkinleştir
@@ -2239,7 +2418,7 @@
                             el.classList.add('active');
                             searchCategoryFilter.classList.remove('hidden');
                             searchCategoryName.innerText = categoryNames[idx];
-                            chatInput.placeholder = 'içinde ara...';
+                            chatInput.placeholder = 'İçinde ara...';
                             chatInput.focus();
                         } else {
                             // Sohbet modunda ise animasyonları başlat
@@ -2275,6 +2454,13 @@
                 
                 // Vitrini Eski Haline Getir
                 document.body.classList.remove('uyku-mode');
+
+                uykuCoverflowItems = [];
+                uykuCoverflowOrder = [];
+                const uykuStage = document.getElementById('uykuCoverflowStage');
+                if (uykuStage) {
+                    uykuStage.innerHTML = '';
+                }
                 
                 lockedCatIdx = -1;
                 clearCategoryActive();
@@ -2349,3 +2535,6 @@
         });
     </script>
 }
+
+
+
