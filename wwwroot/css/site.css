@@ -1,18 +1,18 @@
 :root {
     --vt-primary: #86A8E7;
-    /* Soft Blue */
+    
     --vt-secondary: #91EAE4;
-    /* Soft Cyan */
+    
     --vt-accent-green: #7FDBCA;
-    /* Soft Green */
+    
     --vt-accent-yellow: #FADB5F;
-    /* Soft Yellow */
+    
     --vt-accent-coral: #F78C6B;
-    /* Soft Coral */
+    
     --vt-text-dark: #2D3748;
     --vt-text-light: #F7FAFC;
     --vt-purple: #7B84D1;
-    /* Sleep health purple */
+    
 }
 
 html {
@@ -27,17 +27,17 @@ body {
     overflow-x: hidden;
 }
 
-/* Tracking */
+
 .tracking-wide {
     letter-spacing: 0.1em;
 }
 
-/* Custom placeholder color */
+
 .placeholder-white::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Glassmorphism Cards */
+
 .glass-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
@@ -77,13 +77,13 @@ body {
     line-height: 1.4;
 }
 
-/* Header Specific */
+
 .header-bg {
     background: url('/img/bg.png') no-repeat center center;
     background-size: cover;
 }
 
-/* Nav Icon Buttons */
+
 .nav-icon-btn {
     display: flex;
     align-items: center;
@@ -97,7 +97,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Cart Badge */
+
 .cart-badge {
     position: absolute;
     top: -7px;
@@ -116,7 +116,7 @@ body {
     border: 2px solid transparent;
 }
 
-/* Giriş Yap Butonu */
+
 .btn-giris-yap {
     background: white;
     color: #2D3748 !important;
@@ -135,8 +135,8 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Antigravity Minimal Navbar */
-/* Antigravity Minimal Navbar */
+
+
 .ag-navbar {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
@@ -146,18 +146,18 @@ body {
 .ag-navbar .container {
     max-width: 1500px;
     width: 92%;
-    padding-right: 0 !important; /* Giriş yap butonunu sağa yaslamak için */
+    padding-right: 0 !important; 
 }
 
 .ag-nav-icons {
     display: flex;
     align-items: center;
-    gap: 1.5rem; /* İkonlar ve buton arası eşit boşluk */
+    gap: 1.5rem; 
 }
 
 .ag-nav-links {
     gap: 0px;
-    /* Menü itemleri arası boşluk 10px daraltıldı (0.65rem ~10px) */
+    
 }
 
 .ag-nav-links .nav-link {
@@ -189,7 +189,7 @@ body {
     color: rgba(255, 255, 255, 0.9);
 }
 
-/* No Underline for Icons */
+
 .no-underline {
     text-decoration: none !important;
 }
@@ -198,13 +198,13 @@ body {
     text-decoration: none !important;
 }
 
-/* Badge New */
+
 .badge-new {
     position: absolute;
     top: 12px;
     right: 18px;
-    transform: translate(100%, -100%); /* Genişliği kadar sağa kaydırıldı (Sol alt köşesi I'nın sağına geldi) */
-    background: #e53e3e; /* Rozet kırmızısı */
+    transform: translate(100%, -100%); 
+    background: #e53e3e; 
     color: white;
     font-size: 0.6rem;
     font-weight: 700;
@@ -215,7 +215,7 @@ body {
     pointer-events: none;
 }
 
-/* Category Icons underneath header */
+
 .category-icons-wrapper {
     position: absolute;
     bottom: 2rem;
@@ -243,12 +243,12 @@ body {
     padding: 0.5rem;
 }
 
-/* Border separator between items */
+
 .col-6:not(:last-child) .cat-icon-card::after {
     content: '';
     position: absolute;
     right: -12px;
-    /* Adjust based on gap */
+    
     top: 10%;
     height: 80%;
     width: 1px;
@@ -258,7 +258,7 @@ body {
 @media (max-width: 767px) {
     .col-6:nth-child(even) .cat-icon-card::after {
         display: none;
-        /* Hide every 2nd border on mobile */
+        
     }
 }
 
@@ -284,7 +284,7 @@ body {
     font-size: 1rem;
 }
 
-/* Section Backgrounds */
+
 .bg-cilt {
     background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
 }
@@ -335,7 +335,7 @@ body {
 
 
 
-/* Animations */
+
 .animate-fade-up {
     animation: fadeUp 1s ease-out forwards;
 }
@@ -352,23 +352,23 @@ body {
     }
 }
 
-/* New Section Backgrounds */
+
 .bg-biz-kimiz {
     background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
-    /* You mentioned a watercolor aesthetic, so this soft pink/blue gradient fits */
+    
 }
 
 .bg-urunler {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    /* Elegant purple/blue gradient for products */
+    
 }
 
 .bg-iletisim {
     background: #1A202C;
-    /* Dark blue/gray */
+    
 }
 
-/* Contact Styles */
+
 .text-accent-green {
     color: var(--vt-accent-green);
 }

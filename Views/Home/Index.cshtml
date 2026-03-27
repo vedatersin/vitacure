@@ -1,12 +1,12 @@
-﻿@{
+@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
 
-<!-- Custom Styles for Home Page -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <style>
-    /* Antigravity Header Styles */
+    
     body {
         margin: 0;
         padding: 0;
@@ -15,10 +15,10 @@
     }
 
     .hero-gradient-wrapper {
-        /* Okyanus Ferahlığı (Teal-Cyan-Dark Blue) */
+        
         background: radial-gradient(circle at top center, #5abcb5 0%, #2f94b5 50%, #17546e 100%);
     }
-    /* === KATEGORİ ÖZEL SAYFA MODU === */
+    
     body.uyku-mode .container-fluid.p-0 > div:not(.hero-gradient-wrapper):not(#uykuCategoryPage) {
         display: none !important;
     }
@@ -64,7 +64,7 @@
         padding-bottom: 0 !important;
     }
 
-    /* SİYAH TRANSPARAN chat arayüzü, banner üzerine float edilecek */
+    
     body.uyku-mode .ag-chat-panel {
         position: relative !important;
         top: 0 !important;
@@ -72,7 +72,7 @@
         transform: translateX(-50%) !important;
         width: 92% !important;
         max-width: 1500px !important;
-        margin-top: 100px !important; /* Menüyle üst üste binmemesi için artırıldı */
+        margin-top: 100px !important; 
         margin-bottom: 0 !important;
         background: rgba(20, 20, 30, 0.75) !important;
         border-radius: 24px !important;
@@ -83,14 +83,14 @@
     }
     
     body.uyku-mode .ag-chat-header {
-        /* Kendi doğal border ve padding değerlerini kullansın */
+        
     }
     
     .hide-featured {
         display: none !important;
     }
     
-    /* === Vitamin & Molecule Network Background === */
+    
     .vitamin-network-container {
         position: absolute;
         top: 0;
@@ -98,8 +98,8 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        z-index: 1; /* Ag-Title ve Ag-Chat'in (z-index: 10) arkasında kalacak */
-        pointer-events: none; /* Üzerine tıklanmasını engelle */
+        z-index: 1; 
+        pointer-events: none; 
     }
     .ag-hero {
         position: relative;
@@ -113,10 +113,10 @@
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* General Positions (Percentage based on 100% width/height of Hero) */
+    
     .ag-title {
         position: absolute;
-        top: calc(22% - 20px); /* 10px aşağı kaydırıldı (üst boşluk için) */
+        top: calc(22% - 20px); 
         left: 50%;
         transform: translate(-50%, -50%);
         color: white;
@@ -129,7 +129,7 @@
 
     .ag-subtitle {
         position: absolute;
-        top: calc(22% + 65px); /* 10px yukarı çekildi (başlığa yaklaşması için) */
+        top: calc(22% + 65px); 
         left: 50%;
         transform: translate(-50%, -50%);
         color: rgba(255, 255, 255, 0.9);
@@ -140,37 +140,37 @@
         text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    /* Kategori Butonları (Chat panelinin dış ve üst kısmı) */
+    
     .ag-top-categories {
         position: absolute;
-        bottom: 100%; /* Panel'in tam üstüne yerleştir */
+        bottom: 100%; 
         left: 0;
         width: 100%;
         display: flex;
         gap: 12px;
-        margin-bottom: 20px; /* Form ile butonlar arasına makul boşluk eklendi */
+        margin-bottom: 20px; 
         justify-content: space-between;
     }
 
     .ag-category-pill {
-        position: relative; /* İkonu absolute konumlandırmak için eklendi */
-        flex: 1; /* Hepsi eşit genişlikte yayılsın */
+        position: relative; 
+        flex: 1; 
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 30px 10px 15px 10px; /* Buton hacmi %25 oranında büyütüldü */
+        padding: 30px 10px 15px 10px; 
         border-radius: 20px;
         color: white;
         text-align: center;
         text-decoration: none;
         transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.18); /* Opaklık orta seviyeye (0.18) ayarlandı */
+        background: rgba(255, 255, 255, 0.18); 
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         cursor: pointer;
-        margin-top: 25px; /* İkon taşması için yukarıdan margin verildi */
+        margin-top: 25px; 
     }
 
     .ag-category-pill:hover {
@@ -180,7 +180,7 @@
     }
 
     .ag-category-pill.active {
-        background: rgba(255, 255, 255, 0.32); /* Aktif kart %15 daha parlak */
+        background: rgba(255, 255, 255, 0.32); 
         box-shadow: 0 4px 15px rgba(255, 255, 255, 0.22);
     }
 
@@ -189,33 +189,33 @@
     }
 
     .ag-category-pill i {
-        font-size: 3.1rem; /* İkon boyutu ~%25 büyütüldü (2.5 -> 3.1) */
+        font-size: 3.1rem; 
         position: absolute;
-        top: -25px; /* Daha büyük ikona oranlı taşma */
+        top: -25px; 
         left: 50%;
         transform: translateX(-50%);
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* İkona hafif gölge eklendi */
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); 
         z-index: 10;
     }
 
     .ag-category-pill span {
-        font-size: 1.2rem; /* Yazı boyutu %25 daha büyütüldü (0.96 * 1.25) */
-        font-weight: 700; /* Çok daha belirgin ve kalınlaştırıldı */
+        font-size: 1.2rem; 
+        font-weight: 700; 
         line-height: 1.2;
         text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
     }
 
-    /* Kategori İkon Renkleri */
-    .bg-uyku i { color: #1e3a8a; } /* Lacivert */
+    
+    .bg-uyku i { color: #1e3a8a; } 
     .bg-multi i { color: #fba91c; }
     .bg-zihin i { color: #d67aff; }
-    .bg-koruma i { color: #0f766e; } /* Daha koyu teal/yeşim */
+    .bg-koruma i { color: #0f766e; } 
     .bg-kas i { color: #ff5e79; }
 
-    /* Gemini-Style Chat Interface Updates */
+    
     .ag-chat-panel {
         position: absolute;
-        top: calc(61% + 90px); /* Üstteki kaymalardan dolayı +20px aşağı alındı */
+        top: calc(61% + 90px); 
         left: 50%;
         transform: translate(-50%, -50%);
         width: 70%;
@@ -233,34 +233,34 @@
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Tam Ekran Modu (Fixed kullanarak sayfaya göre yay) */
+    
     .ag-chat-panel.fullscreen-mode {
         position: fixed !important;
-        top: 80px !important; /* Menü Çizgisinin Altından Başla */
+        top: 80px !important; 
         left: 50% !important;
         transform: translateX(-50%) !important;
-        height: calc(100vh - 100px) !important; /* Alta kadar esne, hafif boşluk bırak */
+        height: calc(100vh - 100px) !important; 
         width: 90% !important;
         max-width: 1200px;
         border-radius: 20px;
         background: rgba(35, 40, 48, 0.85);
     }
 
-    /* Üst Bölüm: Textarea + Fullscreen Butonu */
+    
     .ag-chat-top {
         position: relative;
         width: 100%;
         display: flex;
         align-items: flex-start;
-        margin-bottom: 12px; /* Alt araç çubuğu ile dengeli boşluk */
+        margin-bottom: 12px; 
     }
 
     .ag-chat-input {
         box-sizing: border-box;
         background: transparent;
         border: none;
-        color: rgba(226, 232, 240, 0.9); /* Saf beyaz çok sert olduğu için placeholder'a yakınlaştırıldı */
-        font-size: 1.7rem; /* %15 küçültüldü (2.0 -> 1.7) */
+        color: rgba(226, 232, 240, 0.9); 
+        font-size: 1.7rem; 
         font-weight: 500;
         letter-spacing: 0.5px;
         line-height: 1.4;
@@ -268,13 +268,13 @@
         flex-grow: 1;
         resize: none;
         outline: none;
-        padding-top: 2px; /* Yukarıdan (top) ekstra boşluk */
+        padding-top: 2px; 
         padding-bottom: 2px;
         padding-left: 10px;
         padding-right: 48px;
         margin-bottom: 0;
         font-family: inherit;
-        min-height: 110px; /* Bir satır daha genişletildi (70 -> 110) */
+        min-height: 110px; 
         max-height: 180px;
         overflow-y: hidden;
     }
@@ -284,7 +284,7 @@
     }
     .ag-chat-input::-webkit-scrollbar-track {
         background: transparent;
-        margin-top: 40px; /* Fullscreen butonunu ezmemesi için track'ı 40px aşağıdan başlat */
+        margin-top: 40px; 
         margin-bottom: 5px;
     }
     .ag-chat-input::-webkit-scrollbar-thumb {
@@ -333,11 +333,11 @@
         color: #ff4d4f;
     }
 
-    /* Fullscreen ikonu textarea'nın sağında, scrollbar ile aynı hizada */
+    
     .btn-fullscreen {
         position: absolute;
-        top: 0; /* Chat panelinin veya textarea üstünün tam hizasına */
-        right: 0px; /* En sağa dayalı, böylece gönder butonuyla aynı sütuna denk gelir */
+        top: 0; 
+        right: 0px; 
         background: transparent;
         border: none;
         color: rgba(255,255,255,0.6);
@@ -349,7 +349,7 @@
         justify-content: center;
         cursor: pointer;
         transition: all 0.2s ease;
-        opacity: 0;         /* Varsayılan olarak kapalı */
+        opacity: 0;         
         pointer-events: none;
         font-size: 0.95rem;
     }
@@ -364,13 +364,13 @@
         color: white;
     }
 
-    /* Alt Bölüm: Extralar + Gönder Butonu */
+    
     .ag-chat-bottom {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        margin-top: auto; /* Fullscreen'de en alta yapışması için */
+        margin-top: auto; 
     }
 
     .ag-chat-actions-left {
@@ -400,26 +400,26 @@
         color: white;
     }
 
-    /* Add File Dropdown Menu */
+    
     .ag-chat-actions-left {
-        position: relative; /* Menüyü butona göre hizalamak için */
+        position: relative; 
     }
 
     .ag-add-file-menu {
         position: absolute;
-        top: 120%; /* Butonun altında */
+        top: 120%; 
         left: 0;
-        background: #1e1e20; /* Koyu gri Gemini stili */
+        background: #1e1e20; 
         border-radius: 12px;
         padding: 8px 0;
         min-width: 220px;
         display: flex;
         flex-direction: column;
         box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.08); /* İnce sınır */
+        border: 1px solid rgba(255,255,255,0.08); 
         z-index: 1000;
         
-        /* Animasyon başlangıç noktası (Yukarıdan aşağı) */
+        
         opacity: 0;
         visibility: hidden;
         transform: translateY(-10px);
@@ -437,7 +437,7 @@
         align-items: center;
         gap: 15px;
         padding: 10px 16px;
-        color: rgba(255,255,255,0.85); /* Hafif kırık beyaz */
+        color: rgba(255,255,255,0.85); 
         font-size: 0.95rem;
         cursor: pointer;
         transition: background 0.1s ease;
@@ -445,7 +445,7 @@
     }
 
     .ag-add-menu-item:hover {
-        background: rgba(255, 255, 255, 0.08); /* Hover'da hafif aydınlatma */
+        background: rgba(255, 255, 255, 0.08); 
     }
 
     .ag-add-menu-item i {
@@ -458,7 +458,7 @@
     .ag-btn-send {
         background: transparent;
         border: none;
-        color: rgba(255,255,255,0.4); /* Normalde soluk */
+        color: rgba(255,255,255,0.4); 
         width: 35px;
         height: 35px;
         border-radius: 50%;
@@ -472,11 +472,11 @@
     }
 
     .ag-btn-send.active {
-        color: white; /* İçi doluysa parlak */
-        background: rgba(255,255,255,0.1); /* Opsiyonel hafif arka plan */
+        color: white; 
+        background: rgba(255,255,255,0.1); 
     }
 
-    /* Mod Seçici Butonları (Sohbet / Ürün Arama) */
+    
     .ag-mode-toggles {
         display: flex;
         align-items: center;
@@ -553,20 +553,20 @@
         box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
     }
     
-    /* Arama Modu Aktifken Uygulanacak Kısıtlamalar */
+    
     .ag-chat-panel.search-mode-active .ag-chat-input {
-        max-height: 40px !important; /* Hiçbir zaman büyümez */
+        max-height: 40px !important; 
         overflow-y: hidden !important;
-        white-space: nowrap; /* Tek satıra zorla */
+        white-space: nowrap; 
     }
 
     .ag-chat-panel.search-mode-active .btn-fullscreen {
-        display: none !important; /* Arama modunda tam ekran olmaz */
+        display: none !important; 
     }
 
-    /* Yüklenen dosyaların listeleneceği alan */
+    
     .ag-file-list:empty {
-        display: none; /* Boşken görünmesi ve margin itmesi engellendi */
+        display: none; 
     }
     .ag-file-list {
         display: flex;
@@ -586,10 +586,10 @@
         color: white;
     }
     .ag-file-item i {
-        color: #ef4444; /* PDF kırmızı vs */
+        color: #ef4444; 
     }
     
-    /* Fullscreen olunca gizlenecek öğeler */
+    
     .hero-element.hidden {
         opacity: 0;
         pointer-events: none;
@@ -601,11 +601,11 @@
 
     .ag-categories {
         position: absolute;
-        top: 72%; /* Aşağı Kaydırıldı */
+        top: 72%; 
         left: 50%;
         transform: translateX(-50%);
-        width: 92%; /* Her iki alan 92% ile eşitlendi */
-        max-width: 1500px; /* Maksimum büyüklük eşitlendi */
+        width: 92%; 
+        max-width: 1500px; 
         z-index: 10;
         display: flex;
         flex-direction: column;
@@ -646,19 +646,19 @@
 
     .ag-cat-btn i {
         font-size: 1.4rem;
-        /* filter: drop-shadow(0 0 5px currentColor); - Neon parlama kaldırıldı */
+        
     }
 
-    /* Renk tonları biraz daha koyulaştırıldı */
+    
     .icon-moon { color: #d63384; }
     .icon-atom { color: #d97706; }
     .icon-brain { color: #be185d; }
     .icon-shield { color: #059669; }
     .icon-bone { color: #e11d48; }
 
-    /* Stars removed as per user request */
+    
 
-    /* Category Blocks */
+    
     .category-section {
         padding: 5rem 2rem;
         display: flex;
@@ -672,7 +672,7 @@
         }
     }
 
-    /* Backgrounds matching the image */
+    
     .bg-zihin-hafiza {
         background: linear-gradient(135deg, #fceb99 0%, #ecd075 100%);
     }
@@ -691,7 +691,7 @@
 
     .category-title {
         font-weight: 800;
-        font-size: 3rem; /* %20 büyütüldü (2.5 -> 3) */
+        font-size: 3rem; 
         margin-bottom: 1.5rem;
     }
 
@@ -724,7 +724,7 @@
         line-height: 1;
     }
 
-    /* Product Cards inside categories */
+    
     .product-card {
         background: white;
         border-radius: 15px;
@@ -779,16 +779,16 @@
         margin-bottom: 1rem;
     }
 
-    /* Featured Products Carousel */
+    
     .featured-wrapper {
-        background-color: #f3f4f6; /* Gri arka plan tam sayfa genişliğinde */
+        background-color: #f3f4f6; 
         width: 100%;
-        padding: 2rem 0 1rem 0; /* Üstten ve alttan boşluk azaltıldı */
+        padding: 2rem 0 1rem 0; 
         position: relative;
         z-index: 20;
     }
     .featured-section {
-        width: 92%; /* Kategori ile tam aynı genişlikte (85% -> 92%) */
+        width: 92%; 
         max-width: 1500px;
         margin: 0 auto;
         position: relative;
@@ -821,13 +821,13 @@
         text-decoration: none;
     }
     .featured-swiper {
-        padding-top: 30px !important; /* Puan düşürülerek carouselin ve içindeki taşan kartların başlığa daha da yaklaşması sağlandı (fazladan boşluk alındı) */
-        padding-bottom: 50px !important; /* Noktalama işaretleri için alan */
-        padding-left: 0 !important; /* Hizalama sıfırlandı */
+        padding-top: 30px !important; 
+        padding-bottom: 50px !important; 
+        padding-left: 0 !important; 
         padding-right: 0 !important;
-        overflow: visible !important; /* Okların dışarı taşabilmesi için */
+        overflow: visible !important; 
     }
-    /* ===== PRODUCT CARD - YENİ TASARIM ===== */
+    
     .product-glass-card {
         background: white;
         border: 1px solid #e2e8f0;
@@ -849,7 +849,7 @@
         text-decoration: none;
         color: inherit;
     }
-    /* Ürün görseli alanı */
+    
     .product-glass-img-wrap {
         position: relative;
         padding: 18px 18px 12px;
@@ -866,7 +866,7 @@
     .product-glass-card:hover img {
         transform: scale(1.04);
     }
-    /* Favori kalp butonu - sağ üst */
+    
     .pc-heart-btn {
         position: absolute;
         top: 10px;
@@ -890,14 +890,14 @@
     .pc-heart-btn.active { color: #ef4444; border-color: #e2e8f0; }
     .pc-heart-btn.active i { font-weight: 900; }
 
-    /* İçerik bölümü */
+    
     .product-glass-body {
         padding: 14px 14px 14px;
         display: flex;
         flex-direction: column;
         flex: 1;
     }
-    /* Ürün başlığı */
+    
     .product-glass-title {
         font-size: 0.92rem;
         font-weight: 700;
@@ -910,7 +910,7 @@
         line-height: 1.4;
     }
 
-    /* Yıldız + puan (Decimal support) */
+    
     .pc-stars-row {
         display: flex;
         align-items: center;
@@ -921,7 +921,7 @@
         display: inline-flex;
         position: relative;
         font-size: 1.12rem;
-        color: #e2e8f0; /* Empty color */
+        color: #e2e8f0; 
     }
     .pc-stars-filled {
         position: absolute;
@@ -936,7 +936,7 @@
         color: #718096;
     }
 
-    /* Fiyatlar - Yan Yana */
+    
     .pc-prices {
         margin-bottom: 12px;
         margin-top: auto;
@@ -955,7 +955,7 @@
         text-decoration: line-through;
     }
 
-    /* Sepete Ekle butonu - Sağ Alt Pill */
+    
     .pc-add-btn-row {
         display: flex;
         justify-content: flex-end;
@@ -964,10 +964,10 @@
     .pc-add-btn {
         display: inline-flex;
         align-items: center;
-        justify-content: center; /* Merkeze hizalama */
+        justify-content: center; 
         gap: 8px;
         padding: 8px 18px;
-        background: #1e5e78; /* Görsele daha yakın canlı teal tonu */
+        background: #1e5e78; 
         color: white;
         border: none;
         border-radius: 25px;
@@ -985,9 +985,9 @@
         padding-bottom: 50px !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        overflow: hidden !important; /* Taşan slaytları gizle */
+        overflow: hidden !important; 
     }
-    /* Nav butonları .featured-section'a göre konumlandırılacak */
+    
     .featured-nav-btn {
         position: absolute;
         top: 50%;
@@ -1026,18 +1026,18 @@
         font-weight: bold;
     }
     .swiper-pagination-bullet {
-        background: rgba(0, 0, 0, 0.2) !important; /* Koyu renk pagination */
+        background: rgba(0, 0, 0, 0.2) !important; 
         opacity: 1 !important;
         width: 12px !important;
         height: 12px !important;
         transition: all 0.3s ease;
     }
     .swiper-pagination-bullet-active {
-        background: #2d3748 !important; /* Aktif olanı daha koyu */
+        background: #2d3748 !important; 
         box-shadow: 0 0 10px rgba(0,0,0,0.1) !important;
         transform: scale(1.2);
     }
-    /* === COMPACT MODE (AI CHAT FOCUS) === */
+    
     .ag-hero.compact-mode {
         height: auto !important;
         padding-top: 90px;
@@ -1071,8 +1071,8 @@
     .ag-chat-header {
         display: none;
         align-items: center;
-        margin-bottom: 20px; /* Exact 20px gap below divider */
-        padding-bottom: 15px; /* Space inside header above divider */
+        margin-bottom: 20px; 
+        padding-bottom: 15px; 
         border-bottom: 1px solid rgba(255,255,255,0.15);
     }
     
@@ -1114,13 +1114,13 @@
     }
     
     .ag-hero.compact-mode .ag-chat-top {
-        margin-bottom: 20px; /* Üstteki başlık çizgisiyle olan mesafe (20px) ile tam aynı olması için textarea ile alt çizgi arasını da 20px yapıyoruz */
+        margin-bottom: 20px; 
     }
 </style>
 
 <div class="container-fluid p-0">
     
-    <!-- ANTIGRAVITY FULLSCREEN HERO SECTION & CAROUSEL -->
+    
     <div class="hero-gradient-wrapper position-relative">
         <div class="ag-hero">
 
@@ -1129,13 +1129,13 @@
 
         <div class="ag-chat-panel" onclick="document.getElementById('chatInput').focus();">
             
-            <!-- Geri Butonu ve Aktif Kategori Başlığı -->
+            
             <div class="ag-chat-header" id="chatCompactHeader">
                 <a href="#" id="btnBackToCats"><i class="fa-solid fa-chevron-left"></i> Geri</a>
                 <span class="cat-name" id="activeCategoryName">Kategori</span>
             </div>
 
-            <!-- Üst Kategoriler -->
+            
             <div class="ag-top-categories hero-element">
                 <div class="ag-category-pill bg-uyku">
                     <i class="fa-solid fa-moon"></i>
@@ -1163,7 +1163,7 @@
                 </div>
             </div>
 
-            <!-- Dosya Listesi (Tepede, bu istendiği için kalacak) -->
+            
             <div class="ag-file-list" id="fileList"></div>
 
             <div class="ag-chat-top">
@@ -1175,12 +1175,12 @@
                 <button class="btn-fullscreen" id="btnFullscreen" title="Tam Ekran"><i class="fa-solid fa-expand"></i></button>
             </div>
             
-            <!-- ALT: Butonlar (+ solda, Send sağda) -->
+            
             <div class="ag-chat-bottom">
                 <div class="ag-chat-actions-left">
                     <button class="ag-btn-add" id="btnAddFile" title="Dosya Ekle"><i class="fa-solid fa-plus"></i></button>
                     
-                    <!-- Sohbet ve Ürün Arama Modları -->
+                    
                     <div class="ag-mode-toggles">
                         <button class="ag-mode-btn active" id="btnModeChat">
                             <i class="fa-regular fa-comment-dots"></i> Sohbet Modu
@@ -1190,7 +1190,7 @@
                         </button>
                     </div>
 
-                    <!-- Dosya Yükleme Açılır Menüsü -->
+                    
                     <div class="ag-add-file-menu" id="addFileMenu">
                         <div class="ag-add-menu-item" onclick="document.getElementById('fileUploadInput').click()">
                             <i class="fa-solid fa-paperclip"></i> Dosya Yukleyin
@@ -1209,11 +1209,11 @@
         </div>
 
 
-        <!-- Stars removed -->
+        
     </div>
     </div>
 
-    <!-- FEATURED PRODUCTS CAROUSEL -->
+    
     <div class="featured-wrapper">
     <div class="featured-section">
         <div class="d-flex justify-content-between align-items-center mb-0">
@@ -1223,7 +1223,7 @@
         
         <div class="swiper featured-swiper pb-5">
             <div class="swiper-wrapper">
-                <!-- Slide 1 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1251,7 +1251,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 2 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1279,7 +1279,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 3 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1307,7 +1307,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 4 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1335,7 +1335,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 5 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1363,7 +1363,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 6 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1391,7 +1391,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 7 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1419,7 +1419,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 8 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1447,7 +1447,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 9 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1475,7 +1475,7 @@
                         </div>
                     </a>
                 </div>
-                <!-- Slide 10 -->
+                
                 <div class="swiper-slide">
                     <a href="#" class="product-glass-card">
                         <div class="product-glass-img-wrap">
@@ -1504,33 +1504,33 @@
                     </a>
                 </div>
             </div>
-        </div><!-- end .featured-swiper -->
+        </div>
 
 
-            <!-- Navigation buttons (outside swiper to avoid clipping) -->
+            
             <div class="swiper-button-prev featured-nav-btn"></div>
             <div class="swiper-button-next featured-nav-btn"></div>
-        </div><!-- end .featured-section -->
-    </div><!-- end .featured-wrapper -->
+        </div>
+    </div>
 
-    <!-- CATEGORY DETAILS PAGE (Initially hidden) -->
+    
     <div class="category-page d-none pt-0" id="uykuCategoryPage" style="background-color: #f8f9fa;">
         
-        <!-- Categorized Detail Banner -->
+        
         <div class="category-main-banner mb-5" style="width: 100%; min-height: 860px; padding-bottom: 24px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
             <img src="/img/banners/uyku.png" alt="Uyku Sağlığı Kampanya" style="width: 100%; height: 100%; object-fit: cover; position: absolute; z-index: 1; top: 0; left: 0;" />
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%); z-index: 2;"></div>
             
-            <!-- İçerik hiza olarak diğer container ile aynı (Çizgiler arası), Sohbet kutusundan ayrılması için padding yüksek -->
+            
             <div class="container h-100 position-relative" style="max-width: 1500px; width: 92%; padding-top: 300px; z-index: 3;">
                 <div class="row align-items-center">
                     
-                    <!-- LEFT SIDE: Title, Desc, Tags -->
+                    
                     <div class="col-lg-5 col-xl-4 pe-lg-4" style="padding-bottom: 60px;">
                         <h2 style="color: rgba(255,255,255,0.9); font-weight: 800; font-size: 4.8rem; text-shadow: 1px 2px 5px rgba(0,0,0,0.4); margin-bottom: 25px; line-height: 1.1;">Uyku Sağlığı</h2>
                         <p style="color: rgba(255,255,255,0.8); font-size: 1.6rem; font-weight: 400; text-shadow: 1px 2px 4px rgba(0,0,0,0.4); margin-bottom: 40px; line-height: 1.5;">Derin ve rahat bir uyku için doğanın ve bilimin en iyi destekleri.</p>
                         
-                        <!-- Etiket Butonları Havuzu (Şeffaf) -->
+                        
                         <div class="uyku-tag-cloud">
                             <button type="button" class="uyku-tag-btn active"><i class="fa-solid fa-layer-group text-warning"></i> Tümü</button>
                             <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-moon text-primary"></i> Melatonin</button>
@@ -1539,9 +1539,9 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT SIDE: Product Coverflow Carousel -->
+                    
                     <div class="col-lg-7 col-xl-8 position-relative mt-4 mt-lg-0 d-flex flex-column align-items-center justify-content-center" style="min-height: 520px; padding-left: 80px; padding-right: 80px;">
-                        <!-- Yön Okları -->
+                        
                         <div id="uyku-coverflow-prev" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="left: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i></div>
                         <div id="uyku-coverflow-next" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="right: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-right"></i></div>
                         
@@ -1714,11 +1714,11 @@
             });
         </script>
 
-        <!-- Middle content: Sidebar + 4 column grid -->
+        
         <div class="container pb-5" style="max-width: 1500px; width: 92%;">
 
             <div class="row">
-                <!-- Left Sidebar Filters -->
+                
                 <div class="col-lg-2 col-md-3">
                     <div class="filter-sidebar bg-white p-3 border rounded-3 mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1726,7 +1726,7 @@
                             <a href="#" class="text-info text-decoration-none fw-semibold" style="font-size: 0.8rem;">Temizle</a>
                         </div>
                         
-                        <!-- Filter Block: Marka -->
+                        
                         <div class="filter-block mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="fw-bold text-dark" style="font-size: 0.9rem;">Marka</span>
@@ -1758,7 +1758,7 @@
                             </div>
                         </div>
 
-                        <!-- Filter Block: Form -->
+                        
                         <div class="filter-block mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span class="fw-bold text-dark" style="font-size: 0.9rem;">Form</span>
@@ -1786,7 +1786,7 @@
                     </div>
                 </div>
 
-                <!-- Right Product Grid -->
+                
                 <div class="col-lg-10 col-md-9">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <span class="text-muted" style="font-size: 0.85rem;">12 ürün bulundu</span>
@@ -1800,9 +1800,9 @@
                         </div>
                     </div>
 
-                    <!-- Products Grid (4 Columns = col-lg-3, col-md-4, col-sm-6) -->
+                    
                     <div class="row g-4" id="uykuProductGrid">
-                        <!-- JS WILL INJECT PRODUCTS HERE -->
+                        
                     </div>
                 </div>
             </div>
@@ -1827,7 +1827,7 @@
         }
     </style>
 
-    <!-- POPÜLER TAKVİYELER SECTION -->
+    
     <div id="populer-takviyeler" style="background-color: #f3f4f6; padding: 2rem 0 4rem 0;">
         <div class="container" style="max-width: 1500px; width: 92%;">
             <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
@@ -1869,7 +1869,7 @@
         </div>
     </div>
 
-    <!-- MARKALAR / BANNERS SECTION -->
+    
     <div id="markalar" class="brands-wrapper" style="background-color: #f3f4f6; padding: 2rem 0 4rem 0;">
         <div class="container" style="max-width: 1500px; width: 92%;">
             <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
@@ -1900,7 +1900,7 @@
         </div>
     </div>
 
-    <!-- FIRSAT ÜRÜNLERİ STATIC GRID -->
+    
     <div id="firsat-urunleri" class="firsat-wrapper" style="background-color: #f3f4f6; width: 100%; padding: 2rem 0 4rem 0; position: relative; z-index: 20;">
         <div class="container" style="max-width: 1500px; width: 92%;">
             <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
@@ -1952,7 +1952,7 @@
         </div>
     </div>
 
-    <!-- NEDEN VITACURE? & VITACURE AI SECTION -->
+    
     <div id="neden-vitacure" style="background-color: #f3f4f6; padding: 2rem 0 5rem 0;">
         <div class="container" style="max-width: 1500px; width: 92%; text-align: center;">
             <h2 class="mb-4" style="font-weight: 800; font-size: 3rem; color: #1e293b;">Neden Vitacure?</h2>
@@ -1960,7 +1960,7 @@
                     <p class="mb-4">Vitacure olarak amacımız, yoğun yaşam temposunda herkesin günlük ihtiyaç duyduğu vitamin, mineral ve besin desteklerine en güvenilir ve hızlı şekilde ulaşmasını sağlamaktır. Uzmanlık ve inovasyonu bir araya getirerek, sadece ürün satışı değil, aynı zamanda tamamen size özel kişiselleştirilmiş bir sağlık rutini sunmayı hedefliyoruz.</p>
                     <p class="mb-5">Her bir ürünümüz, en yüksek kalite standartlarına uygun olarak üretilmiş ve özenle formüle edilmiştir. Bizim için sağlık, sadece hastalık anında değil hayatın her anında önemsenmesi gereken bir bütündür. Bu vizyonla doğanın gücü ile bilimin ışığını harmanlayarak yepyeni bir dünya sunuyoruz.</p>
                 
-                <!-- Vitacure AI Alt Başlığı ve Açıklaması -->
+                
                 <h3 style="font-size: 2.2rem; font-weight: 700; color: #1e5e78; margin-bottom: 1.5rem;">
                         <i class="fa-solid fa-wand-magic-sparkles me-2" style="color: #FADB5F;"></i> Vitacure AI ile Geleceğin Sağlık Asistanı
                 </h3>
@@ -1984,7 +1984,6 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Kalp butonları — tıklanınca içi kırmızı dolsun
             document.querySelectorAll('.pc-heart-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -2000,7 +1999,6 @@
                     }
                 });
             });
-            // Sepete Ekle butonları — tıklanınca "Eklendi" olsun
             document.querySelectorAll('.pc-add-btn').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -2033,37 +2031,30 @@
 
             const btnSend = document.getElementById('btnSend');
 
-            // --- Auto-Resize Textarea & Fullscreen Icon Visibility ---
             chatInput.addEventListener('input', function () {
-                // Renk ayarı
                 if (this.value.trim() !== '') {
                     btnSend.classList.add('active');
                 } else {
                     btnSend.classList.remove('active');
                 }
                 
-                // Yükseklik sıfırlaması
                 this.style.height = 'auto';
                 this.style.overflowY = 'hidden';
                 
                 let newHeight = this.scrollHeight;
                 
-                // max-height (90px ~ 3 satır sınırı) aşıldıysa:
                 if (newHeight >= 90 && !chatPanel.classList.contains('fullscreen-mode')) {
                     this.style.overflowY = 'auto';
                     this.style.height = '90px';
                     btnFullscreen.classList.add('visible'); // scroll varsa ikonu göster
                 } else {
-                    // 3 satırın altındaysa (scroll yoksa) veya fullscreen modundaysa
                     this.style.height = newHeight + 'px';
-                    // Sadece fullscreen değilken gizle
                     if(!chatPanel.classList.contains('fullscreen-mode')) {
                         btnFullscreen.classList.remove('visible');
                     }
                 }
             });
 
-            // Enter Key
             chatInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -2077,7 +2068,6 @@
                 }
             });
 
-            // --- Fullscreen Toggle Logic ---
             btnFullscreen.addEventListener('click', function(e) {
                 e.stopPropagation(); // Parent tıklamasını engelle
                 
@@ -2086,12 +2076,10 @@
                 const icon = this.querySelector('i');
                 
                 if (isFullscreen) {
-                    // Ekranı Modifiye Et
                     heroElements.forEach(el => el.classList.add('hidden'));
                     icon.classList.remove('fa-expand');
                     icon.classList.add('fa-compress');
                     
-                    // Fullscreen ikonunu sabitle
                     this.style.opacity = "1";
                     
                     chatInput.style.maxHeight = 'calc(100vh - 180px)'; 
@@ -2099,7 +2087,6 @@
                     chatInput.style.height = chatInput.scrollHeight + 'px';
                     
                 } else {
-                    // Geri Dön
                     heroElements.forEach(el => el.classList.remove('hidden'));
                     icon.classList.remove('fa-compress');
                     icon.classList.add('fa-expand');
@@ -2108,12 +2095,10 @@
                     
                     chatInput.style.maxHeight = '68px';
                     
-                    // Input tetiklemesi ile yüksekliği eski haline düzelt
                     chatInput.dispatchEvent(new Event('input'));
                 }
             });
 
-            // --- Add File Menu Toggle ---
             const addFileMenu = document.getElementById('addFileMenu');
 
             btnAddFile.addEventListener('click', function(e) {
@@ -2122,17 +2107,14 @@
                 addFileMenu.classList.toggle('show');
             });
 
-            // Menü dışına tıklanınca kapat
             document.addEventListener('click', function(e) {
                 if (addFileMenu.classList.contains('show')) {
-                    // Eğer tıklanan yer menünün içi veya artı butonu değilse kapat
                     if (!addFileMenu.contains(e.target) && e.target !== btnAddFile) {
                         addFileMenu.classList.remove('show');
                     }
                 }
             });
 
-            // Seçeneklere tıklandığında menüyü kapatmak için
             const menuItems = document.querySelectorAll('.ag-add-menu-item');
             menuItems.forEach(item => {
                 item.addEventListener('click', function() {
@@ -2140,7 +2122,6 @@
                 });
             });
 
-            // --- Dosya / Fotoğraf Yükleme İşlemleri ---
             const fileUploadInput = document.getElementById('fileUploadInput');
             const imageUploadInput = document.getElementById('imageUploadInput');
             
@@ -2150,7 +2131,6 @@
                         let fileDiv = document.createElement('div');
                         fileDiv.className = 'ag-file-item';
                         
-                        // İkon Seçimi: Resim mi, Belge mi?
                         let iconClass = file.type.startsWith('image/') ? 'fa-regular fa-image' : 'fa-solid fa-file-pdf';
                         let iconColor = file.type.startsWith('image/') ? '#4285f4' : '#ff4d4f'; // Resimler için Mavi, Belgeler için Kırmızı ton
                         
@@ -2161,7 +2141,6 @@
                         `;
                         fileList.appendChild(fileDiv);
                     });
-                     // Tam ekranda isek margin ayarla
                     if (chatPanel.classList.contains('fullscreen-mode')) {
                         fileList.style.marginBottom = '10px';
                     }
@@ -2178,7 +2157,6 @@
                 this.value = ''; // Aynı resmi tekrar seçebilmek için sıfırla
             });
 
-            // --- Mod Değiştirme (Sohbet / Ürün Arama) ---
             const btnModeChat = document.getElementById('btnModeChat');
             const btnModeSearch = document.getElementById('btnModeSearch');
             const btnSendIcon = document.querySelector('#btnSend i');
@@ -2207,14 +2185,11 @@
                 btnSendIcon.className = 'fa-solid fa-paper-plane';
                 searchCategoryFilter.classList.add('hidden');
                 
-                // Arama kilidini kaldır ve boyutu yeniden hesapla
                 chatPanel.classList.remove('search-mode-active');
                 chatInput.dispatchEvent(new Event('input'));
                 chatInput.focus();
                 
-                // Eğer kullanıcı manuel boşaltmışsa Chat moduna dönüşte döngüyü serbest başlat
                 if (!isUserTyping && chatInput.value.trim() === '') {
-                    // startAnimations will resume from valid lockedCatIdx or general
                     startAnimations();
                 } else {
                     chatInput.placeholder = 'Hedefini seç, yapay zeka ile sana uygun ürünleri ve rutinleri birlikte planlayalım.';
@@ -2231,12 +2206,10 @@
                 btnModeChat.classList.remove('active');
                 btnSendIcon.className = 'fa-solid fa-magnifying-glass';
                 
-                // Arama kilidini ekle (tek satırda tut)
                 chatPanel.classList.add('search-mode-active');
                 chatInput.style.height = '40px'; 
                 chatInput.focus();
                 
-                // Arama modunda arka plan animasyonlarını tamamen durdur (ama aktif kategori varsa kaybolmasın)
                 stopAllAnimations();
 
                 if (lockedCatIdx !== -1) {
@@ -2250,7 +2223,6 @@
                 }
             });
 
-            // --- Placeholder Typing Animation (AI Prompts) ---
             const placeholderCategories = [
                 ["Son zamanlarda uykum çok düzensiz, ne yapabilirim?", "Gece sık sık uyanıyorum, öneriniz var mı?", "Daha kaliteli uyumak için ne kullanmalıyım?", "Sabah yorgun kalkıyorum, sebebi ne olabilir?"],
                 ["Gün içinde çok halsiz hissediyorum, ne önerirsin?", "Enerjimi artırmak için hangi vitaminleri almalıyım?", "Yorgunluk için iyi gelen takviyeler neler?", "Bağışıklık ve enerji için ne kullanabilirim?"],
@@ -2333,7 +2305,6 @@
                 globalAnimInterval = setInterval(animateNextPrompt, 6000);
             }
 
-            // Sayfa yüklendiğinde otomatik animasyon döngüsü başlasın
             initTimer = setTimeout(startAnimations, 1000);
 
             document.addEventListener('visibilitychange', function() {
@@ -2353,7 +2324,6 @@
                 }
             });
 
-            // Kullanıcı yazmaya başladığında her şeyi durdur
             chatInput.addEventListener('input', function() {
                 if (this.value !== '') {
                     isUserTyping = true;
@@ -2365,14 +2335,12 @@
                 }
             });
 
-            // Kategoriye tıklanınca animasyonu tek kategoriye kilitle
             categorySelectors.forEach((selector, idx) => {
                 const el = document.querySelector(selector);
                 if (el) {
                     el.addEventListener('click', (e) => {
                         e.preventDefault();
                         
-                        // Vitrin (Showcase) Değişimi
                         if (idx === 0) { // Uyku Sağlığı
                            document.body.classList.add('uyku-mode');
                            requestAnimationFrame(() => {
@@ -2388,14 +2356,11 @@
                            }
                         }
 
-                        // Compact Modu Etkinleştir
                         const hero = document.querySelector('.ag-hero');
                         if (!hero.classList.contains('compact-mode')) {
                             hero.classList.add('compact-mode');
-                            // Kategori adını başlığa yazdır
                             document.getElementById('activeCategoryName').innerText = categoryNames[idx];
                             
-                            // Animasyonlu yavaş kaydırma
                             setTimeout(() => {
                                 window.scrollTo({
                                     top: 0,
@@ -2413,7 +2378,6 @@
                         isUserTyping = false;
                         
                         if (chatPanel.classList.contains('search-mode-active')) {
-                            // Arama modunda kategori tıklandığında filtre tag'i ekleyip placeholder'ı değiştir
                             clearCategoryActive();
                             el.classList.add('active');
                             searchCategoryFilter.classList.remove('hidden');
@@ -2421,14 +2385,12 @@
                             chatInput.placeholder = 'İçinde ara...';
                             chatInput.focus();
                         } else {
-                            // Sohbet modunda ise animasyonları başlat
                             startAnimations();
                         }
                     });
                 }
             });
 
-            // Geri Butonu (Sohbet panelindeki)
             const btnBack = document.getElementById('btnBackToCats');
             if(btnBack) {
                 btnBack.addEventListener('click', function(e) {
@@ -2438,7 +2400,6 @@
                 });
             }
 
-            // Anasayfa Breadcrumb
             const btnBreadcrumb = document.getElementById('btnBreadcrumbHome');
             if(btnBreadcrumb) {
                 btnBreadcrumb.addEventListener('click', function(e) {
@@ -2452,7 +2413,6 @@
                 const hero = document.querySelector('.ag-hero');
                 hero.classList.remove('compact-mode');
                 
-                // Vitrini Eski Haline Getir
                 document.body.classList.remove('uyku-mode');
 
                 uykuCoverflowItems = [];
@@ -2470,14 +2430,12 @@
                 }
             }
 
-            // Focus on load
             setTimeout(() => chatInput.focus(), 100);
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Standart swiperları başlat
             var featuredSwiper = new Swiper('.featured-swiper', {
                 slidesPerView: 1,
                 spaceBetween: 10,
@@ -2507,10 +2465,8 @@
                 }
             });
             
-            // Uyku Sayfası Ürünlerini (4 Kolonlu Grid) Otomatik Doldur
             const uykuGrid = document.getElementById('uykuProductGrid');
             if(uykuGrid) {
-                // Featured içindeki slaytları şablon olarak al
                 const templates = document.querySelectorAll('.featured-swiper .swiper-slide a.product-glass-card');
                 if(templates.length > 0) {
                     for(let i=0; i<12; i++) { // 12 ürün gösterelim
@@ -2519,7 +2475,6 @@
                         col.className = 'col-lg-3 col-md-4 col-sm-6 mb-2'; // 12 / 3 = 4 columns
                         col.innerHTML = template.outerHTML;
                         
-                        // Arka planı düzelt (açık gri sayfada duracağı için beyaz kart yapalım)
                         const card = col.querySelector('.product-glass-card');
                         if (card) {
                             card.style.background = '#ffffff';
