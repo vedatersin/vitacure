@@ -1,7 +1,6 @@
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\appsettings.json
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.staticwebassets.runtime.json
-C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.exe
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.deps.json
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.runtimeconfig.json
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.dll
@@ -29,3 +28,5 @@ C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\refint\vitacure.dll
 C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\vitacure.pdb
 C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\vitacure.genruntimeconfig.cache
 C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\ref\vitacure.dll
+C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\docs\mock-data.json
+C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.exe
