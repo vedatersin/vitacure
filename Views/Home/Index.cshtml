@@ -886,9 +886,80 @@
         box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         z-index: 5;
     }
-    .pc-heart-btn:hover { color: #ef4444; transform: scale(1.1); }
+    .pc-heart-btn:hover { color: #ef4444; transform: scale(1.08); }
     .pc-heart-btn.active { color: #ef4444; border-color: #e2e8f0; }
     .pc-heart-btn.active i { font-weight: 900; }
+
+    .coverflow-card-top {
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        margin-bottom: 14px;
+    }
+    .coverflow-heart-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.22);
+        background: rgba(255,255,255,0.06);
+        color: rgba(255,255,255,0.5);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.22s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+    .coverflow-heart-btn:hover {
+        color: rgba(255,255,255,1);
+        border-color: rgba(255,255,255,0.42);
+        background: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+    .coverflow-heart-btn.active {
+        color: rgba(255,255,255,1);
+        border-color: rgba(255,255,255,0.42);
+        background: rgba(255,255,255,0.12);
+    }
+    .coverflow-action-row {
+        display: flex;
+        gap: 8px;
+    }
+    .coverflow-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: all 0.22s ease;
+        cursor: pointer;
+    }
+    .coverflow-action-btn:hover { transform: translateY(-1px); }
+    .coverflow-action-btn.secondary {
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.04);
+        color: #ffffff;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+    .coverflow-action-btn.secondary:hover {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.45);
+    }
+    .coverflow-action-btn.primary {
+        border: none;
+        background: #1e5e78;
+        color: #ffffff;
+        box-shadow: 0 8px 15px rgba(30, 94, 120, 0.4);
+    }
+    .coverflow-action-btn.primary:hover { background: #16465a; }
+    .coverflow-action-btn.primary.added {
+        background: #10b981;
+        box-shadow: 0 8px 15px rgba(16, 185, 129, 0.35);
+    }
 
     
     .product-glass-body {
@@ -1125,7 +1196,7 @@
         <div class="ag-hero">
 
         <h1 class="ag-title hero-element">Bir Dünya Sağlık</h1>
-        <h2 class="ag-subtitle hero-element">Peki senin ihtiyacın ne?</h2>
+        <h2 class="ag-subtitle hero-element">Peki senin ihtiyacin ne?</h2>
 
         <div class="ag-chat-panel" onclick="document.getElementById('chatInput').focus();">
             
@@ -1234,14 +1305,14 @@
                             <h3 class="product-glass-title">Daily Multivitamin</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 96%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.8)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 299,00</span>
-                                <span class="pc-price-old">₺ 399,00</span>
+                                <span class="pc-price-new">&#8378; 299,00</span>
+                                <span class="pc-price-old">&#8378; 399,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1262,14 +1333,14 @@
                             <h3 class="product-glass-title">Omega 3</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 98%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.9)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 349,00</span>
-                                <span class="pc-price-old">₺ 499,00</span>
+                                <span class="pc-price-new">&#8378; 349,00</span>
+                                <span class="pc-price-old">&#8378; 499,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1290,14 +1361,14 @@
                             <h3 class="product-glass-title">Vitamin D3</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 94%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.7)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 199,00</span>
-                                <span class="pc-price-old">₺ 279,00</span>
+                                <span class="pc-price-new">&#8378; 199,00</span>
+                                <span class="pc-price-old">&#8378; 279,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1318,14 +1389,14 @@
                             <h3 class="product-glass-title">Magnezyum</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 86%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.3)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 249,00</span>
-                                <span class="pc-price-old">₺ 349,00</span>
+                                <span class="pc-price-new">&#8378; 249,00</span>
+                                <span class="pc-price-old">&#8378; 349,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1346,14 +1417,14 @@
                             <h3 class="product-glass-title">C Vitamini Complex</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 92%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.6)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 179,00</span>
-                                <span class="pc-price-old">₺ 249,00</span>
+                                <span class="pc-price-new">&#8378; 179,00</span>
+                                <span class="pc-price-old">&#8378; 249,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1374,14 +1445,14 @@
                             <h3 class="product-glass-title">Kolajen Peptit</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 98%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.9)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 499,00</span>
-                                <span class="pc-price-old">₺ 699,00</span>
+                                <span class="pc-price-new">&#8378; 499,00</span>
+                                <span class="pc-price-old">&#8378; 699,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1402,14 +1473,14 @@
                             <h3 class="product-glass-title">B12 Vitamini</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 88%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.4)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 149,00</span>
-                                <span class="pc-price-old">₺ 199,00</span>
+                                <span class="pc-price-new">&#8378; 149,00</span>
+                                <span class="pc-price-old">&#8378; 199,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1430,14 +1501,14 @@
                             <h3 class="product-glass-title">Çinko Pikolinat</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 90%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.5)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 189,00</span>
-                                <span class="pc-price-old">₺ 259,00</span>
+                                <span class="pc-price-new">&#8378; 189,00</span>
+                                <span class="pc-price-old">&#8378; 259,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1458,14 +1529,14 @@
                             <h3 class="product-glass-title">Probiyotik 10B</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 84%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.2)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 329,00</span>
-                                <span class="pc-price-old">₺ 449,00</span>
+                                <span class="pc-price-new">&#8378; 329,00</span>
+                                <span class="pc-price-old">&#8378; 449,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1486,14 +1557,14 @@
                             <h3 class="product-glass-title">Demir + C Vitamini</h3>
                             <div class="pc-stars-row">
                                 <div class="pc-stars-wrapper">
-                                    <div class="pc-stars-empty">★★★★★</div>
+                                    <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                                     <div class="pc-stars-filled" style="width: 82%;">★★★★★</div>
                                 </div>
                                 <span class="score">(4.1)</span>
                             </div>
                             <div class="pc-prices">
-                                <span class="pc-price-new">₺ 159,00</span>
-                                <span class="pc-price-old">₺ 219,00</span>
+                                <span class="pc-price-new">&#8378; 159,00</span>
+                                <span class="pc-price-old">&#8378; 219,00</span>
                             </div>
                             <div class="pc-add-btn-row">
                                 <button class="pc-add-btn" onclick="event.preventDefault()">
@@ -1532,23 +1603,28 @@
                         
                         
                         <div class="uyku-tag-cloud">
-                            <button type="button" class="uyku-tag-btn active"><i class="fa-solid fa-layer-group text-warning"></i> Tümü</button>
+                            <button type="button" class="uyku-tag-btn active"><i class="fa-solid fa-layer-group text-warning"></i> T&uuml;m&uuml;</button>
                             <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-moon text-primary"></i> Melatonin</button>
                             <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-leaf text-success"></i> Bitkisel Ekstreler</button>
-                            <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-child text-info"></i> Çocuklar İçin</button>
+                            <button type="button" class="uyku-tag-btn"><i class="fa-solid fa-child text-info"></i> &Ccedil;ocuklar &#304;&ccedil;in</button>
                         </div>
                     </div>
 
                     
                     <div class="col-lg-7 col-xl-8 position-relative mt-4 mt-lg-0 d-flex flex-column align-items-center justify-content-center" style="min-height: 520px; padding-left: 80px; padding-right: 80px;">
                         
-                        <div id="uyku-coverflow-prev" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="left: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i></div>
-                        <div id="uyku-coverflow-next" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="right: 28px; top: 220px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div id="uyku-coverflow-prev" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="left: 88px; top: 214px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-left"></i></div>
+                        <div id="uyku-coverflow-next" class="btn btn-light rounded-circle position-absolute text-dark shadow-lg d-flex align-items-center justify-content-center" style="right: 88px; top: 214px; transform: translateY(-50%); z-index: 14; width: 52px; height: 52px; opacity: 0.95; cursor: pointer;"><i class="fa-solid fa-chevron-right"></i></div>
                         
-                        <div id="uykuCoverflowStage" style="position: relative; width: 100%; max-width: 620px; height: 380px; margin: 66px auto 0; overflow: visible;"></div>
+                        <div id="uykuCoverflowStage" style="position: relative; width: 100%; max-width: 700px; height: 380px; margin: 66px auto 0; overflow: visible;"></div>
                         <div id="uykuCoverflowInfo" style="width: 100%; color: rgba(255,255,255,0.96); margin-top: -84px; margin-bottom: 50px; position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center;">
-                            <div style="width: 100%; max-width: 480px; padding: 90px 32px 32px; border-radius: 24px; background: rgba(20, 20, 30, 0.55); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
+                            <div style="width: 100%; max-width: 480px; padding: 24px 32px 32px; border-radius: 24px; background: rgba(20, 20, 30, 0.55); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 15px 35px rgba(0,0,0,0.3);">
                                 <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+                                    <div class="coverflow-card-top">
+                                        <button id="uykuCoverflowHeartBtn" class="coverflow-heart-btn" type="button" title="Favorilere Ekle" aria-label="Favorilere ekle">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
+                                    </div>
                                     <div id="uykuCoverflowProductName" style="font-size: 1.6rem; font-weight: 800; line-height: 1.2; text-align: left; margin-bottom: 2px;"></div>
                                     <div id="uykuCoverflowProductDescription" style="font-size: 0.95rem; line-height: 1.5; color: rgba(255,255,255,0.8); text-align: left; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 2px;"></div>
                                     <div id="uykuCoverflowRating" style="display: flex; align-items: center; gap: 8px;">
@@ -1560,9 +1636,9 @@
                                             <span id="uykuCoverflowPriceOld" style="font-size: 0.85rem; color: rgba(255,255,255,0.5); text-decoration: line-through; margin-bottom: 2px;"></span>
                                             <span id="uykuCoverflowPriceNew" style="font-size: 1.3rem; font-weight: 800; color: #fff;"></span>
                                         </div>
-                                        <div style="display: flex; gap: 8px;">
-                                            <button id="uykuCoverflowDetailsBtn" type="button" style="padding: 10px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3); background: transparent; color: #ffffff; font-weight: 700; font-size: 0.9rem; transition: background 0.2s ease;">Ürünü İncele</button>
-                                            <button id="uykuCoverflowProductBtn" type="button" style="padding: 10px 18px; border-radius: 50px; border: none; background: #1e5e78; color: #ffffff; font-weight: 700; box-shadow: 0 8px 15px rgba(30, 94, 120, 0.4); font-size: 0.9rem; transition: transform 0.2s ease, background 0.2s ease;">Sepete Ekle</button>
+                                        <div class="coverflow-action-row">
+                                            <button id="uykuCoverflowDetailsBtn" class="coverflow-action-btn secondary" type="button"><i class="fa-solid fa-magnifying-glass"></i> &Uuml;r&uuml;n&uuml; &#304;ncele</button>
+                                            <button id="uykuCoverflowProductBtn" class="coverflow-action-btn primary" type="button"><i class="fa-solid fa-cart-shopping"></i> Sepete Ekle</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1576,25 +1652,27 @@
         <script>
             let uykuCoverflowItems = [];
             let uykuCoverflowOrder = [];
+            const favoriteProductIds = new Set();
+            const uykuFavoriteProductIds = favoriteProductIds;
 
             const uykuCoverflowProducts = [
-                { id: 'cals-left', src: '/img/bottle_d3_nobg.png', alt: 'Kalsiyum', name: 'Kalsiyum Kompleks', description: 'Kemik ve diş sağlığını destekler. İleri yaşlarda güçlü kemik yapısını korumaya yardımcı olur.', rating: '4.7', priceNew: '₺199,00', priceOld: '₺259,00' },
-                { id: 'multi-left', src: '/img/bottle_multi_nobg.png', alt: 'Multi Vitamin', name: 'Daily Multivitamin', description: 'Günlük enerji dengesini, bağışıklığı ve temel vitamin desteğini tek kapsülde tamamlamaya yardımcı olur.', rating: '4.8', priceNew: '₺299,00', priceOld: '₺399,00' },
-                { id: 'omega-left', src: '/img/bottle_omega_nobg.png', alt: 'Omega 3', name: 'Omega 3', description: 'Rahat bir gece rutini için bedenin gevşemesine destek olur, zihinsel dinginlik hissini güçlendirmeye yardımcı olur.', rating: '4.9', priceNew: '₺349,00', priceOld: '₺499,00' },
-                { id: 'mag-center', src: '/img/bottle_mag_nobg.png', alt: 'Magnezyum', name: 'Magnezyum', description: 'Kasların gevşemesine destek olur. Uyku öncesi rahatlamayı artırır. Gece rutininde daha sakin bir geçiş sağlar.', rating: '4.7', priceNew: '₺249,00', priceOld: '₺349,00' },
-                { id: 'multi-right', src: '/img/bottle_multi_nobg.png', alt: 'C Vitamini Complex', name: 'C Vitamini Complex', description: 'Yoğun günlerde bağışıklık desteği sunarken vücudun toparlanma sürecine destek olur.', rating: '4.6', priceNew: '₺179,00', priceOld: '₺249,00' },
-                { id: 'd3-right', src: '/img/bottle_d3_nobg.png', alt: 'Vitamin D3', name: 'Vitamin D3', description: 'Kemik ve kas desteği sağlarken düşük güneş maruziyetinde günlük D vitamini ihtiyacını destekler.', rating: '4.8', priceNew: '₺199,00', priceOld: '₺279,00' },
-                { id: 'b12-right', src: '/img/bottle_omega_nobg.png', alt: 'B12 Vitamini', name: 'B12 Vitamini Sprey', description: 'Sinir sistemi sağlığını korur, yorgunluk ve bitkinliğin azalmasına destek olur.', rating: '4.9', priceNew: '₺149,00', priceOld: '₺199,00' }
+                { id: 'cals-left', src: '/img/bottle_d3_nobg.png', alt: 'Kalsiyum', name: 'Kalsiyum Kompleks', description: 'Kemik ve di\u015f sa\u011fl\u0131\u011f\u0131n\u0131 destekler. \u0130leri ya\u015flarda g\u00fc\u00e7l\u00fc kemik yap\u0131s\u0131n\u0131 korumaya yard\u0131mc\u0131 olur.', rating: '4.7', priceNew: '\u20BA199,00', priceOld: '\u20BA259,00' },
+                { id: 'multi-left', src: '/img/bottle_multi_nobg.png', alt: 'Multi Vitamin', name: 'Daily Multivitamin', description: 'G\u00fcnl\u00fck enerji dengesini, ba\u011f\u0131\u015f\u0131kl\u0131\u011f\u0131 ve temel vitamin deste\u011fini tek kaps\u00fclde tamamlamaya yard\u0131mc\u0131 olur.', rating: '4.8', priceNew: '\u20BA299,00', priceOld: '\u20BA399,00' },
+                { id: 'omega-left', src: '/img/bottle_omega_nobg.png', alt: 'Omega 3', name: 'Omega 3', description: 'Rahat bir gece rutini i\u00e7in bedenin gev\u015femesine destek olur, zihinsel dinginlik hissini g\u00fc\u00e7lendirmeye yard\u0131mc\u0131 olur.', rating: '4.9', priceNew: '\u20BA349,00', priceOld: '\u20BA499,00' },
+                { id: 'mag-center', src: '/img/bottle_mag_nobg.png', alt: 'Magnezyum', name: 'Magnezyum', description: 'Kaslar\u0131n gev\u015femesine destek olur. Uyku \u00f6ncesi rahatlamay\u0131 art\u0131r\u0131r. Gece rutininde daha sakin bir ge\u00e7i\u015f sa\u011flar.', rating: '4.7', priceNew: '\u20BA249,00', priceOld: '\u20BA349,00' },
+                { id: 'multi-right', src: '/img/bottle_multi_nobg.png', alt: 'C Vitamini Complex', name: 'C Vitamini Complex', description: 'Yo\u011fun g\u00fcnlerde ba\u011f\u0131\u015f\u0131kl\u0131k deste\u011fi sunarken v\u00fccudun toparlanma s\u00fcrecine destek olur.', rating: '4.6', priceNew: '\u20BA179,00', priceOld: '\u20BA249,00' },
+                { id: 'd3-right', src: '/img/bottle_d3_nobg.png', alt: 'Vitamin D3', name: 'Vitamin D3', description: 'Kemik ve kas deste\u011fi sa\u011flarken d\u00fc\u015f\u00fck g\u00fcne\u015f maruziyetinde g\u00fcnl\u00fck D vitamini ihtiyac\u0131n\u0131 destekler.', rating: '4.8', priceNew: '\u20BA199,00', priceOld: '\u20BA279,00' },
+                { id: 'b12-right', src: '/img/bottle_omega_nobg.png', alt: 'B12 Vitamini', name: 'B12 Vitamini Sprey', description: 'Sinir sistemi sa\u011fl\u0131\u011f\u0131n\u0131 korur, yorgunluk ve bitkinli\u011fin azalmas\u0131na destek olur.', rating: '4.9', priceNew: '\u20BA149,00', priceOld: '\u20BA199,00' }
             ];
 
             const uykuCoverflowSlots = [
-                { x: -192, y: -98, scale: 0.74, z: 0, opacity: 1, blur: '2px' },
-                { x: -128, y: -64, scale: 0.84, z: 1, opacity: 1, blur: '2px' },
-                { x: -64, y: -30, scale: 0.94, z: 2, opacity: 1, blur: '2px' },
+                { x: -252, y: -118, scale: 0.72, z: 0, opacity: 1, blur: '3px' },
+                { x: -168, y: -78, scale: 0.83, z: 1, opacity: 1, blur: '3px' },
+                { x: -84, y: -34, scale: 0.94, z: 2, opacity: 1, blur: '3px' },
                 { x: 0, y: 26, scale: 1.18, z: 5, opacity: 1, blur: '0px' },
-                { x: 64, y: -30, scale: 0.94, z: 2, opacity: 1, blur: '2px' },
-                { x: 128, y: -64, scale: 0.84, z: 1, opacity: 1, blur: '2px' },
-                { x: 192, y: -98, scale: 0.74, z: 0, opacity: 1, blur: '2px' }
+                { x: 84, y: -34, scale: 0.94, z: 2, opacity: 1, blur: '3px' },
+                { x: 168, y: -78, scale: 0.83, z: 1, opacity: 1, blur: '3px' },
+                { x: 252, y: -118, scale: 0.72, z: 0, opacity: 1, blur: '3px' }
             ];
 
             function createUykuCoverflowItem(product) {
@@ -1641,15 +1719,24 @@
                 const priceOldEl = document.getElementById('uykuCoverflowPriceOld');
                 const priceNewEl = document.getElementById('uykuCoverflowPriceNew');
                 const productBtnEl = document.getElementById('uykuCoverflowProductBtn');
+                const heartBtnEl = document.getElementById('uykuCoverflowHeartBtn');
+                const heartIconEl = heartBtnEl ? heartBtnEl.querySelector('i') : null;
 
                 if (activeProduct && productNameEl && productDescriptionEl && ratingStarsEl && ratingValueEl && priceOldEl && priceNewEl && productBtnEl) {
                     productNameEl.textContent = activeProduct.name;
                     productDescriptionEl.textContent = activeProduct.description;
-                    ratingStarsEl.textContent = '★★★★★';
-                    ratingValueEl.textContent = `${activeProduct.rating}/5 kullanıcı puanı`;
+                    ratingStarsEl.textContent = '\u2605\u2605\u2605\u2605\u2605';
+                    ratingValueEl.textContent = `${activeProduct.rating}/5 kullan\u0131c\u0131 puan\u0131`;
                     priceOldEl.textContent = activeProduct.priceOld;
                     priceNewEl.textContent = activeProduct.priceNew;
-                    productBtnEl.setAttribute('aria-label', `${activeProduct.name} ürününü sepete ekle`);
+                    productBtnEl.setAttribute('aria-label', `${activeProduct.name} \u00fcr\u00fcn\u00fcn\u00fc sepete ekle`);
+                    if (heartBtnEl && heartIconEl) {
+                        const isFavorite = uykuFavoriteProductIds.has(activeProduct.id);
+                        heartBtnEl.classList.toggle('active', isFavorite);
+                        heartIconEl.classList.toggle('fa-solid', isFavorite);
+                        heartIconEl.classList.toggle('fa-regular', !isFavorite);
+                        heartBtnEl.setAttribute('aria-label', isFavorite ? `${activeProduct.name} favorilerde` : `${activeProduct.name} favorilere ekle`);
+                    }
                 }
             }
 
@@ -1911,13 +1998,13 @@
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 pb-5">
                 @{
                     var dummyProducts = new[] {
-                        new { Name="Vitamin D3 - 3 Al 2 Öde", Img="bottle_d3_nobg.png", Old="279,00", New="199,00", Score="4.7", W="94%" },
+                        new { Name="Vitamin D3 - 3 Al 2 \u00d6de", Img="bottle_d3_nobg.png", Old="279,00", New="199,00", Score="4.7", W="94%" },
                         new { Name="Omega 3 Aile Paketi", Img="bottle_omega_nobg.png", Old="499,00", New="349,00", Score="4.9", W="98%" },
                         new { Name="C Vitamini Seti", Img="bottle_multi_nobg.png", Old="249,00", New="179,00", Score="4.6", W="92%" },
                         new { Name="Magnezyum Enerji Kofre", Img="bottle_mag_nobg.png", Old="349,00", New="249,00", Score="4.3", W="86%" },
-                        new { Name="Daily Multivitamin Büyük Boy", Img="bottle_multi_nobg.png", Old="399,00", New="299,00", Score="4.8", W="96%" },
+                        new { Name="Daily Multivitamin B\u00fcy\u00fck Boy", Img="bottle_multi_nobg.png", Old="399,00", New="299,00", Score="4.8", W="96%" },
                         new { Name="Kolajen ve C Vitamini", Img="bottle_d3_nobg.png", Old="299,00", New="199,00", Score="4.8", W="96%" },
-                        new { Name="Çinko Kompleks", Img="bottle_mag_nobg.png", Old="199,00", New="149,00", Score="4.5", W="90%" },
+                        new { Name="\u00c7inko Kompleks", Img="bottle_mag_nobg.png", Old="199,00", New="149,00", Score="4.5", W="90%" },
                         new { Name="Probiyotik Bakteri", Img="bottle_omega_nobg.png", Old="259,00", New="189,00", Score="4.7", W="94%" },
                         new { Name="B12 Vitamini Sprey", Img="bottle_multi_nobg.png", Old="189,00", New="129,00", Score="4.6", W="92%" },
                         new { Name="Demir Takviyesi", Img="bottle_d3_nobg.png", Old="239,00", New="169,00", Score="4.4", W="88%" }
@@ -1935,11 +2022,11 @@
                             <div class="product-glass-body">
                                 <h3 class="product-glass-title">@p.Name</h3>
                                 <div class="pc-stars-row">
-                                    <div class="pc-stars-wrapper"><div class="pc-stars-empty">★★★★★</div><div class="pc-stars-filled" style="width: @p.W;">★★★★★</div></div><span class="score">(@p.Score)</span>
+                                    <div class="pc-stars-wrapper"><div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div><div class="pc-stars-filled" style="width: @p.W;">&#9733;&#9733;&#9733;&#9733;&#9733;</div></div><span class="score">(@p.Score)</span>
                                 </div>
                                 <div class="pc-prices">
-                                    <span class="pc-price-new">₺ @p.New</span>
-                                    <span class="pc-price-old">₺ @p.Old</span>
+                                    <span class="pc-price-new">&#8378; @p.New</span>
+                                    <span class="pc-price-old">&#8378; @p.Old</span>
                                 </div>
                                 <div class="pc-add-btn-row">
                                     <button class="pc-add-btn" onclick="event.preventDefault()"><i class="fa-solid fa-cart-shopping"></i> Sepete Ekle</button>
@@ -1948,31 +2035,6 @@
                         </a>
                     </div>
                 }
-            </div>
-        </div>
-    </div>
-
-    
-    <div id="neden-vitacure" style="background-color: #f3f4f6; padding: 2rem 0 5rem 0;">
-        <div class="container" style="max-width: 1500px; width: 92%; text-align: center;">
-            <h2 class="mb-4" style="font-weight: 800; font-size: 3rem; color: #1e293b;">Neden Vitacure?</h2>
-            <div style="font-size: 1.15rem; color: #475569; line-height: 1.8; max-width: 1200px; margin: 0 auto;">
-                    <p class="mb-4">Vitacure olarak amacımız, yoğun yaşam temposunda herkesin günlük ihtiyaç duyduğu vitamin, mineral ve besin desteklerine en güvenilir ve hızlı şekilde ulaşmasını sağlamaktır. Uzmanlık ve inovasyonu bir araya getirerek, sadece ürün satışı değil, aynı zamanda tamamen size özel kişiselleştirilmiş bir sağlık rutini sunmayı hedefliyoruz.</p>
-                    <p class="mb-5">Her bir ürünümüz, en yüksek kalite standartlarına uygun olarak üretilmiş ve özenle formüle edilmiştir. Bizim için sağlık, sadece hastalık anında değil hayatın her anında önemsenmesi gereken bir bütündür. Bu vizyonla doğanın gücü ile bilimin ışığını harmanlayarak yepyeni bir dünya sunuyoruz.</p>
-                
-                
-                <h3 style="font-size: 2.2rem; font-weight: 700; color: #1e5e78; margin-bottom: 1.5rem;">
-                        <i class="fa-solid fa-wand-magic-sparkles me-2" style="color: #FADB5F;"></i> Vitacure AI ile Geleceğin Sağlık Asistanı
-                </h3>
-                    <p class="mb-0"><strong>Vitacure AI</strong>, sizin için en doğru takviyeleri belirlemek üzere geliştirilmiş yapay zeka destekli akıllı bir algoritmadır. Profilinizi, hedeflerinizi ve özel ihtiyaçlarınızı saniyeler içinde analiz ederek en uygun ürünleri eşleştirir. Ayrıca sistemimizi kullandıkça ve alışveriş yaptıkça biriken özel <strong>Vitacure Puanlarıyla</strong> ekstra fırsatlar elde etmenizi sağlar. Kullanıcılarımıza sunduğumuz <strong>ücretsiz deneme imkanıyla</strong> sağlık yolculuğunuzu kişiselleştirmek ve yenilikçi teknolojinin keyfini çıkarmak artık bir tık uzağınızda!</p>
-                
-                    <a href="#vitacure-ai" class="btn mt-5" style="background-color: #1e5e78; font-weight: 700; color: white; padding: 0.8rem 2.5rem; border-radius: 50px; box-shadow: 0 4px 15px rgba(30, 94, 120, 0.3); font-size: 1.1rem; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(30, 94, 120, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(30, 94, 120, 0.3)';">AI Asistanı Ücretsiz Dene <i class="fa-solid fa-arrow-right ms-2"></i></a>
-            </div>
-        </div>
-    </div>
-
-
-
 </div>
 
 
@@ -1984,42 +2046,118 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.pc-heart-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const icon = this.querySelector('i');
-                    this.classList.toggle('active');
-                    if (this.classList.contains('active')) {
-                        icon.classList.remove('fa-regular');
-                        icon.classList.add('fa-solid');
-                    } else {
-                        icon.classList.remove('fa-solid');
-                        icon.classList.add('fa-regular');
+            function normalizeProductId(value) {
+                return (value || '')
+                    .toString()
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+            }
+
+            function getActiveCoverflowProduct() {
+                return uykuCoverflowProducts[uykuCoverflowOrder[3]] || null;
+            }
+
+            function getProductFavoriteId(button) {
+                if (!button) {
+                    return null;
+                }
+
+                if (button.classList.contains('coverflow-heart-btn')) {
+                    const activeProduct = getActiveCoverflowProduct();
+                    return activeProduct ? activeProduct.id : null;
+                }
+
+                const card = button.closest('.product-glass-card');
+                if (!card) {
+                    return null;
+                }
+
+                let productId = button.dataset.productId || card.dataset.productId;
+                if (!productId) {
+                    const titleEl = card.querySelector('.product-glass-title');
+                    const imageEl = card.querySelector('img');
+                    productId = normalizeProductId(titleEl ? titleEl.textContent : (imageEl ? imageEl.alt : ''));
+                }
+
+                if (productId) {
+                    button.dataset.productId = productId;
+                    card.dataset.productId = productId;
+                }
+
+                return productId;
+            }
+
+            function syncGridHeartButtons(productId) {
+                if (!productId) {
+                    return;
+                }
+
+                document.querySelectorAll('.pc-heart-btn').forEach(function (button) {
+                    const buttonProductId = getProductFavoriteId(button);
+                    if (buttonProductId !== productId) {
+                        return;
+                    }
+
+                    const icon = button.querySelector('i');
+                    const isFavorite = favoriteProductIds.has(productId);
+                    button.classList.toggle('active', isFavorite);
+                    button.setAttribute('aria-label', isFavorite ? 'Favorilerde' : 'Favorilere ekle');
+                    button.setAttribute('title', isFavorite ? 'Favorilerde' : 'Favorilere Ekle');
+
+                    if (icon) {
+                        icon.classList.toggle('fa-solid', isFavorite);
+                        icon.classList.toggle('fa-regular', !isFavorite);
                     }
                 });
+            }
+
+            document.querySelectorAll('.pc-heart-btn').forEach(function (button) {
+                const productId = getProductFavoriteId(button);
+                syncGridHeartButtons(productId);
             });
-            document.querySelectorAll('.pc-add-btn').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
+
+            document.addEventListener('click', function(e) {
+                const heartButton = e.target.closest('.pc-heart-btn, .coverflow-heart-btn');
+                if (heartButton) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
-                    if (this.classList.contains('processing')) return;
-                    
-                    const originalHTML = this.innerHTML;
-                    this.classList.add('processing');
-                    this.style.width = this.offsetWidth + 'px'; // Genişliği sabitle ki yazı değişince zıplamasın
-                    
-                    this.innerHTML = '<i class="fa-solid fa-check"></i> Eklendi';
-                    this.style.background = "#10b981"; // Geçici yeşil renk
-                    
+
+                    const productId = getProductFavoriteId(heartButton);
+                    if (!productId) {
+                        return;
+                    }
+
+                    if (favoriteProductIds.has(productId)) {
+                        favoriteProductIds.delete(productId);
+                    } else {
+                        favoriteProductIds.add(productId);
+                    }
+
+                    syncGridHeartButtons(productId);
+                    applyUykuVShape();
+                    return;
+                }
+                const addButton = e.target.closest('.pc-add-btn, #uykuCoverflowProductBtn');
+                if (addButton) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (addButton.classList.contains('processing')) return;
+                    const originalHTML = addButton.innerHTML;
+                    addButton.classList.add('processing');
+                    addButton.classList.add('added');
+                    addButton.style.width = addButton.offsetWidth + 'px';
+                    addButton.innerHTML = '<i class="fa-solid fa-check"></i> Eklendi';
+                    addButton.style.background = '#10b981';
                     setTimeout(() => {
-                        this.innerHTML = originalHTML;
-                        this.style.background = ""; // Orijinal CSS rengine dön
-                        this.classList.remove('processing');
-                        this.style.width = "";
+                        addButton.innerHTML = originalHTML;
+                        addButton.classList.remove('processing');
+                        addButton.classList.remove('added');
+                        addButton.style.background = '';
+                        addButton.style.width = '';
                     }, 1500);
-                });
+                }
             });
 
             const chatInput = document.getElementById('chatInput');
@@ -2132,7 +2270,7 @@
                         fileDiv.className = 'ag-file-item';
                         
                         let iconClass = file.type.startsWith('image/') ? 'fa-regular fa-image' : 'fa-solid fa-file-pdf';
-                        let iconColor = file.type.startsWith('image/') ? '#4285f4' : '#ff4d4f'; // Resimler için Mavi, Belgeler için Kırmızı ton
+                        let iconColor = file.type.startsWith('image/') ? '#4285f4' : '#ff4d4f'; // Resimler i�in Mavi, Belgeler i�in Kirmizi ton
                         
                         fileDiv.innerHTML = `
                             <i class="${iconClass}" style="color: ${iconColor}"></i> 
@@ -2224,12 +2362,42 @@
             });
 
             const placeholderCategories = [
-                ["Son zamanlarda uykum çok düzensiz, ne yapabilirim?", "Gece sık sık uyanıyorum, öneriniz var mı?", "Daha kaliteli uyumak için ne kullanmalıyım?", "Sabah yorgun kalkıyorum, sebebi ne olabilir?"],
-                ["Gün içinde çok halsiz hissediyorum, ne önerirsin?", "Enerjimi artırmak için hangi vitaminleri almalıyım?", "Yorgunluk için iyi gelen takviyeler neler?", "Bağışıklık ve enerji için ne kullanabilirim?"],
-                ["Odaklanmakta zorlanıyorum, ne yapmalıyım?", "Hafızamı güçlendirmek için ne önerirsin?", "Ders çalışırken dikkatim dağılıyor, çözüm var mı?", "Beyin performansımı artırmak istiyorum"],
-                ["Bağışıklığımı güçlendirmek istiyorum, ne önerirsin?", "Sık hasta oluyorum, nasıl korunabilirim?", "Gripten korunmak için ne kullanmalıyım?", "Genel sağlık için hangi takviyeler iyi?"],
-                ["Eklem ağrılarım var, ne önerirsin?", "Kemik sağlığımı korumak için ne yapmalıyım?", "Spor yapıyorum, kaslarım için destek önerir misin?", "Bel ve diz ağrılarım için çözüm var mı?"],
-                ["Kilo vermek istiyorum, nereden başlamalıyım?", "Yağ yakımını hızlandırmak için ne önerirsin?", "Diyet yapıyorum ama sonuç alamıyorum", "İştahımı kontrol etmek için ne kullanabilirim?"]
+                [
+                    "Son zamanlarda uykum \u00e7ok d\u00fczensiz, ne yapabilirim?",
+                    "Gece s\u0131k s\u0131k uyan\u0131yorum, \u00f6neriniz var m\u0131?",
+                    "Daha kaliteli uyumak i\u00e7in ne kullanmal\u0131y\u0131m?",
+                    "Sabah yorgun kalk\u0131yorum, sebebi ne olabilir?"
+                ],
+                [
+                    "G\u00fcn i\u00e7inde \u00e7ok halsiz hissediyorum, ne \u00f6nerirsin?",
+                    "Enerjimi art\u0131rmak i\u00e7in hangi vitaminleri almal\u0131y\u0131m?",
+                    "Yorgunluk i\u00e7in iyi gelen takviyeler neler?",
+                    "Ba\u011f\u0131\u015f\u0131kl\u0131k ve enerji i\u00e7in ne kullanabilirim?"
+                ],
+                [
+                    "Odaklanmakta zorlan\u0131yorum, ne yapmal\u0131y\u0131m?",
+                    "Haf\u0131zam\u0131 g\u00fc\u00e7lendirmek i\u00e7in ne \u00f6nerirsin?",
+                    "Ders \u00e7al\u0131\u015f\u0131rken dikkatim da\u011f\u0131l\u0131yor, \u00e7\u00f6z\u00fcm var m\u0131?",
+                    "Beyin performans\u0131m\u0131 art\u0131rmak istiyorum"
+                ],
+                [
+                    "Ba\u011f\u0131\u015f\u0131kl\u0131\u011f\u0131m\u0131 g\u00fc\u00e7lendirmek istiyorum, ne \u00f6nerirsin?",
+                    "S\u0131k hasta oluyorum, nas\u0131l korunabilirim?",
+                    "Gripten korunmak i\u00e7in ne kullanmal\u0131y\u0131m?",
+                    "Genel sa\u011fl\u0131k i\u00e7in hangi takviyeler iyi?"
+                ],
+                [
+                    "Eklem a\u011fr\u0131lar\u0131m var, ne \u00f6nerirsin?",
+                    "Kemik sa\u011fl\u0131\u011f\u0131m\u0131 korumak i\u00e7in ne yapmal\u0131y\u0131m?",
+                    "Spor yap\u0131yorum, kaslar\u0131m i\u00e7in destek \u00f6nerir misin?",
+                    "Bel ve diz a\u011fr\u0131lar\u0131m i\u00e7in \u00e7\u00f6z\u00fcm var m\u0131?"
+                ],
+                [
+                    "Kilo vermek istiyorum, nereden ba\u015flamal\u0131y\u0131m?",
+                    "Ya\u011f yak\u0131m\u0131n\u0131 h\u0131zland\u0131rmak i\u00e7in ne \u00f6nerirsin?",
+                    "Diyet yap\u0131yorum ama sonu\u00e7 alam\u0131yorum",
+                    "\u0130\u015ftah\u0131m\u0131 kontrol etmek i\u00e7in ne kullanabilirim?"
+                ]
             ];
             
             let currentCatIdx = 0;
