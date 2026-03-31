@@ -5,6 +5,38 @@
       "PackagePath": "staticwebassets\\vitacure.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\banner-card.css",
+      "PackagePath": "staticwebassets\\css\\components\\banner-card.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\category-pill.css",
+      "PackagePath": "staticwebassets\\css\\components\\category-pill.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\chat-widget.css",
+      "PackagePath": "staticwebassets\\css\\components\\chat-widget.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\filter-sidebar.css",
+      "PackagePath": "staticwebassets\\css\\components\\filter-sidebar.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\product-card.css",
+      "PackagePath": "staticwebassets\\css\\components\\product-card.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\components\\section-header.css",
+      "PackagePath": "staticwebassets\\css\\components\\section-header.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\pages\\category.css",
+      "PackagePath": "staticwebassets\\css\\pages\\category.css"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\pages\\home.css",
+      "PackagePath": "staticwebassets\\css\\pages\\home.css"
+    },
+    {
       "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
@@ -91,6 +123,26 @@
     {
       "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\img\\logo.png",
       "PackagePath": "staticwebassets\\img\\logo.png"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\components\\chat-widget.js",
+      "PackagePath": "staticwebassets\\js\\components\\chat-widget.js"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\components\\filter-sidebar.js",
+      "PackagePath": "staticwebassets\\js\\components\\filter-sidebar.js"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\components\\product-card.js",
+      "PackagePath": "staticwebassets\\js\\components\\product-card.js"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\pages\\category.js",
+      "PackagePath": "staticwebassets\\js\\pages\\category.js"
+    },
+    {
+      "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\pages\\home.js",
+      "PackagePath": "staticwebassets\\js\\pages\\home.js"
     },
     {
       "Id": "C:\\Users\\vedat\\Documents\\GitHub\\vitacure\\wwwroot\\js\\site.js",

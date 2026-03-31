@@ -1,0 +1,87 @@
+@model ChatWidgetViewModel
+
+@{
+    var promptsJson = System.Text.Json.JsonSerializer.Serialize(Model.PromptPoolByCategory);
+    var categoriesJson = System.Text.Json.JsonSerializer.Serialize(Model.Categories.Select(x => new { x.Slug, Name = x.DisplayName }));
+}
+
+<div class="ag-chat-widget"
+     data-chat-widget
+     data-variant="@Model.Variant"
+     data-category-slug="@Model.CategorySlug"
+     data-category-name="@Model.CategoryName"
+     data-main-placeholder="@Model.MainPlaceholder"
+     data-search-placeholder="@Model.SearchPlaceholder"
+     data-search-placeholder-locked="@Model.SearchPlaceholderLocked"
+     data-prompts='@Html.Raw(promptsJson)'
+     data-categories='@Html.Raw(categoriesJson)'>
+
+    @if (Model.Variant == "home")
+    {
+        <h1 class="ag-title hero-element">@Model.HeroTitle</h1>
+        <h2 class="ag-subtitle hero-element">@Model.HeroSubtitle</h2>
+    }
+
+    <div class="ag-chat-panel" data-chat-panel>
+        <div class="ag-chat-header">
+            <a href="/" data-chat-back><i class="fa-solid fa-chevron-left"></i> @Model.CompactBackLabel</a>
+            <span class="cat-name" data-chat-active-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.CompactCategoryLabel : Model.CategoryName)</span>
+        </div>
+
+        @if (Model.Variant == "home")
+        {
+            <div class="ag-top-categories hero-element">
+                @foreach (var category in Model.Categories)
+                {
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_CategoryPill.cshtml", category)
+                }
+            </div>
+        }
+
+        <div class="ag-file-list" data-chat-files></div>
+
+        <div class="ag-chat-top">
+            <div class="ag-search-filter hidden" data-chat-search-filter>
+                <span data-chat-search-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.SearchFilterLabel : Model.CategoryName)</span>
+                <button class="ag-search-filter-close" data-chat-clear-filter><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <textarea class="ag-chat-input"
+                      data-chat-input
+                      placeholder="@Model.MainPlaceholder"
+                      rows="1"
+                      autofocus></textarea>
+            <button class="btn-fullscreen" data-chat-fullscreen title="@Model.FullscreenTitle"><i class="fa-solid fa-expand"></i></button>
+        </div>
+
+        <div class="ag-chat-bottom">
+            <div class="ag-chat-actions-left">
+                <button class="ag-btn-add" data-chat-add title="@Model.AddFileTitle"><i class="fa-solid fa-plus"></i></button>
+
+                <div class="ag-mode-toggles">
+                    <button class="ag-mode-btn active" data-chat-mode="chat">
+                        <i class="fa-regular fa-comment-dots"></i> @Model.ChatModeLabel
+                    </button>
+                    <button class="ag-mode-btn" data-chat-mode="search">
+                        <i class="fa-solid fa-magnifying-glass"></i> @Model.SearchModeLabel
+                    </button>
+                </div>
+
+                <div class="ag-add-file-menu" data-chat-file-menu>
+                    <div class="ag-add-menu-item" data-chat-file-trigger="document">
+                        <i class="fa-solid fa-paperclip"></i> @Model.FileMenuDocumentLabel
+                    </div>
+                    <div class="ag-add-menu-item" data-chat-file-trigger="image">
+                        <i class="fa-regular fa-image"></i> @Model.FileMenuImageLabel
+                    </div>
+                </div>
+            </div>
+
+            <div class="ag-chat-actions-right">
+                <button class="ag-btn-send" data-chat-send><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" data-chat-file-input="document" multiple hidden accept=".pdf,.doc,.docx,.txt" />
+    <input type="file" data-chat-file-input="image" multiple hidden accept="image/*" />
+</div>

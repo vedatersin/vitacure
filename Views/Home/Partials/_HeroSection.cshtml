@@ -1,0 +1,7 @@
+@model HomeViewModel
+
+<div class="hero-gradient-wrapper position-relative" id="kategoriler">
+    <div class="ag-hero">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
+    </div>
+</div>

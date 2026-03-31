@@ -1,0 +1,27 @@
+@model HomeViewModel
+
+<div id="populer-takviyeler" class="popular-supplements-section">
+    <div class="container section-container">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel { Title = Model.SectionTitles["popular"] })
+        <div class="row align-items-stretch g-3">
+            <div class="col-lg-8">
+                <div class="row g-3 h-100">
+                    @foreach (var supplement in Model.PopularSupplements)
+                    {
+                        <div class="col-lg-4 col-md-4 col-6">
+                            @await Html.PartialAsync("~/Views/Shared/Partials/_BannerCard.cshtml", supplement)
+                        </div>
+                    }
+                </div>
+            </div>
+            @if (Model.FeaturedBanner is not null)
+            {
+                <div class="col-lg-4 text-center" id="vitacure-ai">
+                    <a href="@Model.FeaturedBanner.TargetUrl" class="hero-banner-link">
+                        <img src="@Model.FeaturedBanner.ImageUrl" alt="@Model.FeaturedBanner.AltText" class="hero-banner-image" />
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

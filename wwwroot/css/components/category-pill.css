@@ -1,0 +1,48 @@
+.ag-category-pill {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 10px 15px;
+    border-radius: 20px;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    margin-top: 25px;
+}
+
+.ag-category-pill:hover {
+    background: rgba(255, 255, 255, 0.26);
+    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.18);
+    transform: translateY(-5px);
+    color: #fff;
+}
+
+.ag-category-pill i {
+    font-size: 3.1rem;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ag-category-pill span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.bg-uyku i { color: #1e3a8a; }
+.bg-multi i { color: #fba91c; }
+.bg-zihin i { color: #d67aff; }
+.bg-koruma i { color: #0f766e; }
+.bg-kas i { color: #ff5e79; }
+.bg-zayiflama i { color: #f59e0b; }

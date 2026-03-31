@@ -1,0 +1,25 @@
+@model ProductCardViewModel
+
+<a href="@Model.Href" class="product-glass-card h-100">
+    <div class="product-glass-img-wrap">
+        <img src="@Model.ImageUrl" alt="@Model.Name">
+        <button class="pc-heart-btn" title="@Model.FavoriteTitle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
+    </div>
+    <div class="product-glass-body">
+        <h3 class="product-glass-title">@Model.Name</h3>
+        <div class="pc-stars-row">
+            <div class="pc-stars-wrapper">
+                <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="pc-stars-filled" style="width: @Model.RatingWidth;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            </div>
+            <span class="score">(@Model.Rating)</span>
+        </div>
+        <div class="pc-prices">
+            <span class="pc-price-new">&#8378; @Model.Price</span>
+            <span class="pc-price-old">&#8378; @Model.OldPrice</span>
+        </div>
+        <div class="pc-add-btn-row">
+            <button class="pc-add-btn" onclick="event.preventDefault()"><i class="fa-solid fa-cart-shopping"></i> @Model.AddToCartLabel</button>
+        </div>
+    </div>
+</a>

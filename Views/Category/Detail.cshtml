@@ -1,0 +1,129 @@
+@model CategoryViewModel
+
+@{
+    var coverflowJson = System.Text.Json.JsonSerializer.Serialize(Model.CoverflowProducts.Select(product => new
+    {
+        product.Id,
+        Src = product.ImageUrl,
+        Alt = product.Name,
+        product.Name,
+        product.Description,
+        product.Rating,
+        PriceNew = $"₺{product.Price}",
+        PriceOld = $"₺{product.OldPrice}"
+    }));
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/components/chat-widget.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/product-card.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/filter-sidebar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/banner-card.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/section-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/category.css" asp-append-version="true" />
+}
+
+<div class="category-page @Model.Category.BackgroundClass" data-category-page data-category-slug="@Model.Category.Slug">
+    <div class="category-main-banner">
+        <img src="@Model.HeroBanner.ImageUrl" alt="@Model.HeroBanner.AltText" class="category-main-banner-image" />
+        <div class="category-main-banner-overlay" style="background:@Model.Category.BackgroundOverlay;"></div>
+
+        <div class="container h-100 position-relative section-container category-hero-container">
+            @await Html.PartialAsync("~/Views/Shared/Partials/_Breadcrumb.cshtml", Model.Breadcrumbs)
+            <div class="row align-items-stretch category-hero-row">
+                <div class="col-12 col-xl-5 pe-xl-4 d-flex flex-column justify-content-center category-copy-column">
+                    <div class="category-copy-block">
+                        <h1 class="category-title-heading">@Model.Category.Name</h1>
+                        <p class="category-description">@Html.Raw(Model.Category.DescriptionHtml)</p>
+                        <div class="uyku-tag-cloud">
+                            @foreach (var tag in Model.Category.Tags)
+                            {
+                                <button type="button" class="uyku-tag-btn @(tag == Model.Category.Tags.First() ? "active" : string.Empty)">
+                                    @tag
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-7 position-relative mt-5 mt-xl-0 d-flex flex-column align-items-center justify-content-center category-widget-column">
+                    <div class="category-widget-frame">
+                        @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
+                    </div>
+
+                    <div class="category-coverflow-shell" data-coverflow data-products='@Html.Raw(coverflowJson)'>
+                        <div class="category-coverflow-nav prev" data-coverflow-prev><i class="fa-solid fa-chevron-left"></i></div>
+                        <div class="category-coverflow-nav next" data-coverflow-next><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="category-coverflow-stage" data-coverflow-stage></div>
+                        <div class="category-coverflow-info">
+                            <div class="category-coverflow-card">
+                                <button class="coverflow-heart-btn" type="button" title="Favorilere Ekle" aria-label="Favorilere ekle" data-coverflow-heart>
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                                <div class="category-coverflow-copy">
+                                    <div class="category-coverflow-name" data-coverflow-name></div>
+                                    <div class="category-coverflow-description" data-coverflow-description></div>
+                                    <div class="category-coverflow-rating">
+                                        <span class="category-coverflow-stars" data-coverflow-stars></span>
+                                        <span class="category-coverflow-rating-value" data-coverflow-rating></span>
+                                    </div>
+                                    <div class="category-coverflow-footer">
+                                        <div class="category-coverflow-price">
+                                            <span class="category-coverflow-price-old" data-coverflow-old-price></span>
+                                            <span class="category-coverflow-price-new" data-coverflow-new-price></span>
+                                        </div>
+                                        <div class="coverflow-action-row">
+                                            <button class="coverflow-action-btn secondary" type="button"><i class="fa-solid fa-magnifying-glass"></i> Ürünü İncele</button>
+                                            <button class="coverflow-action-btn primary" type="button"><i class="fa-solid fa-cart-shopping"></i> Sepete Ekle</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-products-section">
+        <div class="container section-container">
+            <div class="row">
+                <div class="col-lg-2 col-md-3">
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_FilterSidebar.cshtml", Model.Filters)
+                </div>
+
+                <div class="col-lg-10 col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="text-muted category-result-label">@Model.ResultLabel</span>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-2 category-sort-label">@Model.SortLabel</span>
+                            <select class="form-select form-select-sm border-0 bg-transparent text-dark shadow-none category-sort-select">
+                                @foreach (var option in Model.SortOptions)
+                                {
+                                    <option>@option</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        @foreach (var product in Model.ProductGrid)
+                        {
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+                                @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/components/chat-widget.js" asp-append-version="true"></script>
+    <script src="~/js/components/product-card.js" asp-append-version="true"></script>
+    <script src="~/js/components/filter-sidebar.js" asp-append-version="true"></script>
+    <script src="~/js/pages/category.js" asp-append-version="true"></script>
+}

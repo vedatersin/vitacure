@@ -1,0 +1,9 @@
+@model SectionHeaderViewModel
+
+<div class="d-flex justify-content-between align-items-center section-header">
+    <h2 class="featured-title mb-0">@Model.Title</h2>
+    @if (!string.IsNullOrWhiteSpace(Model.ActionLabel) && !string.IsNullOrWhiteSpace(Model.ActionUrl))
+    {
+        <a href="@Model.ActionUrl" class="btn-tum-urunler">@Model.ActionLabel <i class="fa-solid fa-arrow-right fa-sm"></i></a>
+    }
+</div>

@@ -1,0 +1,19 @@
+@model CategorySummaryViewModel
+
+@{
+    var pillLabel = Model.Slug switch
+    {
+        "uyku-sagligi" => "Uyku<br/>Sağlığı",
+        "multivitamin-enerji" => "Multivitamin<br/>& Enerji",
+        "zihin-hafiza-guclendirme" => "Zihin & Hafıza<br/>Güçlendirme",
+        "hastaliklara-karsi-koruma" => "Hastalıklara<br/>Karşı Koruma",
+        "kas-ve-iskelet-sagligi" => "Kas ve İskelet<br/>Sağlığı",
+        "zayiflama-destegi" => "Zayıflama<br/>Desteği",
+        _ => Model.Name
+    };
+}
+
+<a href="/@Model.Slug" class="ag-category-pill @Model.PillCssClass" data-category-pill data-category-slug="@Model.Slug" data-category-name="@Model.DisplayName">
+    <i class="@Model.IconClass"></i>
+    <span>@Html.Raw(pillLabel)</span>
+</a>

@@ -1,0 +1,20 @@
+@model HomeViewModel
+
+<div id="firsat-urunleri" class="firsat-wrapper">
+    <div class="container section-container">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel
+        {
+            Title = Model.SectionTitles["deals"],
+            ActionLabel = "Tümünü Gör",
+            ActionUrl = "#tum-urunler"
+        })
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 pb-5">
+            @foreach (var product in Model.OpportunityProducts)
+            {
+                <div class="col">
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                </div>
+            }
+        </div>
+    </div>
+</div>

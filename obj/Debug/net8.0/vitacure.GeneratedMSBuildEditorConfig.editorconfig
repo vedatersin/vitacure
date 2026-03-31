@@ -18,8 +18,32 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\vedat\Documents\GitHub\vitacure
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Category/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2F0ZWdvcnlcRGV0YWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Partials/_Campaigns.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXJ0aWFsc1xfQ2FtcGFpZ25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Partials/_FeaturedProducts.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXJ0aWFsc1xfRmVhdHVyZWRQcm9kdWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Partials/_HeroSection.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXJ0aWFsc1xfSGVyb1NlY3Rpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Partials/_OpportunityProducts.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXJ0aWFsc1xfT3Bwb3J0dW5pdHlQcm9kdWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Partials/_PopularSupplements.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQYXJ0aWFsc1xfUG9wdWxhclN1cHBsZW1lbnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/vedat/Documents/GitHub/vitacure/Views/Home/Privacy.cshtml]
@@ -28,6 +52,34 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_BannerCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9CYW5uZXJDYXJkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_Breadcrumb.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9CcmVhZGNydW1iLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_CategoryPill.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9DYXRlZ29yeVBpbGwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_ChatWidget.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9DaGF0V2lkZ2V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_FilterSidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9GaWx0ZXJTaWRlYmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_ProductCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9Qcm9kdWN0Q2FyZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/Partials/_SectionHeader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFBhcnRpYWxzXF9TZWN0aW9uSGVhZGVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/vedat/Documents/GitHub/vitacure/Views/Shared/_ValidationScriptsPartial.cshtml]

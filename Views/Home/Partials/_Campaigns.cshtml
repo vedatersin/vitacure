@@ -1,0 +1,15 @@
+@model HomeViewModel
+
+<div id="markalar" class="brands-wrapper">
+    <div class="container section-container">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel { Title = Model.SectionTitles["campaigns"] })
+        <div class="row g-4">
+            @foreach (var banner in Model.CampaignBanners)
+            {
+                <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_BannerCard.cshtml", banner)
+                </div>
+            }
+        </div>
+    </div>
+</div>

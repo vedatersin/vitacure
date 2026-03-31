@@ -1,0 +1,17 @@
+@model IReadOnlyList<BreadcrumbItemViewModel>
+
+<nav aria-label="breadcrumb" class="category-breadcrumb">
+    <ol class="breadcrumb mb-0">
+        @foreach (var item in Model)
+        {
+            if (item.IsActive)
+            {
+                <li class="breadcrumb-item active" aria-current="page">@item.Label</li>
+            }
+            else
+            {
+                <li class="breadcrumb-item"><a href="@item.Url">@item.Label</a></li>
+            }
+        }
+    </ol>
+</nav>

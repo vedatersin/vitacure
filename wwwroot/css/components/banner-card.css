@@ -1,0 +1,56 @@
+.banner-card {
+    display: block;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    min-height: 120px;
+    text-decoration: none;
+}
+
+.banner-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.banner-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.popular-supplement-title {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-weight: 700;
+    font-size: 1.65rem;
+    line-height: 1.1;
+    max-width: 65%;
+    opacity: 0.9;
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.hero-banner-link {
+    display: block;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.hero-banner-link:hover {
+    transform: scale(1.02);
+}
+
+.hero-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}

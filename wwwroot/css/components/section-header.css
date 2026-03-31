@@ -1,0 +1,17 @@
+.section-header {
+    margin-bottom: 30px;
+}
+
+.featured-title {
+    font-weight: 800;
+    color: #14213d;
+}
+
+.btn-tum-urunler {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #0f4c61;
+    text-decoration: none;
+    font-weight: 700;
+}

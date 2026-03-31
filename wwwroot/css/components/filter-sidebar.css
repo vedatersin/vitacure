@@ -1,0 +1,9 @@
+.filter-clear-link,
+.filter-group-title,
+.filter-option-label {
+    font-size: 0.85rem;
+}
+
+.filter-group-icon {
+    font-size: 0.7rem;
+}

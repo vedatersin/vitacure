@@ -1,0 +1,24 @@
+@model HomeViewModel
+
+<div class="featured-wrapper" id="tum-urunler">
+    <div class="featured-section">
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel
+        {
+            Title = Model.SectionTitles["featured"],
+            ActionLabel = "Tümünü Gör",
+            ActionUrl = "#tum-urunler"
+        })
+        <div class="swiper featured-swiper pb-5">
+            <div class="swiper-wrapper">
+                @foreach (var product in Model.FeaturedProducts)
+                {
+                    <div class="swiper-slide">
+                        @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="swiper-button-prev featured-nav-btn"></div>
+        <div class="swiper-button-next featured-nav-btn"></div>
+    </div>
+</div>
