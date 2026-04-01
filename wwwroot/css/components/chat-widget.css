@@ -4,11 +4,82 @@
 }
 
 .hero-gradient-wrapper {
-    background: radial-gradient(circle at top center, #5abcb5 0%, #2f94b5 50%, #17546e 100%);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 22%, rgba(250, 219, 95, 0.16), rgba(250, 219, 95, 0) 28%),
+        radial-gradient(circle at 82% 18%, rgba(145, 234, 228, 0.22), rgba(145, 234, 228, 0) 26%),
+        linear-gradient(130deg, #0f6481 0%, #1582a1 26%, #37aebc 52%, #0c5d79 78%, #0f6481 100%);
+    background-size: 140% 140%;
+    animation: heroGradientFlow 6.6s ease-in-out infinite alternate;
+}
+
+.hero-surface {
+    position: absolute;
+    inset: -8%;
+    pointer-events: none;
+}
+
+.hero-surface--base {
+    background:
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 24%),
+        radial-gradient(circle at 64% 34%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 18%),
+        linear-gradient(115deg, rgba(7, 33, 52, 0.22), rgba(255, 255, 255, 0.02) 36%, rgba(4, 40, 61, 0.16) 100%);
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    animation: heroBasePulse 5.4s ease-in-out infinite;
+}
+
+.hero-surface--grid {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.08));
+    opacity: 0.12;
+    transform: perspective(900px) rotateX(66deg) translateY(-10%);
+    transform-origin: center top;
+    animation: heroGridDrift 8.4s linear infinite;
+}
+
+.hero-surface--glow {
+    border-radius: 999px;
+    filter: blur(12px);
+    opacity: 0.8;
+    will-change: transform;
+}
+
+.hero-surface--glow-a {
+    top: 6%;
+    left: -4%;
+    width: 26rem;
+    height: 26rem;
+    background: radial-gradient(circle, rgba(123, 132, 209, 0.34) 0%, rgba(123, 132, 209, 0) 72%);
+    animation: heroFloatA 6s ease-in-out infinite;
+}
+
+.hero-surface--glow-b {
+    top: 12%;
+    right: 10%;
+    width: 22rem;
+    height: 22rem;
+    background: radial-gradient(circle, rgba(145, 234, 228, 0.3) 0%, rgba(145, 234, 228, 0) 72%);
+    animation: heroFloatB 7.2s ease-in-out infinite;
+}
+
+.hero-surface--glow-c {
+    right: -3%;
+    bottom: -14%;
+    width: 30rem;
+    height: 30rem;
+    background: radial-gradient(circle, rgba(247, 140, 107, 0.18) 0%, rgba(247, 140, 107, 0) 74%);
+    animation: heroFloatC 7.8s ease-in-out infinite;
 }
 
 .ag-hero {
     position: relative;
+    z-index: 1;
     width: 100%;
     min-height: 650px;
     max-height: 850px;
@@ -18,6 +89,68 @@
     justify-content: center;
     align-items: center;
     padding: 120px 0 80px;
+}
+
+@keyframes heroGradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+@keyframes heroBasePulse {
+    0%, 100% {
+        transform: scale(1) translate3d(0, 0, 0);
+        opacity: 0.82;
+    }
+
+    50% {
+        transform: scale(1.04) translate3d(0, -10px, 0);
+        opacity: 0.96;
+    }
+}
+
+@keyframes heroGridDrift {
+    0%, 100% {
+        transform: perspective(900px) rotateX(66deg) translateY(-10%) translateX(0);
+    }
+
+    50% {
+        transform: perspective(900px) rotateX(66deg) translateY(-8%) translateX(-18px);
+    }
+}
+
+@keyframes heroFloatA {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(26px, 18px, 0) scale(1.08);
+    }
+}
+
+@keyframes heroFloatB {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(-20px, 24px, 0) scale(1.06);
+    }
+}
+
+@keyframes heroFloatC {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(-28px, -14px, 0) scale(1.05);
+    }
 }
 
 .ag-title {
@@ -393,6 +526,17 @@
 }
 
 @media (max-width: 991px) {
+    .hero-surface--grid {
+        background-size: 48px 48px;
+        opacity: 0.14;
+    }
+
+    .hero-surface--glow-a,
+    .hero-surface--glow-b,
+    .hero-surface--glow-c {
+        filter: blur(16px);
+    }
+
     .ag-title {
         font-size: 2.8rem;
     }
@@ -432,5 +576,21 @@
 
     .ag-chat-actions-right {
         margin-right: 5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-gradient-wrapper,
+    .hero-surface--base,
+    .hero-surface--grid,
+    .hero-surface--glow-a,
+    .hero-surface--glow-b,
+    .hero-surface--glow-c {
+        animation: none;
+    }
+
+    .hero-surface--grid,
+    .hero-surface--glow {
+        transform: none !important;
     }
 }

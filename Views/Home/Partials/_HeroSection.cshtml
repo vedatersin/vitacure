@@ -1,6 +1,11 @@
 @model HomeViewModel
 
-<div class="hero-gradient-wrapper position-relative" id="kategoriler">
+<div class="hero-gradient-wrapper position-relative" id="kategoriler" data-hero-surface>
+    <div class="hero-surface hero-surface--base" aria-hidden="true"></div>
+    <div class="hero-surface hero-surface--grid" aria-hidden="true"></div>
+    <div class="hero-surface hero-surface--glow hero-surface--glow-a" aria-hidden="true"></div>
+    <div class="hero-surface hero-surface--glow hero-surface--glow-b" aria-hidden="true"></div>
+    <div class="hero-surface hero-surface--glow hero-surface--glow-c" aria-hidden="true"></div>
     <div class="ag-hero">
         @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
     </div>
