@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bd435c9eef9b37ddf387435aa1f8fabd1a8d872e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1b6c162c71e37ec8c84f3384e78fc7cf0067c75f")]
 [assembly: System.Reflection.AssemblyProductAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("vitacure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

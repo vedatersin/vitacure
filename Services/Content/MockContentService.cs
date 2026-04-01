@@ -182,6 +182,8 @@ public class MockContentService : IMockContentService
         return new ChatWidgetViewModel
         {
             Variant = variant,
+            HeaderTitle = category?.DisplayName ?? string.Empty,
+            HeaderBackUrl = "/",
             HeroTitle = global.HeroTitle,
             HeroSubtitle = global.HeroSubtitle,
             CompactBackLabel = global.CompactBackLabel,

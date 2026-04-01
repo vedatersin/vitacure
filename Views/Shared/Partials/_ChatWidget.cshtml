@@ -23,10 +23,13 @@
     }
 
     <div class="ag-chat-panel" data-chat-panel>
-        <div class="ag-chat-header">
-            <a href="/" data-chat-back><i class="fa-solid fa-chevron-left"></i> @Model.CompactBackLabel</a>
-            <span class="cat-name" data-chat-active-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.CompactCategoryLabel : Model.CategoryName)</span>
-        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.HeaderTitle))
+        {
+            <div class="ag-chat-header">
+                <a href="@Model.HeaderBackUrl" data-chat-back><i class="fa-solid fa-chevron-left"></i> @Model.CompactBackLabel</a>
+                <span class="cat-name" data-chat-active-category>@Model.HeaderTitle</span>
+            </div>
+        }
 
         @if (Model.Variant == "home")
         {
@@ -45,12 +48,14 @@
                 <span data-chat-search-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.SearchFilterLabel : Model.CategoryName)</span>
                 <button class="ag-search-filter-close" data-chat-clear-filter><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <textarea class="ag-chat-input"
-                      data-chat-input
-                      placeholder="@Model.MainPlaceholder"
-                      rows="1"
-                      autofocus></textarea>
-            <button class="btn-fullscreen" data-chat-fullscreen title="@Model.FullscreenTitle"><i class="fa-solid fa-expand"></i></button>
+            <div class="ag-chat-input-wrap">
+                <textarea class="ag-chat-input"
+                          data-chat-input
+                          placeholder="@Model.MainPlaceholder"
+                          rows="1"
+                          autofocus></textarea>
+                <button class="btn-fullscreen" data-chat-fullscreen title="@Model.FullscreenTitle"><i class="fa-solid fa-expand"></i></button>
+            </div>
         </div>
 
         <div class="ag-chat-bottom">

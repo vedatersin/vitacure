@@ -3,6 +3,8 @@ namespace vitacure.Models.ViewModels;
 public class ChatWidgetViewModel
 {
     public string Variant { get; set; } = "home";
+    public string HeaderTitle { get; set; } = string.Empty;
+    public string HeaderBackUrl { get; set; } = "/";
     public string HeroTitle { get; set; } = string.Empty;
     public string HeroSubtitle { get; set; } = string.Empty;
     public string CompactBackLabel { get; set; } = string.Empty;

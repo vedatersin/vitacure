@@ -41,6 +41,12 @@
 }
 
 .ag-chat-widget {
+    --chat-mode-font-size: 1.125rem;
+    --chat-content-font-size: 1.21rem;
+    --chat-file-font-size: 0.935rem;
+    --chat-side-action-offset: 20px;
+    --chat-side-rail-width: 34px;
+    --chat-input-base-height: 84px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -64,6 +70,12 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.ag-chat-widget[data-variant="home"] .ag-chat-panel {
+    min-height: 210px;
+    height: auto;
+    padding-top: 26px;
+}
+
 .ag-chat-panel.fullscreen-mode {
     position: fixed !important;
     top: 80px !important;
@@ -82,12 +94,19 @@
     align-items: center;
     gap: 12px;
     color: rgba(255, 255, 255, 0.85);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .ag-chat-header a {
     color: inherit;
     text-decoration: none;
+}
+
+.ag-chat-header .cat-name {
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .ag-top-categories {
@@ -120,7 +139,26 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.85rem;
+    font-size: var(--chat-file-font-size);
+    color: #fff;
+}
+
+.ag-file-remove {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.78);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 4px;
+}
+
+.ag-file-remove:hover {
+    background: rgba(255, 255, 255, 0.2);
     color: #fff;
 }
 
@@ -128,8 +166,19 @@
     position: relative;
     width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 0; /* Boşluk alt panele devredildi */
+    flex: 1;
+    min-height: 0;
+}
+
+.ag-chat-input-wrap {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding-right: 48px; /* Scrollbar'ı butonların soluna it (48px boşluk) */
 }
 
 .ag-chat-input {
@@ -137,19 +186,47 @@
     background: transparent;
     border: none;
     color: rgba(226, 232, 240, 0.9);
-    font-size: 1.7rem;
+    font-size: var(--chat-content-font-size);
     font-weight: 500;
-    letter-spacing: 0.5px;
-    line-height: 1.4;
+    letter-spacing: 0.15px;
+    line-height: 1.45;
     width: 100%;
     flex-grow: 1;
     resize: none;
     outline: none;
-    padding: 2px 48px 2px 10px;
+    padding: 0 8px 0 10px; /* Wrapper zaten metni uzaklaştırıyor */
     font-family: inherit;
-    min-height: 110px;
-    max-height: 180px;
+    min-height: var(--chat-input-base-height);
+    height: var(--chat-input-base-height);
+    max-height: var(--chat-input-base-height);
     overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.ag-chat-input.has-scrollbar {
+    overflow-y: auto;
+}
+
+.ag-chat-input::-webkit-scrollbar {
+    width: 6px;
+    z-index: 10;
+}
+
+.ag-chat-input::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    margin-top: 0; /* Tam Ekran butonunun hizasından başlat */
+    margin-bottom: -45px; /* Gönder butonunun altına kadar tüm hattı kapsa */
+}
+
+.ag-chat-input::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+}
+
+.ag-chat-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.42);
 }
 
 .ag-chat-input::placeholder {
@@ -187,8 +264,8 @@
 
 .btn-fullscreen {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 0; /* Scroll ile aynı dikey eksende başla */
+    right: 0; /* Butonları pivot olarak en sağa yasla */
     color: rgba(255, 255, 255, 0.6);
     width: 35px;
     height: 35px;
@@ -196,12 +273,35 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    z-index: 15;
+}
+
+.btn-fullscreen.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .ag-chat-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: auto;
+    position: relative;
+    z-index: 5;
+    background: transparent;
+    padding-top: 10px; 
+}
+
+.ag-chat-actions-right {
+    display: flex;
+    align-items: center;
+    width: 35px;
+    justify-content: center;
+    /* absolute positioning kaldırıldı, normal flex akışına bırakıldı (simetri ve hizalama için) */
 }
 
 .ag-chat-actions-left {
@@ -243,7 +343,7 @@
     color: rgba(255, 255, 255, 0.5);
     padding: 10px 18px;
     border-radius: 25px;
-    font-size: 1.25rem;
+    font-size: var(--chat-mode-font-size);
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -287,8 +387,9 @@
 }
 
 .ag-chat-panel.search-mode-active .ag-chat-input {
-    max-height: 40px !important;
-    min-height: 40px !important;
+    min-height: var(--chat-input-base-height) !important;
+    height: var(--chat-input-base-height) !important;
+    max-height: var(--chat-input-base-height) !important;
 }
 
 @media (max-width: 991px) {
@@ -314,12 +415,22 @@
     }
 
     .ag-chat-input {
-        font-size: 1.2rem;
-        min-height: 82px;
+        font-size: 1.05rem;
+        min-height: 78px;
+        height: 78px;
+        max-height: 78px;
     }
 
     .ag-mode-btn {
-        font-size: 0.95rem;
+        font-size: 0.84rem;
         padding: 8px 12px;
+    }
+
+    .btn-fullscreen {
+        right: 16px;
+    }
+
+    .ag-chat-actions-right {
+        margin-right: 5px;
     }
 }
