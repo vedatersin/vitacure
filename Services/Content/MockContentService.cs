@@ -301,12 +301,27 @@ public class MockContentService : IMockContentService
                 Name = item.Name,
                 Title = item.Name,
                 AltText = item.Name,
-                ImageUrl = $"/img/{item.Image}",
+                ImageUrl = NormalizeImageUrl(item.Image),
                 TargetUrl = "#",
                 Gradient = gradients[index % gradients.Length],
                 TextColor = "#ffffff"
             })
             .ToList();
+    }
+
+    private static string NormalizeImageUrl(string? imagePath)
+    {
+        if (string.IsNullOrWhiteSpace(imagePath))
+        {
+            return string.Empty;
+        }
+
+        if (imagePath.StartsWith("/", StringComparison.Ordinal))
+        {
+            return imagePath;
+        }
+
+        return $"/img/{imagePath.TrimStart('/')}";
     }
 
     private static IReadOnlyList<BannerViewModel> BuildCampaignBanners(MockDataDocument data)

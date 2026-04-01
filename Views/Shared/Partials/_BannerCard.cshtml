@@ -1,6 +1,9 @@
 @model BannerViewModel
+@{
+    var cardClass = !string.IsNullOrWhiteSpace(Model.Title) ? "banner-card banner-card--supplement" : "banner-card";
+}
 
-<a href="@Model.TargetUrl" class="banner-card" style="@(string.IsNullOrWhiteSpace(Model.Gradient) ? string.Empty : $"background: {Model.Gradient};")">
+<a href="@Model.TargetUrl" class="@cardClass" style="@(string.IsNullOrWhiteSpace(Model.Gradient) ? string.Empty : $"background: {Model.Gradient};")">
     @if (!string.IsNullOrWhiteSpace(Model.Title))
     {
         <span class="popular-supplement-title" style="color:@(Model.TextColor ?? "#ffffff");">@Model.Title</span>

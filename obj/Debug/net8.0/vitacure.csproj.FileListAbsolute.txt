@@ -30,3 +30,12 @@ C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\vitacure.genruntimecon
 C:\Users\vedat\Documents\GitHub\vitacure\obj\Debug\net8.0\ref\vitacure.dll
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\docs\mock-data.json
 C:\Users\vedat\Documents\GitHub\vitacure\bin\Debug\net8.0\vitacure.exe
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\appsettings.Development.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\appsettings.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\docs\mock-data.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.staticwebassets.runtime.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.exe
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.deps.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.runtimeconfig.json
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.dll
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-build-out\vitacure.pdb
