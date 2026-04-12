@@ -1,0 +1,62 @@
+﻿@model vitacure.Models.ViewModels.Admin.TagListViewModel
+
+@{
+    ViewData["Title"] = "Etiketler";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container auth-container-wide">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Etiket Yönetimi</div>
+            <h1 class="auth-title">Etiket listesi</h1>
+            <p class="auth-subtitle">Ürün segmentasyonu ve storefront filtreleme hazırlığı için kullanılacak etiketler burada yönetilir.</p>
+
+            <div class="auth-account-grid mb-4">
+                <div class="auth-account-item">
+                    <span>Toplam Etiket</span>
+                    <strong>@Model.TotalCount</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Kullanımda</span>
+                    <strong>@Model.UsedCount</strong>
+                </div>
+            </div>
+
+            <div class="auth-admin-actions mb-4">
+                <a href="/admin/tags/create" class="btn auth-submit-btn auth-secondary-btn">Yeni Etiket</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table auth-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad</th>
+                            <th>Slug</th>
+                            <th>Ürün Sayısı</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <tr>
+                                <td>@tag.Id</td>
+                                <td>@tag.Name</td>
+                                <td>@tag.Slug</td>
+                                <td>@tag.ProductCount</td>
+                                <td class="text-end">
+                                    <a href="/admin/tags/edit/@tag.Id" class="btn auth-table-link">Düzenle</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             576: { slidesPerView: 3, spaceBetween: 12 },
             768: { slidesPerView: 4, spaceBetween: 14 },
             1024: { slidesPerView: 5, spaceBetween: 16 },
-            1280: { slidesPerView: 6, spaceBetween: 16 }
+            1280: { slidesPerView: 5, spaceBetween: 16 }
         }
     });
 });

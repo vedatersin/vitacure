@@ -1,0 +1,25 @@
+﻿@model vitacure.Models.ViewModels.Admin.CategoryFormViewModel
+
+@{
+    ViewData["Title"] = "Kategori Oluştur";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container auth-container-wide">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Kategori Yönetimi</div>
+            <h1 class="auth-title">Yeni kategori oluştur</h1>
+            <p class="auth-subtitle">Kategori eklendiğinde storefront tarafında dinamik route ile erişilebilir hale gelir.</p>
+
+            @await Html.PartialAsync("~/Areas/Admin/Views/Categories/_Form.cshtml", Model)
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,55 @@
+﻿@model vitacure.Models.ViewModels.Auth.RegisterViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page">
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-eyebrow">Yeni Üyelik</div>
+            <h1 class="auth-title">Vitacure müşterisi olarak kayıt ol</h1>
+            <p class="auth-subtitle">Bu kayıt akışı yalnızca alışveriş kullanıcıları içindir. Yönetim hesapları ayrı tutulur.</p>
+
+            <form method="post" class="auth-form">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control auth-input" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control auth-input" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control auth-input" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control auth-input" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn auth-submit-btn">Kayıt Ol</button>
+            </form>
+
+            <div class="auth-footer-link">
+                Zaten hesabın var mı? <a href="/login">Giriş yap</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

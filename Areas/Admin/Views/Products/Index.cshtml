@@ -1,0 +1,78 @@
+﻿@model vitacure.Models.ViewModels.Admin.ProductListViewModel
+
+@{
+    ViewData["Title"] = "Ürünler";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container auth-container-wide">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Ürün Yönetimi</div>
+            <h1 class="auth-title">Ürün listesi</h1>
+            <p class="auth-subtitle">Storefront kartları ve ürün detay sayfaları bu veri setinden besleniyor.</p>
+
+            <div class="auth-account-grid mb-4">
+                <div class="auth-account-item">
+                    <span>Toplam Ürün</span>
+                    <strong>@Model.TotalCount</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Aktif</span>
+                    <strong>@Model.ActiveCount</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Stokta Yok</span>
+                    <strong>@Model.OutOfStockCount</strong>
+                </div>
+            </div>
+
+            <div class="auth-admin-actions mb-4">
+                <a href="/admin/products/create" class="btn auth-submit-btn auth-secondary-btn">Yeni Ürün</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table auth-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad</th>
+                            <th>Kategori</th>
+                            <th>Slug</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>Etiket</th>
+                            <th>Durum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Products)
+                        {
+                            <tr>
+                                <td>@product.Id</td>
+                                <td>@product.Name</td>
+                                <td>@product.CategoryName</td>
+                                <td>@product.Slug</td>
+                                <td>@product.Price.ToString("0.00") TL</td>
+                                <td>@product.Stock</td>
+                                <td>@product.TagCount</td>
+                                <td>
+                                    <span class="auth-status-badge @(product.IsActive ? "is-active" : "is-passive")">
+                                        @(product.IsActive ? "Aktif" : "Pasif")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="/admin/products/edit/@product.Id" class="btn auth-table-link">Düzenle</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

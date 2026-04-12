@@ -2,11 +2,24 @@
 
 <a href="@Model.Href" class="product-glass-card h-100">
     <div class="product-glass-img-wrap">
+        <button
+            class="pc-heart-btn"
+            type="button"
+            title="@Model.FavoriteTitle"
+            aria-label="@Model.FavoriteTitle"
+            aria-pressed="false"
+            data-favorite-button
+            data-favorite-product-id="@Model.Id">
+            <i class="fa-regular fa-heart"></i>
+        </button>
         <img src="@Model.ImageUrl" alt="@Model.Name">
-        <button class="pc-heart-btn" title="@Model.FavoriteTitle" onclick="event.preventDefault()"><i class="fa-regular fa-heart"></i></button>
     </div>
     <div class="product-glass-body">
         <h3 class="product-glass-title">@Model.Name</h3>
+        @if (!string.IsNullOrWhiteSpace(Model.SizeLabel))
+        {
+            <div class="product-glass-size">@Model.SizeLabel</div>
+        }
         <div class="pc-stars-row">
             <div class="pc-stars-wrapper">
                 <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -19,7 +32,19 @@
             <span class="pc-price-old">&#8378; @Model.OldPrice</span>
         </div>
         <div class="pc-add-btn-row">
-            <button class="pc-add-btn" onclick="event.preventDefault()"><i class="fa-solid fa-cart-shopping"></i> @Model.AddToCartLabel</button>
+            <button
+                class="pc-add-btn"
+                type="button"
+                aria-pressed="false"
+                data-cart-button
+                data-cart-product-id="@Model.CartProductSlug"
+                data-default-label="@Model.AddToCartLabel"
+                data-added-label="Eklendi">
+                <i class="fa-solid fa-cart-shopping pc-add-btn-icon pc-add-btn-icon-cart"></i>
+                <i class="fa-solid fa-spinner pc-add-btn-icon pc-add-btn-icon-spinner"></i>
+                <i class="fa-regular fa-circle-check pc-add-btn-icon pc-add-btn-icon-check"></i>
+                <span class="pc-add-btn-text">@Model.AddToCartLabel</span>
+            </button>
         </div>
     </div>
 </a>

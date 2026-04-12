@@ -1,0 +1,97 @@
+﻿@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
+
+<form method="post" class="auth-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control auth-input" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Slug" class="form-label"></label>
+            <input asp-for="Slug" class="form-control auth-input" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" class="form-select auth-input">
+                <option value="0">Seçiniz</option>
+                @foreach (var option in Model.CategoryOptions)
+                {
+                    <option value="@option.Id">@option.Name</option>
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check mb-2">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label"></label>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" class="form-control auth-input" type="number" min="0.01" step="0.01" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="OldPrice" class="form-label"></label>
+            <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
+            <span asp-validation-for="OldPrice" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="Rating" class="form-label"></label>
+            <input asp-for="Rating" class="form-control auth-input" type="number" min="0" max="5" step="0.1" />
+            <span asp-validation-for="Rating" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Stock" class="form-label"></label>
+            <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
+            <span asp-validation-for="Stock" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="ImageUrl" class="form-label"></label>
+            <input asp-for="ImageUrl" class="form-control auth-input" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Etiketler</label>
+            <div class="auth-checkbox-grid">
+                @foreach (var tag in Model.TagOptions)
+                {
+                    var isChecked = Model.SelectedTagIds.Contains(tag.Id);
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedTagIds" value="@tag.Id" @(isChecked ? "checked" : null) />
+                        <span>@tag.Name</span>
+                        <small>@tag.Slug</small>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control auth-textarea" rows="6"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/products" class="btn auth-submit-btn auth-tertiary-btn">Listeye Dön</a>
+    </div>
+</form>

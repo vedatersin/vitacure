@@ -1,4 +1,4 @@
-namespace vitacure.Models.ViewModels;
+﻿namespace vitacure.Models.ViewModels;
 
 public class CategoryViewModel
 {
@@ -15,11 +15,22 @@ public class CategoryViewModel
     public string ResultLabel { get; set; } = string.Empty;
     public string SortLabel { get; set; } = string.Empty;
     public IReadOnlyList<string> SortOptions { get; set; } = Array.Empty<string>();
+    public string? ActiveTagSlug { get; set; }
+    public string ActiveTagLabel { get; set; } = "Tümü";
+    public IReadOnlyList<CategoryTagViewModel> AvailableTags { get; set; } = Array.Empty<CategoryTagViewModel>();
 }
 
 public class BreadcrumbItemViewModel
 {
     public string Label { get; set; } = string.Empty;
+    public string Url { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+}
+
+public class CategoryTagViewModel
+{
+    public string Label { get; set; } = string.Empty;
+    public string Slug { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
     public bool IsActive { get; set; }
 }

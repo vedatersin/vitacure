@@ -44,10 +44,13 @@
         <div class="ag-file-list" data-chat-files></div>
 
         <div class="ag-chat-top">
-            <div class="ag-search-filter hidden" data-chat-search-filter>
-                <span data-chat-search-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.SearchFilterLabel : Model.CategoryName)</span>
-                <button class="ag-search-filter-close" data-chat-clear-filter><i class="fa-solid fa-xmark"></i></button>
-            </div>
+            @if (Model.Variant == "home")
+            {
+                <div class="ag-search-filter hidden" data-chat-search-filter>
+                    <span data-chat-search-category>@(string.IsNullOrWhiteSpace(Model.CategoryName) ? Model.SearchFilterLabel : Model.CategoryName)</span>
+                    <button class="ag-search-filter-close" data-chat-clear-filter><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            }
             <div class="ag-chat-input-wrap">
                 <textarea class="ag-chat-input"
                           data-chat-input

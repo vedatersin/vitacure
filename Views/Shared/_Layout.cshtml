@@ -1,3 +1,25 @@
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Identity
+@using vitacure.Application.Abstractions
+@using vitacure.Domain.Entities
+@using vitacure.Domain.Enums
+@inject IAntiforgery Antiforgery
+@inject UserManager<AppUser> UserManager
+@inject ICustomerAccountService CustomerAccountService
+@inject ICartService CartService
+@{
+    var antiForgeryTokens = Antiforgery.GetAndStoreTokens(Context);
+    IReadOnlyList<string> favoriteSlugs = Array.Empty<string>();
+    var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
+    var isCustomerUser = currentUser is not null && currentUser.AccountType == AccountType.Customer && currentUser.IsActive;
+    var cartItemCount = 0;
+    if (isCustomerUser)
+    {
+        favoriteSlugs = await CustomerAccountService.GetFavoriteProductSlugsAsync(currentUser!.Id);
+        cartItemCount = await CartService.GetCartItemCountAsync(currentUser.Id);
+    }
+}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -9,15 +31,21 @@
     {
         <link rel="canonical" href="@($"{Context.Request.Scheme}://{Context.Request.Host}{canonicalPath}")" />
     }
+    <meta name="request-verification-token" content="@antiForgeryTokens.RequestToken" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/vitacure.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="d-flex flex-column min-vh-100">
+@{
+    var isHomePage = string.Equals(Context.Request.Path, "/", System.StringComparison.OrdinalIgnoreCase);
+}
+<body class="d-flex flex-column min-vh-100 @(isHomePage ? "page-home" : "page-inner")"
+      data-customer-authenticated="@(isCustomerUser.ToString().ToLowerInvariant())"
+      data-favorite-slugs='@JsonSerializer.Serialize(favoriteSlugs)'
+      data-cart-item-count="@cartItemCount">
     <header class="vitacure-header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-transparent w-100 position-absolute ag-navbar" style="z-index: 1050 !important;">
             <div class="container">
@@ -50,16 +78,23 @@
                         </li>
                     </ul>
                     <div class="ag-nav-icons ms-lg-4">
-                        <a href="#" class="text-white fs-5 nav-icon-btn no-underline" title="Favoriler" style="cursor:pointer;">
+                        <a href="/account#favorites" class="text-white fs-5 nav-icon-btn no-underline" title="Favoriler" style="cursor:pointer;">
                             <i class="fa-solid fa-heart"></i>
                         </a>
-                        <a href="#" class="text-white fs-5 nav-icon-btn position-relative" title="Sepetim" style="cursor:pointer;">
+                        <a href="/cart" class="text-white fs-5 nav-icon-btn position-relative" title="Sepetim" style="cursor:pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em;">
                                 <path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm285-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>
                             </svg>
-                            <span class="cart-badge">0</span>
+                            <span class="cart-badge">@cartItemCount</span>
                         </a>
-                        <a href="#" class="btn btn-giris-yap" style="cursor:pointer;">Giriş Yap</a>
+                        @if (currentUser is not null)
+                        {
+                            <a href="/account" class="btn btn-giris-yap" style="cursor:pointer;">Hesabım</a>
+                        }
+                        else
+                        {
+                            <a href="/login" class="btn btn-giris-yap" style="cursor:pointer;">Giriş Yap</a>
+                        }
                     </div>
                 </div>
             </div>

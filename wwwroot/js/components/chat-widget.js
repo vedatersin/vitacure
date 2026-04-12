@@ -37,7 +37,6 @@
         let isPlaceholderTyping = false;
         let isPlaceholderErasing = false;
         let isPlaceholderReadyToSend = false;
-        const lineThreshold = 3;
         const promptQueues = buildPromptQueues();
 
         function normalizeCategory(category) {
@@ -55,6 +54,18 @@
             });
 
             return queues;
+        }
+
+        function canRotatePrompts() {
+            if (variant === "home") {
+                return true;
+            }
+
+            if (variant === "category" && lockedCategory) {
+                return Array.isArray(promptsByCategory[lockedCategory]) && promptsByCategory[lockedCategory].length > 0;
+            }
+
+            return false;
         }
 
         function shuffle(items) {
@@ -94,7 +105,9 @@
         }
 
         function getNextPrompt() {
-            const orderedCategories = categories.map(normalizeCategory).filter((category) => category.slug);
+            const orderedCategories = variant === "category" && lockedCategory
+                ? categories.map(normalizeCategory).filter((category) => category.slug === lockedCategory)
+                : categories.map(normalizeCategory).filter((category) => category.slug);
             if (!orderedCategories.length) {
                 return null;
             }
@@ -177,9 +190,9 @@
         function setPlaceholder() {
             if (currentMode === "search") {
                 input.placeholder = lockedCategory ? searchPlaceholderLocked : searchPlaceholder;
-                if (lockedCategory) {
+                if (lockedCategory && searchFilter) {
                     searchFilter.classList.remove("hidden");
-                } else {
+                } else if (searchFilter) {
                     searchFilter.classList.add("hidden");
                 }
                 clearActivePills();
@@ -190,7 +203,7 @@
         }
 
         function startPromptRotation() {
-            if (variant !== "home") {
+            if (!canRotatePrompts()) {
                 return;
             }
 
@@ -334,7 +347,7 @@
         input.placeholder = mainPlaceholder;
         resizeInput();
         updateSendState();
-        if (variant === "home") {
+        if (canRotatePrompts()) {
             startPromptRotation();
         } else {
             clearActivePills();

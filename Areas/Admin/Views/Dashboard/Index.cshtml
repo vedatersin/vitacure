@@ -1,0 +1,43 @@
+﻿@model vitacure.Models.ViewModels.Admin.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Admin Panel</div>
+            <h1 class="auth-title">Yönetim özeti</h1>
+            <p class="auth-subtitle">Backoffice tarafı artık canlı verilerden temel metrikleri okuyabiliyor.</p>
+
+            <div class="auth-account-grid mb-4">
+                @foreach (var card in Model.Cards)
+                {
+                    <div class="auth-account-item">
+                        <span>@card.Title</span>
+                        <strong>@card.Value</strong>
+                        <div class="auth-metric-description">@card.Description</div>
+                    </div>
+                }
+            </div>
+
+            <div class="auth-admin-actions mb-4">
+                <a href="/admin/users" class="btn auth-submit-btn auth-secondary-btn">Kullanıcıları Gör</a>
+                <a href="/admin/categories" class="btn auth-submit-btn auth-tertiary-btn">Kategorileri Gör</a>
+                <a href="/admin/products" class="btn auth-submit-btn auth-tertiary-btn">Ürünleri Gör</a>
+                <a href="/admin/orders" class="btn auth-submit-btn auth-tertiary-btn">Siparişleri Gör</a>
+                <a href="/admin/tags" class="btn auth-submit-btn auth-tertiary-btn">Etiketleri Gör</a>
+            </div>
+
+            <form method="post" action="/admin/logout">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn auth-submit-btn">Çıkış Yap</button>
+            </form>
+        </div>
+    </div>
+</div>

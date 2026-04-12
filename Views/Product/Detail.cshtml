@@ -1,0 +1,100 @@
+﻿@model ProductDetailViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/components/product-card.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/product.css" asp-append-version="true" />
+}
+
+<div class="product-detail-page">
+    <section class="product-detail-hero">
+        <div class="container section-container">
+            @await Html.PartialAsync("~/Views/Shared/Partials/_Breadcrumb.cshtml", Model.Breadcrumbs)
+
+            <div class="row align-items-center g-5 product-detail-row">
+                <div class="col-lg-6">
+                    <div class="product-detail-media">
+                        <img src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" />
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="product-detail-copy">
+                        <div class="product-detail-category">@Model.CategoryName</div>
+                        <h1 class="product-detail-title">@Model.Name</h1>
+                        <div class="product-detail-size">@Model.SizeLabel</div>
+
+                        <div class="product-detail-rating">
+                            <div class="pc-stars-wrapper">
+                                <div class="pc-stars-empty">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                                <div class="pc-stars-filled" style="width: @Model.RatingWidth;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                            </div>
+                            <span>@Model.Rating / 5</span>
+                        </div>
+
+                        <div class="product-detail-prices">
+                            <span class="product-detail-price-new">&#8378; @Model.Price</span>
+                            @if (!string.IsNullOrWhiteSpace(Model.OldPrice))
+                            {
+                                <span class="product-detail-price-old">&#8378; @Model.OldPrice</span>
+                            }
+                        </div>
+
+                        @if (Model.Tags.Count > 0)
+                        {
+                            <div class="product-detail-tags">
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <span class="product-detail-tag">@tag</span>
+                                }
+                            </div>
+                        }
+
+                        <p class="product-detail-description">@Model.Description</p>
+
+                        <div class="product-detail-actions">
+                            <button class="pc-add-btn product-detail-cart-btn"
+                                    type="button"
+                                    aria-pressed="false"
+                                    data-cart-button
+                                    data-cart-product-id="@Model.CartProductSlug"
+                                    data-default-label="@Model.AddToCartLabel"
+                                    data-added-label="Eklendi">
+                                <i class="fa-solid fa-cart-shopping pc-add-btn-icon pc-add-btn-icon-cart"></i>
+                                <i class="fa-solid fa-spinner pc-add-btn-icon pc-add-btn-icon-spinner"></i>
+                                <i class="fa-regular fa-circle-check pc-add-btn-icon pc-add-btn-icon-check"></i>
+                                <span class="pc-add-btn-text">@Model.AddToCartLabel</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (Model.RelatedProducts.Count > 0)
+    {
+        <section class="product-related-section">
+            <div class="container section-container">
+                @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel
+                {
+                    Title = "Benzer Ürünler",
+                    ActionLabel = "Kategoriye Dön",
+                    ActionUrl = $"/{Model.CategorySlug}"
+                })
+
+                <div class="row g-4">
+                    @foreach (var product in Model.RelatedProducts)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/components/product-card.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,25 @@
+﻿@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
+
+@{
+    ViewData["Title"] = "Yeni Ürün";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container auth-container-wide">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Ürün Yönetimi</div>
+            <h1 class="auth-title">Yeni ürün oluştur</h1>
+            <p class="auth-subtitle">Bu form storefront ürün kartlarını ve detay sayfasını besleyecek kaydı oluşturur.</p>
+
+            <partial name="_Form" model="Model" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

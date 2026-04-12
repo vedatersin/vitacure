@@ -1,20 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using vitacure.Services.Content;
 
 namespace vitacure.Controllers;
 
 public class CategoryController : Controller
 {
-    private readonly IMockContentService _mockContentService;
+    private readonly IStorefrontContentService _storefrontContentService;
 
-    public CategoryController(IMockContentService mockContentService)
+    public CategoryController(IStorefrontContentService storefrontContentService)
     {
-        _mockContentService = mockContentService;
+        _storefrontContentService = storefrontContentService;
     }
 
-    public IActionResult Detail(string slug)
+    [OutputCache(PolicyName = "StorefrontCategory")]
+    public async Task<IActionResult> Detail(string slug, string? tag, CancellationToken cancellationToken)
     {
-        var model = _mockContentService.GetCategoryPageContent(slug);
+        var model = await _storefrontContentService.GetCategoryPageContentAsync(slug, tag, cancellationToken);
         if (model is null)
         {
             return NotFound();

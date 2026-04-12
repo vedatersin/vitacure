@@ -1,9 +1,11 @@
-@model CategoryViewModel
+﻿@model CategoryViewModel
 
 @{
     var coverflowJson = System.Text.Json.JsonSerializer.Serialize(Model.CoverflowProducts.Select(product => new
     {
         product.Id,
+        product.CartProductSlug,
+        product.Href,
         Src = product.ImageUrl,
         Alt = product.Name,
         product.Name,
@@ -29,35 +31,34 @@
         <div class="category-main-banner-overlay" style="background:@Model.Category.BackgroundOverlay;"></div>
 
         <div class="container h-100 position-relative section-container category-hero-container">
-            @await Html.PartialAsync("~/Views/Shared/Partials/_Breadcrumb.cshtml", Model.Breadcrumbs)
+            <div class="category-top-widget-row">
+                <div class="category-widget-frame">
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
+                </div>
+            </div>
+
             <div class="row align-items-stretch category-hero-row">
-                <div class="col-12 col-xl-5 pe-xl-4 d-flex flex-column justify-content-center category-copy-column">
+                <div class="col-12 col-xl-6 pe-xl-4 d-flex flex-column justify-content-center category-copy-column">
                     <div class="category-copy-block">
                         <h1 class="category-title-heading">@Model.Category.Name</h1>
                         <p class="category-description">@Html.Raw(Model.Category.DescriptionHtml)</p>
                         <div class="uyku-tag-cloud">
-                            @foreach (var tag in Model.Category.Tags)
+                            @foreach (var tag in Model.AvailableTags)
                             {
-                                <button type="button" class="uyku-tag-btn @(tag == Model.Category.Tags.First() ? "active" : string.Empty)">
-                                    @tag
-                                </button>
+                                <a href="@tag.Url" class="uyku-tag-btn @(tag.IsActive ? "active" : string.Empty)">@tag.Label</a>
                             }
                         </div>
                     </div>
                 </div>
 
-                <div class="col-12 col-xl-7 position-relative mt-5 mt-xl-0 d-flex flex-column align-items-center justify-content-center category-widget-column">
-                    <div class="category-widget-frame">
-                        @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
-                    </div>
-
+                <div class="col-12 col-xl-6 position-relative mt-4 mt-xl-0 d-flex flex-column align-items-center justify-content-center category-widget-column">
                     <div class="category-coverflow-shell" data-coverflow data-products='@Html.Raw(coverflowJson)'>
                         <div class="category-coverflow-nav prev" data-coverflow-prev><i class="fa-solid fa-chevron-left"></i></div>
                         <div class="category-coverflow-nav next" data-coverflow-next><i class="fa-solid fa-chevron-right"></i></div>
                         <div class="category-coverflow-stage" data-coverflow-stage></div>
                         <div class="category-coverflow-info">
                             <div class="category-coverflow-card">
-                                <button class="coverflow-heart-btn" type="button" title="Favorilere Ekle" aria-label="Favorilere ekle" data-coverflow-heart>
+                                <button class="coverflow-heart-btn" type="button" title="Favorilere Ekle" aria-label="Favorilere ekle" aria-pressed="false" data-coverflow-heart>
                                     <i class="fa-regular fa-heart"></i>
                                 </button>
                                 <div class="category-coverflow-copy">
@@ -73,8 +74,18 @@
                                             <span class="category-coverflow-price-new" data-coverflow-new-price></span>
                                         </div>
                                         <div class="coverflow-action-row">
-                                            <button class="coverflow-action-btn secondary" type="button"><i class="fa-solid fa-magnifying-glass"></i> Ürünü İncele</button>
-                                            <button class="coverflow-action-btn primary" type="button"><i class="fa-solid fa-cart-shopping"></i> Sepete Ekle</button>
+                                            <button class="coverflow-action-btn secondary" type="button" data-coverflow-inspect data-default-label="Ürünü İncele" data-added-label="Eklendi">
+                                                <i class="fa-solid fa-magnifying-glass coverflow-action-icon coverflow-action-icon-search"></i>
+                                                <i class="fa-solid fa-spinner coverflow-action-icon coverflow-action-icon-spinner"></i>
+                                                <i class="fa-regular fa-circle-check coverflow-action-icon coverflow-action-icon-check"></i>
+                                                <span class="coverflow-action-btn-text">Ürünü İncele</span>
+                                            </button>
+                                            <button class="coverflow-action-btn primary" type="button" data-coverflow-cart data-default-label="Sepete Ekle" data-added-label="Eklendi">
+                                                <i class="fa-solid fa-cart-shopping coverflow-action-icon coverflow-action-icon-cart"></i>
+                                                <i class="fa-solid fa-spinner coverflow-action-icon coverflow-action-icon-spinner"></i>
+                                                <i class="fa-regular fa-circle-check coverflow-action-icon coverflow-action-icon-check"></i>
+                                                <span class="coverflow-action-btn-text">Sepete Ekle</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +106,7 @@
 
                 <div class="col-lg-10 col-md-9">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="text-muted category-result-label">@Model.ResultLabel</span>
+                        <span class="text-muted category-result-label">@Model.ResultLabel@if (!string.IsNullOrWhiteSpace(Model.ActiveTagSlug)) {<text> - Etiket: @Model.ActiveTagLabel</text>}</span>
                         <div class="d-flex align-items-center">
                             <span class="text-muted me-2 category-sort-label">@Model.SortLabel</span>
                             <select class="form-select form-select-sm border-0 bg-transparent text-dark shadow-none category-sort-select">

@@ -1,0 +1,311 @@
+﻿.auth-page {
+    align-items: center;
+    background:
+        radial-gradient(circle at top right, rgba(41, 143, 191, 0.18), transparent 30%),
+        linear-gradient(180deg, #f3fbff 0%, #ffffff 42%, #f3f8fb 100%);
+    display: flex;
+    min-height: 100vh;
+    padding: 7rem 0 3rem;
+}
+
+.auth-page-admin {
+    background:
+        radial-gradient(circle at top left, rgba(14, 116, 144, 0.22), transparent 28%),
+        linear-gradient(180deg, #ecf7fa 0%, #f7fbfc 45%, #edf4f7 100%);
+}
+
+.auth-container {
+    max-width: 720px;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(23, 55, 74, 0.08);
+    border-radius: 32px;
+    box-shadow: 0 28px 60px rgba(15, 43, 58, 0.12);
+    padding: 3rem;
+}
+
+.auth-card-admin {
+    border-color: rgba(14, 116, 144, 0.14);
+}
+
+.auth-eyebrow {
+    color: #0e7490;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.auth-title {
+    color: #0f2b3a;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.08;
+    margin-bottom: 0.85rem;
+}
+
+.auth-subtitle {
+    color: #587385;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+.auth-form .form-label {
+    color: #26495d;
+    font-weight: 700;
+}
+
+.auth-input {
+    border: 1px solid rgba(80, 116, 136, 0.18);
+    border-radius: 16px;
+    min-height: 54px;
+    padding: 0.9rem 1rem;
+}
+
+.auth-input:focus {
+    border-color: rgba(14, 116, 144, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(14, 116, 144, 0.15);
+}
+
+.auth-submit-btn {
+    background: linear-gradient(135deg, #0e7490, #155e75);
+    border: 0;
+    border-radius: 16px;
+    color: #fff;
+    font-weight: 700;
+    min-height: 54px;
+    padding: 0.9rem 1.4rem;
+    width: 100%;
+}
+
+.auth-submit-btn:hover {
+    background: linear-gradient(135deg, #0c657d, #134e61);
+    color: #fff;
+}
+
+.auth-secondary-btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    max-width: 260px;
+    text-decoration: none;
+}
+
+.auth-tertiary-btn {
+    align-items: center;
+    background: linear-gradient(135deg, #7c98aa, #5e7888);
+    color: #fff;
+    display: inline-flex;
+    justify-content: center;
+    max-width: 260px;
+    text-decoration: none;
+}
+
+.auth-tertiary-btn:hover {
+    background: linear-gradient(135deg, #6d8798, #536a79);
+    color: #fff;
+}
+
+.auth-footer-link {
+    color: #557384;
+    margin-top: 1.5rem;
+}
+
+.auth-footer-link a {
+    color: #0e7490;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-account-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.auth-account-item {
+    background: #f7fbfd;
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+}
+
+.auth-account-item span {
+    color: #648194;
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+}
+
+.auth-account-item strong {
+    color: #16384c;
+    font-size: 1rem;
+}
+
+.auth-metric-description {
+    color: #5f7c8f;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-top: 0.55rem;
+}
+
+.auth-container-wide {
+    max-width: 1180px;
+}
+
+.auth-admin-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.auth-table {
+    margin-bottom: 0;
+}
+
+.auth-table thead th {
+    border-bottom-width: 1px;
+    color: #47687b;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.auth-table tbody td {
+    color: #18384a;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.auth-table-link {
+    color: #0e7490;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.auth-textarea {
+    border: 1px solid rgba(80, 116, 136, 0.18);
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+}
+
+.auth-textarea:focus {
+    border-color: rgba(14, 116, 144, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(14, 116, 144, 0.15);
+}
+
+.auth-status-badge {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.38rem 0.7rem;
+}
+
+.auth-status-badge.is-active {
+    background: rgba(15, 118, 110, 0.12);
+    color: #0f766e;
+}
+
+.auth-status-badge.is-passive {
+    background: rgba(148, 163, 184, 0.18);
+    color: #64748b;
+}
+
+.auth-account-sections {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.auth-account-panel {
+    background: #f9fcfe;
+    border: 1px solid rgba(80, 116, 136, 0.12);
+    border-radius: 24px;
+    padding: 1.5rem;
+}
+
+.auth-panel-head {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.auth-panel-title {
+    color: #16384c;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.auth-empty-state {
+    color: #5f7c8f;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.auth-address-card {
+    min-height: 140px;
+    padding-left: 1rem;
+}
+
+.auth-inline-badge {
+    background: rgba(14, 116, 144, 0.08);
+    border: 1px solid rgba(14, 116, 144, 0.15);
+    border-radius: 999px;
+    color: #0e7490;
+    display: inline-flex;
+    font-size: 0.76rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+    padding: 0.16rem 0.5rem;
+    vertical-align: middle;
+}
+
+.auth-checkbox-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.auth-checkbox-card {
+    align-items: flex-start;
+    background: #f7fbfd;
+    border: 1px solid rgba(80, 116, 136, 0.18);
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-height: 88px;
+    padding: 0.9rem 1rem 0.9rem 2.4rem;
+    position: relative;
+}
+
+.auth-checkbox-card input {
+    left: 0.9rem;
+    position: absolute;
+    top: 1rem;
+}
+
+.auth-checkbox-card span {
+    color: #16384c;
+    font-weight: 700;
+}
+
+.auth-checkbox-card small {
+    color: #648194;
+}
+
+@media (max-width: 767.98px) {
+    .auth-page {
+        padding: 6rem 0 2rem;
+    }
+
+    .auth-card {
+        border-radius: 24px;
+        padding: 2rem 1.25rem;
+    }
+}

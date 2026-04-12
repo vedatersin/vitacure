@@ -1,0 +1,209 @@
+﻿@model vitacure.Models.ViewModels.Account.AccountDashboardViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/product-card.css" asp-append-version="true" />
+}
+
+<div class="auth-page">
+    <div class="container auth-container auth-container-wide">
+        <div class="auth-card">
+            <div class="auth-eyebrow">Hesabım</div>
+            <h1 class="auth-title">@Model.FullName</h1>
+            <p class="auth-subtitle">@Model.Email</p>
+
+            <div class="auth-account-grid">
+                <div class="auth-account-item">
+                    <span>Hesap Tipi</span>
+                    <strong>Müşteri</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Oluşturulma</span>
+                    <strong>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Favoriler</span>
+                    <strong>@Model.FavoriteCount ürün</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Adresler</span>
+                    <strong>@Model.AddressCount kayıt</strong>
+                </div>
+                <div class="auth-account-item">
+                    <span>Siparişler</span>
+                    <strong>@Model.OrderCount sipariş</strong>
+                </div>
+            </div>
+
+            <div class="auth-account-sections mt-4">
+                @if (TempData["CheckoutMessage"] is string checkoutMessage)
+                {
+                    <div class="alert @(string.Equals(TempData["CheckoutMessageType"] as string, "success", StringComparison.OrdinalIgnoreCase) ? "alert-success" : "alert-warning")">
+                        @checkoutMessage
+                    </div>
+                }
+
+                <section class="auth-account-panel" id="orders">
+                    <div class="auth-panel-head">
+                        <div>
+                            <div class="auth-eyebrow">Siparişler</div>
+                            <h2 class="auth-panel-title">Sipariş geçmişin</h2>
+                        </div>
+                    </div>
+
+                    @if (Model.Orders.Count > 0)
+                    {
+                        <div class="table-responsive">
+                            <table class="table auth-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Tarih</th>
+                                        <th>Durum</th>
+                                        <th>Adet</th>
+                                        <th>Tutar</th>
+                                        <th>İçerik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders)
+                                    {
+                                        <tr>
+                                            <td>@order.OrderNumber</td>
+                                            <td>@order.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@order.Status</td>
+                                            <td>@order.TotalQuantity</td>
+                                            <td>&#8378; @order.TotalAmount</td>
+                                            <td>
+                                                @string.Join(", ", order.Items.Select(item => $"{item.ProductName} x{item.Quantity}"))
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="auth-empty-state">Henüz sipariş oluşturmadın. Sepet sayfasından kayıtlı adresinle sipariş oluşturabilirsin.</p>
+                    }
+                </section>
+
+                <section class="auth-account-panel" id="favorites">
+                    <div class="auth-panel-head">
+                        <div>
+                            <div class="auth-eyebrow">Favoriler</div>
+                            <h2 class="auth-panel-title">Kaydettiğin ürünler</h2>
+                        </div>
+                    </div>
+
+                    @if (Model.FavoriteProducts.Count > 0)
+                    {
+                        <div class="row g-4">
+                            @foreach (var product in Model.FavoriteProducts)
+                            {
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+                                    @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="auth-empty-state">Henüz favori ürün eklemedin. Ürün kartlarındaki kalp butonu ile burada bir liste oluşturabilirsin.</p>
+                    }
+                </section>
+
+                <section class="auth-account-panel" id="addresses">
+                    <div class="auth-panel-head">
+                        <div>
+                            <div class="auth-eyebrow">Adresler</div>
+                            <h2 class="auth-panel-title">Teslimat adreslerin</h2>
+                        </div>
+                    </div>
+
+                    @if (Model.Addresses.Count > 0)
+                    {
+                        <div class="auth-checkbox-grid mb-4">
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <div class="auth-checkbox-card auth-address-card">
+                                    <span>@address.Title @if (address.IsDefault) { <small class="auth-inline-badge">Varsayılan</small> }</span>
+                                    <small>@address.RecipientName - @address.PhoneNumber</small>
+                                    <small>@address.District / @address.City</small>
+                                    <small>@address.AddressLine</small>
+                                    @if (!string.IsNullOrWhiteSpace(address.PostalCode))
+                                    {
+                                        <small>Posta Kodu: @address.PostalCode</small>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <form method="post" action="/account/addresses/create" class="auth-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="NewAddress.Title" class="form-label"></label>
+                                <input asp-for="NewAddress.Title" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NewAddress.RecipientName" class="form-label"></label>
+                                <input asp-for="NewAddress.RecipientName" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.RecipientName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NewAddress.PhoneNumber" class="form-label"></label>
+                                <input asp-for="NewAddress.PhoneNumber" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NewAddress.City" class="form-label"></label>
+                                <input asp-for="NewAddress.City" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NewAddress.District" class="form-label"></label>
+                                <input asp-for="NewAddress.District" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.District" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-8">
+                                <label asp-for="NewAddress.AddressLine" class="form-label"></label>
+                                <textarea asp-for="NewAddress.AddressLine" class="form-control auth-textarea" rows="4"></textarea>
+                                <span asp-validation-for="NewAddress.AddressLine" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="NewAddress.PostalCode" class="form-label"></label>
+                                <input asp-for="NewAddress.PostalCode" class="form-control auth-input" />
+                                <span asp-validation-for="NewAddress.PostalCode" class="text-danger"></span>
+
+                                <div class="form-check mt-3">
+                                    <input asp-for="NewAddress.IsDefault" class="form-check-input" />
+                                    <label asp-for="NewAddress.IsDefault" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="auth-admin-actions mt-4">
+                            <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Adresi Kaydet</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <form method="post" action="/logout" class="mt-4">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn auth-submit-btn">Çıkış Yap</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/components/product-card.js" asp-append-version="true"></script>
+}

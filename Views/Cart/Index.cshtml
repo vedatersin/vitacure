@@ -1,0 +1,93 @@
+@model vitacure.Models.ViewModels.Cart.CartViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/cart.css" asp-append-version="true" />
+}
+
+<div class="cart-page">
+    <div class="container section-container">
+        <div class="cart-page-header">
+            <h1>Sepetim</h1>
+            <p>Eklediğiniz ürünleri burada görebilir, miktarlarını güncelleyebilir ve sipariş adımına hazırlanabilirsiniz.</p>
+        </div>
+
+        @if (TempData["CheckoutMessage"] is string checkoutMessage)
+        {
+            <div class="alert @(string.Equals(TempData["CheckoutMessageType"] as string, "success", StringComparison.OrdinalIgnoreCase) ? "alert-success" : "alert-warning") cart-feedback">
+                @checkoutMessage
+            </div>
+        }
+
+        @if (Model.IsEmpty)
+        {
+            <div class="cart-empty-state">
+                <h2>Sepetiniz şu an boş</h2>
+                <p>Beğendiğiniz ürünleri sepete eklediğinizde burada listelenecek.</p>
+                <a href="/" class="btn btn-primary cart-continue-btn">Ürünleri Keşfet</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-8">
+                    <div class="cart-items-panel">
+                        @foreach (var item in Model.Items)
+                        {
+                            <article class="cart-item-card">
+                                <a href="@item.ProductHref" class="cart-item-media">
+                                    <img src="@item.ProductImageUrl" alt="@item.ProductName" loading="lazy" />
+                                </a>
+                                <div class="cart-item-content">
+                                    <div class="cart-item-copy">
+                                        <a href="@item.ProductHref" class="cart-item-title">@item.ProductName</a>
+                                        <div class="cart-item-unit-price">Birim fiyat: &#8378; @item.UnitPrice</div>
+                                    </div>
+                                    <div class="cart-item-actions">
+                                        <form method="post" action="/cart/items/@item.ProductSlug/quantity" class="cart-quantity-form">
+                                            @Html.AntiForgeryToken()
+                                            <label class="cart-quantity-label" for="qty-@item.ProductSlug">Adet</label>
+                                            <input id="qty-@item.ProductSlug"
+                                                   name="quantity"
+                                                   type="number"
+                                                   min="1"
+                                                   value="@item.Quantity"
+                                                   class="form-control cart-quantity-input" />
+                                            <button type="submit" class="btn btn-outline-secondary cart-update-btn">Güncelle</button>
+                                        </form>
+                                        <div class="cart-item-total">&#8378; @item.LineTotal</div>
+                                        <form method="post" action="/cart/items/@item.ProductSlug/remove">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-link cart-remove-btn">Kaldır</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <aside class="cart-summary-card">
+                        <h2>Sipariş Özeti</h2>
+                        <div class="cart-summary-row">
+                            <span>Toplam ürün</span>
+                            <strong>@Model.TotalQuantity</strong>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>Ara toplam</span>
+                            <strong>&#8378; @Model.TotalAmount</strong>
+                        </div>
+                        <div class="cart-summary-note">
+                            Sipariş varsayılan adresinizle oluşturulur. Varsayılan adresiniz yoksa hesabınızdaki ilk kayıtlı adres kullanılır.
+                        </div>
+                        <form method="post" action="/cart/checkout" class="mb-3">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary cart-summary-link">Siparişi Oluştur</button>
+                        </form>
+                        <a href="/" class="btn btn-outline-primary cart-summary-link">Alışverişe Devam Et</a>
+                    </aside>
+                </div>
+            </div>
+        }
+    </div>
+</div>

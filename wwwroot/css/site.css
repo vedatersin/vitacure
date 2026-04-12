@@ -140,7 +140,22 @@ body {
 .ag-navbar {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.page-home .ag-navbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+    background: transparent !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+body.page-inner .ag-navbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(9, 12, 24, 0.42) !important;
+    backdrop-filter: blur(13px);
+    -webkit-backdrop-filter: blur(13px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
 }
 
 .ag-navbar .container {

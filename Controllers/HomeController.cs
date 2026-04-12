@@ -1,5 +1,6 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using vitacure.Models;
 using vitacure.Services.Content;
 
@@ -7,18 +8,17 @@ namespace vitacure.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IMockContentService _mockContentService;
+    private readonly IStorefrontContentService _storefrontContentService;
 
-    public HomeController(ILogger<HomeController> logger, IMockContentService mockContentService)
+    public HomeController(IStorefrontContentService storefrontContentService)
     {
-        _logger = logger;
-        _mockContentService = mockContentService;
+        _storefrontContentService = storefrontContentService;
     }
 
-    public IActionResult Index()
+    [OutputCache(PolicyName = "StorefrontHome")]
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var model = _mockContentService.GetHomePageContent();
+        var model = await _storefrontContentService.GetHomePageContentAsync(cancellationToken);
         ViewData["Title"] = model.Title;
         ViewData["MetaDescription"] = model.MetaDescription;
         ViewData["CanonicalPath"] = model.CanonicalPath;

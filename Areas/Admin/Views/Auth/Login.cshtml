@@ -1,0 +1,40 @@
+﻿@model vitacure.Models.ViewModels.Auth.LoginViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Yönetim Girişi</div>
+            <h1 class="auth-title">Admin paneline giriş yap</h1>
+            <p class="auth-subtitle">Bu alan yalnızca sistem yöneten backoffice hesapları içindir.</p>
+
+            <form method="post" class="auth-form">
+                @Html.AntiForgeryToken()
+                <input asp-for="ReturnUrl" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control auth-input" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control auth-input" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn auth-submit-btn">Admin Girişi</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

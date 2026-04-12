@@ -127,7 +127,7 @@ public class MockContentService : IMockContentService
 
         var backgrounds = new Dictionary<string, (string Image, string Overlay, string Pill, string BackgroundClass)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["uyku-sagligi"] = ("/img/banners/uyku.png", "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%)", "bg-uyku", "category-theme-sleep"),
+            ["uyku-sagligi"] = ("/img/uykuBg.png", "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%)", "bg-uyku", "category-theme-sleep"),
             ["multivitamin-enerji"] = ("/img/banners/pharmaton-mobil-banner.jpg", "linear-gradient(to right, rgba(88,38,0,0.92) 0%, rgba(154,84,16,0.65) 50%, rgba(0,0,0,0.1) 100%)", "bg-multi", "category-theme-energy"),
             ["zihin-hafiza-guclendirme"] = ("/img/banners/nutraxin-banner-mobile.jpg", "linear-gradient(to right, rgba(32,10,64,0.9) 0%, rgba(113,64,160,0.6) 50%, rgba(0,0,0,0.08) 100%)", "bg-zihin", "category-theme-mind"),
             ["hastaliklara-karsi-koruma"] = ("/img/banners/easyfishoil-banner-mobile.jpg", "linear-gradient(to right, rgba(3,54,56,0.92) 0%, rgba(13,111,104,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-koruma", "category-theme-protection"),
@@ -197,7 +197,9 @@ public class MockContentService : IMockContentService
             FileMenuDocumentLabel = global.FileMenuDocumentLabel,
             FileMenuImageLabel = global.FileMenuImageLabel,
             SearchPlaceholder = global.SearchPlaceholder,
-            SearchPlaceholderLocked = global.SearchPlaceholderLocked,
+            SearchPlaceholderLocked = category is null
+                ? global.SearchPlaceholderLocked
+                : "Bu kategoride aramak istediğiniz ürünü yazın...",
             CategorySlug = category?.Slug ?? string.Empty,
             CategoryName = category?.DisplayName ?? string.Empty,
             Categories = categories,
@@ -215,6 +217,7 @@ public class MockContentService : IMockContentService
         {
             Id = string.IsNullOrWhiteSpace(item.Name) ? $"product-{index}" : item.Name.ToLowerInvariant().Replace(" ", "-").Replace("&", string.Empty),
             Name = item.Name,
+            SizeLabel = BuildProductSizeLabel(item.Name),
             ImageUrl = item.Image,
             Price = item.Price,
             OldPrice = item.OldPrice,
@@ -222,6 +225,40 @@ public class MockContentService : IMockContentService
             RatingWidth = $"{Math.Round(ParseRating(item.Rating) / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = item.Description ?? string.Empty
         }).ToList();
+    }
+
+    private static string BuildProductSizeLabel(string? productName)
+    {
+        if (string.IsNullOrWhiteSpace(productName))
+        {
+            return "60 kapsul";
+        }
+
+        return productName.Trim() switch
+        {
+            "Daily Multivitamin" => "120 kapsul",
+            "Omega 3" => "60 softgel",
+            "Vitamin D3" => "30 ml damla",
+            "Magnezyum" => "60 kapsul",
+            "C Vitamini Complex" => "20 efervesan tablet",
+            "Kolajen Peptit" => "300 gr toz",
+            "B12 Vitamini" => "30 ml sprey",
+            "Çinko Pikolinat" => "90 kapsul",
+            "Probiyotik 10B" => "30 kapsul",
+            "Demir + C Vitamini" => "30 kapsul",
+            "Kalsiyum Kompleks" => "60 tablet",
+            "B12 Vitamini Sprey" => "20 ml sprey",
+            "Vitamin D3 - 3 Al 2 Öde" => "3 x 30 ml",
+            "Omega 3 Aile Paketi" => "2 x 60 softgel",
+            "C Vitamini Seti" => "3 x 20 tablet",
+            "Magnezyum Enerji Kofre" => "2 x 60 kapsul",
+            "Daily Multivitamin Büyük Boy" => "180 kapsul",
+            "Kolajen ve C Vitamini" => "14 saşe",
+            "Çinko Kompleks" => "60 tablet",
+            "Probiyotik Bakteri" => "20 kapsul",
+            "Demir Takviyesi" => "30 kapsul",
+            _ => "60 kapsul"
+        };
     }
 
     private static decimal ParseRating(string? value)
