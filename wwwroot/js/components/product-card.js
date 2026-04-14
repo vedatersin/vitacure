@@ -4,9 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const body = document.body;
     const favoriteSeed = body?.dataset.favoriteSlugs ? JSON.parse(body.dataset.favoriteSlugs) : [];
     const isAuthenticatedCustomer = body?.dataset.customerAuthenticated === "true";
+    const favoriteSeedCount = Number.parseInt(body?.dataset.favoriteCount || String(favoriteSeed.length), 10);
     const cartSeedCount = Number.parseInt(body?.dataset.cartItemCount || "0", 10);
     const favoriteStore = window.__vitacureFavoriteStore || (window.__vitacureFavoriteStore = new Set(favoriteSeed));
     const antiForgeryToken = document.querySelector('meta[name="request-verification-token"]')?.getAttribute("content") || "";
+    const favoriteState = window.__vitacureFavoriteState || (window.__vitacureFavoriteState = { count: Number.isFinite(favoriteSeedCount) ? favoriteSeedCount : favoriteSeed.length });
     const cartState = window.__vitacureCartState || (window.__vitacureCartState = { count: Number.isFinite(cartSeedCount) ? cartSeedCount : 0 });
 
     function buildReturnUrl() {
@@ -26,6 +28,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.querySelectorAll(".cart-badge").forEach((badge) => {
+            if (badge.classList.contains("favorite-badge")) {
+                return;
+            }
+
+            badge.textContent = String(nextCount);
+        });
+    }
+
+    function updateFavoriteBadge(count) {
+        const nextCount = Math.max(0, Number.parseInt(String(count), 10) || 0);
+        favoriteState.count = nextCount;
+
+        if (body) {
+            body.dataset.favoriteCount = String(nextCount);
+        }
+
+        document.querySelectorAll(".favorite-badge").forEach((badge) => {
             badge.textContent = String(nextCount);
         });
     }
@@ -80,11 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function syncCart(productSlug, quantity) {
-        if (!isAuthenticatedCustomer) {
-            redirectToLogin();
-            return null;
-        }
-
         const response = await fetch("/cart/items", {
             method: "POST",
             headers: {
@@ -109,11 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function syncFavorite(productId, isActive, button) {
-        if (!isAuthenticatedCustomer) {
-            redirectToLogin();
-            return false;
-        }
-
         const response = await fetch("/account/favorites/toggle", {
             method: "POST",
             headers: {
@@ -125,16 +134,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (response.status === 401) {
             redirectToLogin();
-            return false;
+            return null;
         }
+
+        const payload = await response.json().catch(() => null);
 
         if (!response.ok) {
             button.classList.toggle("is-active", !isActive);
             button.setAttribute("aria-pressed", !isActive ? "true" : "false");
-            return false;
+            return null;
         }
 
-        return true;
+        updateFavoriteBadge(payload?.favoriteCount ?? favoriteStore.size);
+        return payload;
     }
 
     window.VitacureCart = {
@@ -191,10 +203,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const synced = await syncFavorite(productId, isActive, button);
+            if (!synced) {
+                button.classList.toggle("is-active", !isActive);
+                button.setAttribute("aria-pressed", !isActive ? "true" : "false");
+
+                if (productId) {
+                    if (isActive) {
+                        favoriteStore.delete(productId);
+                    } else {
+                        favoriteStore.add(productId);
+                    }
+                }
+            }
+
             if (!synced && icon) {
                 const revertedState = button.classList.contains("is-active");
                 icon.classList.toggle("fa-regular", !revertedState);
                 icon.classList.toggle("fa-solid", revertedState);
+                updateFavoriteBadge(favoriteStore.size);
             }
         });
     });

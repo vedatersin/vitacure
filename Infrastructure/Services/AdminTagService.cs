@@ -8,11 +8,13 @@ namespace vitacure.Infrastructure.Services;
 
 public class AdminTagService : IAdminTagService
 {
+    private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
 
-    public AdminTagService(AppDbContext dbContext)
+    public AdminTagService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
     {
         _dbContext = dbContext;
+        _cacheInvalidationService = cacheInvalidationService;
     }
 
     public async Task<TagListViewModel> GetTagsAsync(CancellationToken cancellationToken = default)
@@ -73,6 +75,7 @@ public class AdminTagService : IAdminTagService
 
         _dbContext.Tags.Add(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateCategoryAsync(cancellationToken);
         return entity.Id;
     }
 
@@ -93,6 +96,7 @@ public class AdminTagService : IAdminTagService
         entity.Slug = model.Slug.Trim();
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateCategoryAsync(cancellationToken);
         return true;
     }
 }

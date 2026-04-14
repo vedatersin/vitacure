@@ -8,11 +8,13 @@ namespace vitacure.Infrastructure.Services;
 
 public class AdminProductService : IAdminProductService
 {
+    private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
 
-    public AdminProductService(AppDbContext dbContext)
+    public AdminProductService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
     {
         _dbContext = dbContext;
+        _cacheInvalidationService = cacheInvalidationService;
     }
 
     public async Task<ProductListViewModel> GetProductsAsync(CancellationToken cancellationToken = default)
@@ -28,6 +30,7 @@ public class AdminProductService : IAdminProductService
         var items = products.Select(product => new ProductListItemViewModel
         {
             Id = product.Id,
+            ImageUrl = product.ImageUrl,
             Name = product.Name,
             Slug = product.Slug,
             CategoryName = product.Category?.Name ?? "-",
@@ -77,6 +80,7 @@ public class AdminProductService : IAdminProductService
             OldPrice = product.OldPrice,
             Rating = product.Rating,
             ImageUrl = product.ImageUrl,
+            GalleryImageUrls = product.GalleryImageUrls,
             Stock = product.Stock,
             CategoryId = product.CategoryId,
             IsActive = product.IsActive,
@@ -97,6 +101,7 @@ public class AdminProductService : IAdminProductService
             OldPrice = NormalizeOldPrice(model.OldPrice),
             Rating = model.Rating,
             ImageUrl = model.ImageUrl.Trim(),
+            GalleryImageUrls = NormalizeGalleryImageUrls(model.GalleryImageUrls),
             Stock = model.Stock,
             CategoryId = model.CategoryId,
             IsActive = model.IsActive
@@ -105,6 +110,7 @@ public class AdminProductService : IAdminProductService
         _dbContext.Products.Add(entity);
         ApplyProductTags(entity, model.SelectedTagIds);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateProductAsync(cancellationToken);
         return entity.Id;
     }
 
@@ -130,12 +136,14 @@ public class AdminProductService : IAdminProductService
         entity.OldPrice = NormalizeOldPrice(model.OldPrice);
         entity.Rating = model.Rating;
         entity.ImageUrl = model.ImageUrl.Trim();
+        entity.GalleryImageUrls = NormalizeGalleryImageUrls(model.GalleryImageUrls);
         entity.Stock = model.Stock;
         entity.CategoryId = model.CategoryId;
         entity.IsActive = model.IsActive;
         ApplyProductTags(entity, model.SelectedTagIds);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateProductAsync(cancellationToken);
         return true;
     }
 
@@ -170,6 +178,22 @@ public class AdminProductService : IAdminProductService
     private static decimal? NormalizeOldPrice(decimal? oldPrice)
     {
         return oldPrice is > 0 ? oldPrice : null;
+    }
+
+    private static string? NormalizeGalleryImageUrls(string? rawValue)
+    {
+        if (string.IsNullOrWhiteSpace(rawValue))
+        {
+            return null;
+        }
+
+        var urls = rawValue
+            .Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        return urls.Length == 0 ? null : string.Join(Environment.NewLine, urls);
     }
 
     private void ApplyProductTags(Product entity, IReadOnlyList<int>? selectedTagIds)

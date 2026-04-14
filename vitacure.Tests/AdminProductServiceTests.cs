@@ -60,7 +60,7 @@ public class AdminProductServiceTests
 
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminProductService(dbContext);
+        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService());
 
         var result = await service.GetProductsAsync();
 
@@ -88,7 +88,8 @@ public class AdminProductServiceTests
             new Tag { Id = 11, Name = "Enerji", Slug = "enerji" });
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminProductService(dbContext);
+        var cacheInvalidation = new FakeCacheInvalidationService();
+        var service = new AdminProductService(dbContext, cacheInvalidation);
 
         var id = await service.CreateAsync(new ProductFormViewModel
         {
@@ -111,6 +112,7 @@ public class AdminProductServiceTests
         Assert.Equal("yeni-urun", created.Slug);
         Assert.Equal(1, created.CategoryId);
         Assert.Equal(2, await dbContext.ProductTags.CountAsync(x => x.ProductId == id));
+        Assert.Equal(1, cacheInvalidation.ProductInvalidationCount);
     }
 
     private static AppDbContext CreateDbContext()
@@ -120,5 +122,19 @@ public class AdminProductServiceTests
             .Options;
 
         return new AppDbContext(options);
+    }
+
+    private sealed class FakeCacheInvalidationService : Application.Abstractions.ICacheInvalidationService
+    {
+        public int ProductInvalidationCount { get; private set; }
+
+        public Task InvalidateStorefrontAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task InvalidateCategoryAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task InvalidateProductAsync(CancellationToken cancellationToken = default)
+        {
+            ProductInvalidationCount++;
+            return Task.CompletedTask;
+        }
     }
 }

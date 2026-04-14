@@ -1,68 +1,13 @@
-﻿@model vitacure.Models.ViewModels.Admin.UserListViewModel
+@model vitacure.Models.ViewModels.Admin.UserListViewModel
 
 @{
-    ViewData["Title"] = "Kullanıcılar";
+    ViewData["Title"] = "Kullanicilar";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Kullanıcı Yönetimi</div>
-            <h1 class="auth-title">Kullanıcı listesi</h1>
-            <p class="auth-subtitle">Müşteri ve yönetim hesapları ayrı hesap tipleriyle aynı ekranda takip ediliyor.</p>
-
-            <div class="auth-account-grid mb-4">
-                <div class="auth-account-item">
-                    <span>Toplam Hesap</span>
-                    <strong>@Model.TotalCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Müşteri</span>
-                    <strong>@Model.CustomerCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Yönetim</span>
-                    <strong>@Model.BackOfficeCount</strong>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table auth-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Ad Soyad</th>
-                            <th>E-posta</th>
-                            <th>Hesap Tipi</th>
-                            <th>Rol</th>
-                            <th>Durum</th>
-                            <th>Oluşturulma</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var user in Model.Users)
-                        {
-                            <tr>
-                                <td>@user.Id</td>
-                                <td>@user.FullName</td>
-                                <td>@user.Email</td>
-                                <td>@user.AccountTypeLabel</td>
-                                <td>@user.RoleSummary</td>
-                                <td>
-                                    <span class="auth-status-badge @(user.IsActive ? "is-active" : "is-passive")">
-                                        @(user.IsActive ? "Aktif" : "Pasif")
-                                    </span>
-                                </td>
-                                <td>@user.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/users">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Users/_ListContent.cshtml", Model)
 </div>
+
+@section Scripts {
+    <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+}

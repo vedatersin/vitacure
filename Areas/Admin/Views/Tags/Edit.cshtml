@@ -1,23 +1,35 @@
-﻿@model vitacure.Models.ViewModels.Admin.TagFormViewModel
+@model vitacure.Models.ViewModels.Admin.TagFormViewModel
 
 @{
-    ViewData["Title"] = "Etiket Düzenle";
+    ViewData["Title"] = "Etiket Duzenle";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Segmentasyon",
+        Title = "Etiketi duzenle",
+        Description = "Urunlerle iliskili etiketi guncellediginde admin secim listesi de buna gore yenilenir.",
+        IconClass = "fa-solid fa-tags",
+        AsideTitle = "Form akis notu",
+        AsideText = "Etiket adi ve slug degisiklikleri urun secim ekranlarinda gorecegin listeyi etkiler. Kisa, net ve tutarli bir isim yapisi koru.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Slug", Value = string.IsNullOrWhiteSpace(Model.Slug) ? "Taslak" : "Hazir" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Etiketler", Url = "/admin/tags" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+        }
+    };
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Etiket Yönetimi</div>
-            <h1 class="auth-title">Etiketi düzenle</h1>
-            <p class="auth-subtitle">Ürünlerle ilişkili etiketi güncellediğinizde admin seçim listesi de buna göre yenilenir.</p>
-
-            <partial name="_Form" model="Model" />
-        </div>
-    </div>
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        <partial name="_Form" model="Model" />
+    </section>
 </div>
 
 @section Scripts {

@@ -17,9 +17,16 @@ public class ProductsController : Controller
     }
 
     [HttpGet("/admin/products")]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index([FromQuery] string? q, [FromQuery] string? status, [FromQuery] string? stock, CancellationToken cancellationToken)
     {
         var model = await _adminProductService.GetProductsAsync(cancellationToken);
+        model = ApplyFilters(model, q, status, stock);
+
+        if (IsAjaxRequest())
+        {
+            return PartialView("~/Areas/Admin/Views/Products/_ListContent.cshtml", model);
+        }
+
         return View(model);
     }
 
@@ -83,4 +90,51 @@ public class ProductsController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    private static ProductListViewModel ApplyFilters(ProductListViewModel model, string? q, string? status, string? stock)
+    {
+        var search = q?.Trim();
+        var normalizedStatus = string.IsNullOrWhiteSpace(status) ? "all" : status.Trim().ToLowerInvariant();
+        var normalizedStock = string.IsNullOrWhiteSpace(stock) ? "all" : stock.Trim().ToLowerInvariant();
+
+        IEnumerable<ProductListItemViewModel> query = model.Products;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(item =>
+                item.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.Slug.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        query = normalizedStatus switch
+        {
+            "active" => query.Where(item => item.IsActive),
+            "passive" => query.Where(item => !item.IsActive),
+            _ => query
+        };
+
+        query = normalizedStock switch
+        {
+            "instock" => query.Where(item => item.Stock > 0),
+            "outofstock" => query.Where(item => item.Stock <= 0),
+            _ => query
+        };
+
+        var items = query.ToList();
+
+        return new ProductListViewModel
+        {
+            SearchTerm = search,
+            StatusFilter = normalizedStatus,
+            StockFilter = normalizedStock,
+            TotalCount = items.Count,
+            ActiveCount = items.Count(item => item.IsActive),
+            OutOfStockCount = items.Count(item => item.Stock <= 0),
+            Products = items
+        };
+    }
+
+    private bool IsAjaxRequest()
+        => string.Equals(Request.Headers["X-Requested-With"].ToString(), "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 }

@@ -9,10 +9,17 @@ namespace vitacure.Infrastructure.Services;
 public class AdminDashboardService : IAdminDashboardService
 {
     private readonly AppDbContext _dbContext;
+    private readonly IRedisConnectionStatusService _redisConnectionStatusService;
+    private readonly ICacheObservabilityService _cacheObservabilityService;
 
-    public AdminDashboardService(AppDbContext dbContext)
+    public AdminDashboardService(
+        AppDbContext dbContext,
+        IRedisConnectionStatusService redisConnectionStatusService,
+        ICacheObservabilityService cacheObservabilityService)
     {
         _dbContext = dbContext;
+        _redisConnectionStatusService = redisConnectionStatusService;
+        _cacheObservabilityService = cacheObservabilityService;
     }
 
     public async Task<DashboardViewModel> GetDashboardAsync(CancellationToken cancellationToken = default)
@@ -22,6 +29,8 @@ public class AdminDashboardService : IAdminDashboardService
         var customerCount = await _dbContext.Users.CountAsync(x => x.IsActive && x.AccountType == AccountType.Customer, cancellationToken);
         var backOfficeUserCount = await _dbContext.Users.CountAsync(x => x.IsActive && x.AccountType == AccountType.BackOffice, cancellationToken);
         var orderCount = await _dbContext.Orders.CountAsync(cancellationToken);
+        var redisStatus = await _redisConnectionStatusService.GetStatusAsync(cancellationToken);
+        var cacheMetrics = _cacheObservabilityService.GetSnapshot();
 
         return new DashboardViewModel
         {
@@ -30,6 +39,8 @@ public class AdminDashboardService : IAdminDashboardService
             CustomerCount = customerCount,
             BackOfficeUserCount = backOfficeUserCount,
             OrderCount = orderCount,
+            RedisStatus = redisStatus,
+            CacheMetrics = cacheMetrics,
             Cards = new[]
             {
                 new DashboardMetricCardViewModel

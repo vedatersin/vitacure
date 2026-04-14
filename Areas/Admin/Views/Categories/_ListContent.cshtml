@@ -1,0 +1,102 @@
+@model vitacure.Models.ViewModels.Admin.CategoryListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Yonetimi",
+        Title = "Kategori listesi",
+        Description = "Storefront tarafindaki dinamik kategori route'lari bu veri setinden besleniyor.",
+        IconClass = "fa-solid fa-layer-group",
+        AsideTitle = "Kategori akis ozeti",
+        AsideText = "Route yapisi, yayin durumu ve ana kategori dagilimi bu ekranin sag tarafinda hizli okunabilsin diye toplandi.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kok", Value = Model.RootCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Kategoriler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/categories",
+        SearchPlaceholder = "Kategori ara, slug kontrol et, kok kategori incele...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Kategori",
+        PrimaryActionUrl = "/admin/categories/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "structure",
+                Label = "Yapi",
+                Value = Model.StructureFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum kategoriler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "root", Label = "Kok kategori" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "child", Label = "Alt kategori" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ad</th>
+                    <th>Slug</th>
+                    <th>Ust Kategori</th>
+                    <th>Urun Sayisi</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.Categories)
+                {
+                    <tr>
+                        <td>@category.Id</td>
+                        <td>@category.Name</td>
+                        <td>@category.Slug</td>
+                        <td>@category.ParentName</td>
+                        <td>@category.ProductCount</td>
+                        <td>
+                            <span class="auth-status-badge @(category.IsActive ? "is-active" : "is-passive")">
+                                @(category.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/categories/edit/@category.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

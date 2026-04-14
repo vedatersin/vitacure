@@ -48,7 +48,7 @@ public class AdminTagServiceTests
 
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminTagService(dbContext);
+        var service = new AdminTagService(dbContext, new FakeCacheInvalidationService());
 
         var result = await service.GetTagsAsync();
 
@@ -61,7 +61,8 @@ public class AdminTagServiceTests
     public async Task CreateAsync_Persists_New_Tag()
     {
         await using var dbContext = CreateDbContext();
-        var service = new AdminTagService(dbContext);
+        var cacheInvalidation = new FakeCacheInvalidationService();
+        var service = new AdminTagService(dbContext, cacheInvalidation);
 
         var id = await service.CreateAsync(new TagFormViewModel
         {
@@ -73,6 +74,7 @@ public class AdminTagServiceTests
         Assert.NotNull(created);
         Assert.Equal("Yeni Etiket", created!.Name);
         Assert.Equal("yeni-etiket", created.Slug);
+        Assert.Equal(1, cacheInvalidation.CategoryInvalidationCount);
     }
 
     private static AppDbContext CreateDbContext()
@@ -82,5 +84,20 @@ public class AdminTagServiceTests
             .Options;
 
         return new AppDbContext(options);
+    }
+
+    private sealed class FakeCacheInvalidationService : Application.Abstractions.ICacheInvalidationService
+    {
+        public int CategoryInvalidationCount { get; private set; }
+
+        public Task InvalidateStorefrontAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task InvalidateCategoryAsync(CancellationToken cancellationToken = default)
+        {
+            CategoryInvalidationCount++;
+            return Task.CompletedTask;
+        }
+
+        public Task InvalidateProductAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 }

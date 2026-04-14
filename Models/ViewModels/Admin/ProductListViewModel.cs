@@ -2,6 +2,9 @@
 
 public class ProductListViewModel
 {
+    public string? SearchTerm { get; set; }
+    public string StatusFilter { get; set; } = "all";
+    public string StockFilter { get; set; } = "all";
     public int TotalCount { get; set; }
     public int ActiveCount { get; set; }
     public int OutOfStockCount { get; set; }
@@ -11,6 +14,7 @@ public class ProductListViewModel
 public class ProductListItemViewModel
 {
     public int Id { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Slug { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;

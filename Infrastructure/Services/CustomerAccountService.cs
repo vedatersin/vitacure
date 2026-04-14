@@ -44,12 +44,19 @@ public class CustomerAccountService : ICustomerAccountService
         {
             FullName = user.FullName,
             Email = user.Email ?? string.Empty,
+            PhoneNumber = user.PhoneNumber,
             CreatedAt = user.CreatedAt,
             FavoriteCount = favoriteProducts.Count,
             AddressCount = user.Addresses.Count,
             OrderCount = orders.Count,
             FavoriteProducts = favoriteProducts,
             Orders = orders,
+            Profile = new ProfileFormViewModel
+            {
+                FullName = user.FullName,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber
+            },
             Addresses = user.Addresses.Select(address => new AccountAddressViewModel
             {
                 Id = address.Id,
@@ -143,6 +150,102 @@ public class CustomerAccountService : ICustomerAccountService
             PostalCode = string.IsNullOrWhiteSpace(model.PostalCode) ? null : model.PostalCode.Trim(),
             IsDefault = model.IsDefault
         });
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> UpdateAddressAsync(int userId, int addressId, AddressFormViewModel model, CancellationToken cancellationToken = default)
+    {
+        var address = await _dbContext.CustomerAddresses
+            .FirstOrDefaultAsync(x => x.Id == addressId && x.AppUserId == userId, cancellationToken);
+
+        if (address is null)
+        {
+            return false;
+        }
+
+        if (model.IsDefault)
+        {
+            var currentDefaults = await _dbContext.CustomerAddresses
+                .Where(x => x.AppUserId == userId && x.Id != addressId && x.IsDefault)
+                .ToListAsync(cancellationToken);
+
+            foreach (var existingAddress in currentDefaults)
+            {
+                existingAddress.IsDefault = false;
+            }
+        }
+
+        address.Title = model.Title.Trim();
+        address.RecipientName = model.RecipientName.Trim();
+        address.PhoneNumber = model.PhoneNumber.Trim();
+        address.City = model.City.Trim();
+        address.District = model.District.Trim();
+        address.AddressLine = model.AddressLine.Trim();
+        address.PostalCode = string.IsNullOrWhiteSpace(model.PostalCode) ? null : model.PostalCode.Trim();
+        address.IsDefault = model.IsDefault;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> DeleteAddressAsync(int userId, int addressId, CancellationToken cancellationToken = default)
+    {
+        var address = await _dbContext.CustomerAddresses
+            .FirstOrDefaultAsync(x => x.Id == addressId && x.AppUserId == userId, cancellationToken);
+
+        if (address is null)
+        {
+            return false;
+        }
+
+        var deletedWasDefault = address.IsDefault;
+        _dbContext.CustomerAddresses.Remove(address);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        if (!deletedWasDefault)
+        {
+            return true;
+        }
+
+        var nextAddress = await _dbContext.CustomerAddresses
+            .Where(x => x.AppUserId == userId)
+            .OrderBy(x => x.CreatedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (nextAddress is null)
+        {
+            return true;
+        }
+
+        nextAddress.IsDefault = true;
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> UpdateProfileAsync(int userId, ProfileFormViewModel model, CancellationToken cancellationToken = default)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+        if (user is null)
+        {
+            return false;
+        }
+
+        var normalizedEmail = model.Email.Trim();
+        var emailInUse = await _dbContext.Users.AnyAsync(
+            x => x.Id != userId && x.Email != null && x.Email.ToLower() == normalizedEmail.ToLower(),
+            cancellationToken);
+
+        if (emailInUse)
+        {
+            return false;
+        }
+
+        user.FullName = model.FullName.Trim();
+        user.Email = normalizedEmail;
+        user.UserName = normalizedEmail;
+        user.PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim();
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;

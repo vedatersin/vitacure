@@ -1,0 +1,36 @@
+@model vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+
+<form method="get" action="@Model.ActionUrl" class="admin-filter-bar" data-admin-async-form="true">
+    <div class="admin-filter-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" name="@Model.SearchName" value="@Model.SearchValue" placeholder="@Model.SearchPlaceholder" />
+    </div>
+
+    @foreach (var select in Model.Selects)
+    {
+        <label class="admin-filter-select">
+            <span>@select.Label</span>
+            <select name="@select.Name">
+                @foreach (var option in select.Options)
+                {
+                    if (string.Equals(option.Value, select.Value, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="@option.Value" selected>@option.Label</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Value">@option.Label</option>
+                    }
+                }
+            </select>
+        </label>
+    }
+
+    <div class="admin-filter-meta">
+        <button type="submit" class="admin-filter-ghost">Uygula</button>
+        @if (!string.IsNullOrWhiteSpace(Model.PrimaryActionLabel) && !string.IsNullOrWhiteSpace(Model.PrimaryActionUrl))
+        {
+            <a href="@Model.PrimaryActionUrl" class="admin-filter-action">@Model.PrimaryActionLabel</a>
+        }
+    </div>
+</form>

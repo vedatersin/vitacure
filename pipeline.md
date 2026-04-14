@@ -168,9 +168,9 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 
 ### Eksikler
 
-- [ ] Sifre sifirlama akisi
-- [ ] E-posta dogrulama
-- [ ] Rate limiting
+- [x] Sifre sifirlama akisi
+- [x] E-posta dogrulama
+- [x] Rate limiting
 - [ ] 2FA hazirligi
 
 ## Faz 6 - Admin Paneli
@@ -188,6 +188,14 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 - [x] Product-tag baglantisi
 - [x] Orders listeleme
 
+### Backend Notlari
+
+- [x] Admin UI icin ayri `vitacureAdminUIPipeline.md` ile tasarim takibi baslatildi
+- [ ] Admin bildirim merkezi UI olarak hazir; backend omurga gerekecek
+- [ ] Kullanici aksiyonlarindan (yeni siparis, sepete ekleme, favori, yeni uye kaydi) bildirim event akisi tasarlanacak
+- [ ] Bildirim entity/read state/list/detail omurgasi daha sonra Faz 6 veya yeni bir admin notification fazi olarak ele alinacak
+- [ ] Admin subdomain gecisi icin ileride cookie domain, auth ayari ve host bazli route planlamasi yapilacak
+
 ### Eksikler
 
 - [ ] User create/reset/role assignment islemleri
@@ -195,7 +203,7 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 - [ ] Product delete / gorsel yukleme / daha guclu validasyon
 - [ ] Tag delete
 - [ ] Admin tarafi toplu islemler
-- [ ] Admin cache invalidation akislari
+- [x] Admin cache invalidation akislari
 
 ## Faz 7 - Musteri Hesabi ve Favoriler
 
@@ -204,6 +212,7 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 - [x] Kalici favori tabloları eklendi
 - [x] Kalici adres tabloları eklendi
 - [x] Kalici sepet tablosu ve servis katmani eklendi
+- [x] Gecici oturum sepet/favori saklama ve login sonrasi merge akisi eklendi
 - [x] `CustomerAccountService` yazildi
 - [x] Favori toggle endpoint'i eklendi
 - [x] Account dashboard modeli yazildi
@@ -213,17 +222,17 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 - [x] Urun karti kalp butonlari gercek endpoint'e baglandi
 - [x] Urun karti ve urun detay sepet butonlari gercek endpoint'e baglandi
 - [x] Header sepet sayaci dinamik hale getirildi
-- [x] Girissiz favori denemesinde login redirect akisi eklendi
-- [x] Girissiz sepete ekleme denemesinde login redirect akisi eklendi
+- [x] Girissiz favori denemesinde gecici oturum akisi eklendi
+- [x] Girissiz sepete ekleme denemesinde gecici oturum akisi eklendi
 - [x] Varsayilan veya ilk kayitli adresle siparis olusturma akisi eklendi
 - [x] Hesabim sayfasina siparis gecmisi eklendi
 - [x] Canli musteri kaydi + favori + adres akisi dogrulandi
 
 ### Eksikler
 
-- [ ] Favori sayacinin header'da dinamik gosterimi
-- [ ] Adres duzenleme / silme
-- [ ] Musteri profil guncelleme
+- [x] Favori sayacinin header'da dinamik gosterimi
+- [x] Adres duzenleme / silme
+- [x] Musteri profil guncelleme
 - [x] Siparis gecmisi
 - [x] Kalici sepet
 
@@ -240,10 +249,10 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 
 ### Eksikler
 
-- [ ] Gercek Redis instance ile canli baglanti testi
-- [ ] Admin CRUD sonrasi ilgili output cache temizleme stratejisi
-- [ ] Cache invalidation servis katmani
-- [ ] Cache hit/miss gozlemlenebilirligi
+- [x] Gercek Redis instance ile canli baglanti testi
+- [x] Admin CRUD sonrasi ilgili output cache temizleme stratejisi
+- [x] Cache invalidation servis katmani
+- [x] Cache hit/miss gozlemlenebilirligi
 
 ## Faz 9 - Hemen Siradaki Isler
 
@@ -253,13 +262,11 @@ Amac: ne yapildi, ne sirada, hangi teknik kurallar gecerli, hangi moduller sonra
 - [x] Siparis entity ve servis omurgasini kurmak
 - [x] Musteri siparis gecmisi ekranini acmak
 - [x] Admin order listeleme modulu
-- [ ] Sifre sifirlama akisi
+- [x] Sifre sifirlama akisi
 
 ### Onerilen Sira
 
-1. Password reset
-2. Redis canli baglanti
-3. Cache invalidation
+1. 2FA hazirligi
 
 ## Faz 10 - Teknik Borclar ve Dikkat Noktalari
 
@@ -290,7 +297,13 @@ Bu dosya guncellendiginde sistem su durumda:
 - Musteri account, favori ve adres akisi aktif
 - Storefront SSR urun/kategori/urun detay akislari aktif
 - Output cache aktif
-- Redis hazirligi var, canli baglanti henuz yok
-- Kalici sepet, sepet sayfasi ve header sepet sayaci aktif
+- Redis baglanti durumu dashboard'da gozlemlenebiliyor, Memurai ile canli baglanti dogrulandi
+- Output cache hit/miss, yazma ve invalidation metrikleri admin dashboard'da gozlemlenebiliyor
+- Kalici sepet, sepet sayfasi, header sepet sayaci ve header favori sayaci aktif
+- Girissiz kullanicida gecici sepet/favori cookie oturumu aktif, login basarisinda uye hesabina merge ediliyor
 - Siparis entityleri, siparis olusturma akisi, musteri siparis gecmisi ve admin siparis listeleme aktif
+- Sifre sifirlama akisi aktif, e-posta servisi gelene kadar reset linki ekranda uretiliyor
+- E-posta dogrulama akisi aktif, kayit sonrasi dogrulama linki ekranda uretiliyor
+- Login, register, forgot-password, reset-password ve admin login akislari rate limiting ile korunuyor
+- Admin category/product/tag CRUD sonrasi output cache invalidation aktif
 - Test suite aktif ve buyuyor

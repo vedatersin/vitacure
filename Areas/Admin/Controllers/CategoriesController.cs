@@ -17,9 +17,16 @@ public class CategoriesController : Controller
     }
 
     [HttpGet("/admin/categories")]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index([FromQuery] string? q, [FromQuery] string? status, [FromQuery] string? structure, CancellationToken cancellationToken)
     {
         var model = await _adminCategoryService.GetCategoriesAsync(cancellationToken);
+        model = ApplyFilters(model, q, status, structure);
+
+        if (IsAjaxRequest())
+        {
+            return PartialView("~/Areas/Admin/Views/Categories/_ListContent.cshtml", model);
+        }
+
         return View(model);
     }
 
@@ -80,4 +87,51 @@ public class CategoriesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    private static CategoryListViewModel ApplyFilters(CategoryListViewModel model, string? q, string? status, string? structure)
+    {
+        var search = q?.Trim();
+        var normalizedStatus = string.IsNullOrWhiteSpace(status) ? "all" : status.Trim().ToLowerInvariant();
+        var normalizedStructure = string.IsNullOrWhiteSpace(structure) ? "all" : structure.Trim().ToLowerInvariant();
+
+        IEnumerable<CategoryListItemViewModel> query = model.Categories;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(item =>
+                item.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.Slug.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.ParentName.Contains(search, StringComparison.OrdinalIgnoreCase));
+        }
+
+        query = normalizedStatus switch
+        {
+            "active" => query.Where(item => item.IsActive),
+            "passive" => query.Where(item => !item.IsActive),
+            _ => query
+        };
+
+        query = normalizedStructure switch
+        {
+            "root" => query.Where(item => item.ParentName == "-"),
+            "child" => query.Where(item => item.ParentName != "-"),
+            _ => query
+        };
+
+        var items = query.ToList();
+
+        return new CategoryListViewModel
+        {
+            SearchTerm = search,
+            StatusFilter = normalizedStatus,
+            StructureFilter = normalizedStructure,
+            TotalCount = items.Count,
+            RootCount = items.Count(item => item.ParentName == "-"),
+            ActiveCount = items.Count(item => item.IsActive),
+            Categories = items
+        };
+    }
+
+    private bool IsAjaxRequest()
+        => string.Equals(Request.Headers["X-Requested-With"].ToString(), "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 }

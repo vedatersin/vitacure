@@ -1,0 +1,95 @@
+@model vitacure.Models.ViewModels.Admin.AdminOrderListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Operasyon",
+        Title = "Siparis listesi",
+        Description = "Sepetten olusturulan siparisler, durumlari ve gelir etkisi burada izlenir.",
+        IconClass = "fa-solid fa-bag-shopping",
+        AsideTitle = "Operasyon ozeti",
+        AsideText = "Acil takip gerektiren siparisler ve toplam gelir bu ekranin saginda hizli bir bakisla okunabilir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Bekleyen", Value = Model.PendingCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Tamamlanan", Value = Model.CompletedCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Siparisler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/orders",
+        SearchPlaceholder = "Siparis no, musteri, durum veya e-posta ara...",
+        SearchValue = Model.SearchTerm,
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "pending", Label = "Bekleyenler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "completed", Label = "Tamamlananlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "cancelled", Label = "Iptaller" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "volume",
+                Label = "Siparis Tipi",
+                Value = Model.VolumeFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum siparisler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "single", Label = "Tek urunlu" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "multi", Label = "Cok urunlu" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Musteri</th>
+                    <th>E-posta</th>
+                    <th>Durum</th>
+                    <th>Adet</th>
+                    <th>Tutar</th>
+                    <th>Tarih</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@order.OrderNumber</td>
+                        <td>@order.CustomerName</td>
+                        <td>@order.CustomerEmail</td>
+                        <td>@order.Status</td>
+                        <td>@order.TotalQuantity</td>
+                        <td>@order.TotalAmount.ToString("0.00") TL</td>
+                        <td>@order.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

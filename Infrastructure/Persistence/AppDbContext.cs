@@ -81,6 +81,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
             entity.Property(x => x.OldPrice).HasColumnType("decimal(18,2)");
             entity.Property(x => x.Rating).HasColumnType("decimal(3,2)");
             entity.Property(x => x.ImageUrl).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.GalleryImageUrls).HasColumnType("nvarchar(max)");
             entity.HasIndex(x => x.Slug).IsUnique();
 
             entity.HasOne(x => x.Category)

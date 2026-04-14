@@ -7,6 +7,8 @@ public class DashboardViewModel
     public int CustomerCount { get; set; }
     public int BackOfficeUserCount { get; set; }
     public int OrderCount { get; set; }
+    public RedisConnectionStatusViewModel RedisStatus { get; set; } = new();
+    public CacheMetricsViewModel CacheMetrics { get; set; } = new();
     public IReadOnlyList<DashboardMetricCardViewModel> Cards { get; set; } = Array.Empty<DashboardMetricCardViewModel>();
 }
 

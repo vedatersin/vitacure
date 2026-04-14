@@ -1,74 +1,13 @@
-﻿@model vitacure.Models.ViewModels.Admin.CategoryListViewModel
+@model vitacure.Models.ViewModels.Admin.CategoryListViewModel
 
 @{
     ViewData["Title"] = "Kategoriler";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Kategori Yönetimi</div>
-            <h1 class="auth-title">Kategori listesi</h1>
-            <p class="auth-subtitle">Storefront tarafındaki dinamik kategori route’ları bu veri setinden besleniyor.</p>
-
-            <div class="auth-account-grid mb-4">
-                <div class="auth-account-item">
-                    <span>Toplam Kategori</span>
-                    <strong>@Model.TotalCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Kök Kategori</span>
-                    <strong>@Model.RootCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Aktif</span>
-                    <strong>@Model.ActiveCount</strong>
-                </div>
-            </div>
-
-            <div class="auth-admin-actions mb-4">
-                <a href="/admin/categories/create" class="btn auth-submit-btn auth-secondary-btn">Yeni Kategori</a>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table auth-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Ad</th>
-                            <th>Slug</th>
-                            <th>Üst Kategori</th>
-                            <th>Ürün Sayısı</th>
-                            <th>Durum</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var category in Model.Categories)
-                        {
-                            <tr>
-                                <td>@category.Id</td>
-                                <td>@category.Name</td>
-                                <td>@category.Slug</td>
-                                <td>@category.ParentName</td>
-                                <td>@category.ProductCount</td>
-                                <td>
-                                    <span class="auth-status-badge @(category.IsActive ? "is-active" : "is-passive")">
-                                        @(category.IsActive ? "Aktif" : "Pasif")
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <a href="/admin/categories/edit/@category.Id" class="btn auth-table-link">Düzenle</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/categories">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Categories/_ListContent.cshtml", Model)
 </div>
+
+@section Scripts {
+    <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+}

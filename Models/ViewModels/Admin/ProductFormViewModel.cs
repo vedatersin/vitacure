@@ -33,6 +33,9 @@ public class ProductFormViewModel
     [Display(Name = "Görsel URL")]
     public string ImageUrl { get; set; } = string.Empty;
 
+    [Display(Name = "Galeri Görselleri")]
+    public string? GalleryImageUrls { get; set; }
+
     [Range(0, int.MaxValue)]
     [Display(Name = "Stok")]
     public int Stock { get; set; }

@@ -1,0 +1,24 @@
+@model vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+
+<section class="admin-section-card admin-compact-header">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminBreadcrumb.cshtml", Model.Breadcrumbs)
+    <div class="admin-compact-header-row">
+        <div>
+            <div class="admin-page-eyebrow">@Model.Eyebrow</div>
+            <h1 class="admin-compact-title">@Model.Title</h1>
+            <p class="admin-page-subtitle">@Model.Description</p>
+        </div>
+        @if (Model.Stats.Count > 0)
+        {
+            <div class="admin-compact-stats">
+                @foreach (var stat in Model.Stats)
+                {
+                    <div class="admin-compact-stat @stat.ToneClass">
+                        <span>@stat.Label</span>
+                        <strong>@stat.Value</strong>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

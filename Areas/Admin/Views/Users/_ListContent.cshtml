@@ -1,0 +1,98 @@
+@model vitacure.Models.ViewModels.Admin.UserListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Erisim Yonetimi",
+        Title = "Kullanici listesi",
+        Description = "Musteri ve backoffice hesaplari ayrik hesap tipleriyle tek ekranda izleniyor.",
+        IconClass = "fa-solid fa-users",
+        AsideTitle = "Hesap ozeti",
+        AsideText = "Musteri ve yonetim hesap dagilimi bu bolumde ust seviye bir kontrol noktasi olarak gorunur.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Musteri", Value = Model.CustomerCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Yonetim", Value = Model.BackOfficeCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Kullanicilar", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/users",
+        SearchPlaceholder = "Kullanici ara, rol filtrele, durum sec...",
+        SearchValue = Model.SearchTerm,
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "accountType",
+                Label = "Hesap Tipi",
+                Value = Model.AccountTypeFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum hesaplar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "customer", Label = "Musteri" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "backoffice", Label = "Yonetim" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Hesap Tipi</th>
+                    <th>Rol</th>
+                    <th>Durum</th>
+                    <th>Olusturulma</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.FullName</td>
+                        <td>@user.Email</td>
+                        <td>@user.AccountTypeLabel</td>
+                        <td>@user.RoleSummary</td>
+                        <td>
+                            <span class="auth-status-badge @(user.IsActive ? "is-active" : "is-passive")">
+                                @(user.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td>@user.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

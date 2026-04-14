@@ -10,6 +10,7 @@ public class Product
     public decimal? OldPrice { get; set; }
     public decimal Rating { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public string? GalleryImageUrls { get; set; }
     public int Stock { get; set; }
     public int CategoryId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

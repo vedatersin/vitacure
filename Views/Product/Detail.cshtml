@@ -12,8 +12,30 @@
 
             <div class="row align-items-center g-5 product-detail-row">
                 <div class="col-lg-6">
-                    <div class="product-detail-media">
-                        <img src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" />
+                    <div class="product-detail-gallery">
+                        <div class="product-detail-media">
+                            <img src="@Model.ImageUrl"
+                                 alt="@Model.Name"
+                                 loading="lazy"
+                                 data-product-main-image />
+                        </div>
+
+                        @if (Model.GalleryImages.Count > 1)
+                        {
+                            <div class="product-detail-thumbs">
+                                @foreach (var image in Model.GalleryImages)
+                                {
+                                    var isActive = string.Equals(image, Model.ImageUrl, StringComparison.OrdinalIgnoreCase);
+                                    <button type="button"
+                                            class="product-detail-thumb @(isActive ? "is-active" : null)"
+                                            data-product-thumb="true"
+                                            data-image-src="@image"
+                                            aria-pressed="@(isActive ? "true" : "false")">
+                                        <img src="@image" alt="@Model.Name" loading="lazy" />
+                                    </button>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -97,4 +119,5 @@
 
 @section Scripts {
     <script src="~/js/components/product-card.js" asp-append-version="true"></script>
+    <script src="~/js/pages/product-detail.js" asp-append-version="true"></script>
 }

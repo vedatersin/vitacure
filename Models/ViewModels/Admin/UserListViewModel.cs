@@ -2,6 +2,9 @@
 
 public class UserListViewModel
 {
+    public string? SearchTerm { get; set; }
+    public string AccountTypeFilter { get; set; } = "all";
+    public string StatusFilter { get; set; } = "all";
     public int TotalCount { get; set; }
     public int CustomerCount { get; set; }
     public int BackOfficeCount { get; set; }

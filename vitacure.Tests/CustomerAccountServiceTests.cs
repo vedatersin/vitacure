@@ -107,6 +107,131 @@ public class CustomerAccountServiceTests
     }
 
     [Fact]
+    public async Task UpdateAddressAsync_Updates_Address_And_Default_State()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.CustomerAddresses.AddRange(
+            new CustomerAddress
+            {
+                Id = 10,
+                AppUserId = 1,
+                Title = "Ev",
+                RecipientName = "Test User",
+                PhoneNumber = "5551112233",
+                City = "İstanbul",
+                District = "Kadıköy",
+                AddressLine = "Adres 1",
+                IsDefault = true
+            },
+            new CustomerAddress
+            {
+                Id = 11,
+                AppUserId = 1,
+                Title = "Ofis",
+                RecipientName = "Test User",
+                PhoneNumber = "5554445566",
+                City = "İstanbul",
+                District = "Şişli",
+                AddressLine = "Adres 2",
+                IsDefault = false
+            });
+        await dbContext.SaveChangesAsync();
+
+        var service = CreateCustomerAccountService(dbContext);
+
+        var updated = await service.UpdateAddressAsync(1, 11, new AddressFormViewModel
+        {
+            Title = "Merkez Ofis",
+            RecipientName = "Yeni Kisi",
+            PhoneNumber = "5559998877",
+            City = "Ankara",
+            District = "Cankaya",
+            AddressLine = "Adres 3",
+            PostalCode = "06000",
+            IsDefault = true
+        });
+
+        var addresses = await dbContext.CustomerAddresses.OrderBy(x => x.Id).ToListAsync();
+
+        Assert.True(updated);
+        Assert.False(addresses[0].IsDefault);
+        Assert.True(addresses[1].IsDefault);
+        Assert.Equal("Merkez Ofis", addresses[1].Title);
+        Assert.Equal("Ankara", addresses[1].City);
+    }
+
+    [Fact]
+    public async Task DeleteAddressAsync_Reassigns_Default_When_Default_Address_Is_Removed()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.CustomerAddresses.AddRange(
+            new CustomerAddress
+            {
+                Id = 10,
+                AppUserId = 1,
+                Title = "Ev",
+                RecipientName = "Test User",
+                PhoneNumber = "5551112233",
+                City = "İstanbul",
+                District = "Kadıköy",
+                AddressLine = "Adres 1",
+                IsDefault = true,
+                CreatedAt = new DateTime(2026, 1, 2, 10, 0, 0, DateTimeKind.Utc)
+            },
+            new CustomerAddress
+            {
+                Id = 11,
+                AppUserId = 1,
+                Title = "Ofis",
+                RecipientName = "Test User",
+                PhoneNumber = "5554445566",
+                City = "İstanbul",
+                District = "Şişli",
+                AddressLine = "Adres 2",
+                IsDefault = false,
+                CreatedAt = new DateTime(2026, 1, 3, 10, 0, 0, DateTimeKind.Utc)
+            });
+        await dbContext.SaveChangesAsync();
+
+        var service = CreateCustomerAccountService(dbContext);
+
+        var deleted = await service.DeleteAddressAsync(1, 10);
+        var addresses = await dbContext.CustomerAddresses.OrderBy(x => x.Id).ToListAsync();
+
+        Assert.True(deleted);
+        Assert.Single(addresses);
+        Assert.True(addresses[0].IsDefault);
+        Assert.Equal(11, addresses[0].Id);
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_Updates_Basic_Profile_Fields()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        await dbContext.SaveChangesAsync();
+
+        var service = CreateCustomerAccountService(dbContext);
+
+        var updated = await service.UpdateProfileAsync(1, new ProfileFormViewModel
+        {
+            FullName = "Yeni Kullanici",
+            Email = "yeni@test.local",
+            PhoneNumber = "5557778899"
+        });
+
+        var user = await dbContext.Users.FirstAsync(x => x.Id == 1);
+
+        Assert.True(updated);
+        Assert.Equal("Yeni Kullanici", user.FullName);
+        Assert.Equal("yeni@test.local", user.Email);
+        Assert.Equal("yeni@test.local", user.UserName);
+        Assert.Equal("5557778899", user.PhoneNumber);
+    }
+
+    [Fact]
     public async Task GetDashboardAsync_Returns_Order_History_When_Order_Exists()
     {
         await using var dbContext = CreateDbContext();

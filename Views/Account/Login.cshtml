@@ -11,6 +11,11 @@
             <h1 class="auth-title">Vitacure hesabınla giriş yap</h1>
             <p class="auth-subtitle">Alışveriş hesabınla oturum açarak siparişlerini ve hesabını yönetebilirsin.</p>
 
+            @if (TempData["AuthMessage"] is string authMessage)
+            {
+                <div class="alert alert-warning">@authMessage</div>
+            }
+
             <form method="post" class="auth-form">
                 @Html.AntiForgeryToken()
                 <input asp-for="ReturnUrl" type="hidden" />
@@ -32,6 +37,10 @@
                 <div class="form-check mb-4">
                     <input asp-for="RememberMe" class="form-check-input" />
                     <label asp-for="RememberMe" class="form-check-label"></label>
+                </div>
+
+                <div class="auth-footer-link mb-4 text-start">
+                    <a href="/forgot-password">Şifremi unuttum</a>
                 </div>
 
                 <button type="submit" class="btn auth-submit-btn">Giriş Yap</button>

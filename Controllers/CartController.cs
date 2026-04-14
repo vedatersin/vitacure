@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using vitacure.Application.Abstractions;
@@ -8,11 +7,11 @@ using vitacure.Models.ViewModels.Cart;
 
 namespace vitacure.Controllers;
 
-[Authorize]
 public class CartController : Controller
 {
     private readonly IAccountAccessService _accountAccessService;
     private readonly ICartService _cartService;
+    private readonly IGuestSessionService _guestSessionService;
     private readonly IOrderService _orderService;
     private readonly UserManager<AppUser> _userManager;
 
@@ -20,11 +19,13 @@ public class CartController : Controller
         UserManager<AppUser> userManager,
         IAccountAccessService accountAccessService,
         ICartService cartService,
+        IGuestSessionService guestSessionService,
         IOrderService orderService)
     {
         _userManager = userManager;
         _accountAccessService = accountAccessService;
         _cartService = cartService;
+        _guestSessionService = guestSessionService;
         _orderService = orderService;
     }
 
@@ -32,22 +33,16 @@ public class CartController : Controller
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (!CanAccessCart(user))
-        {
-            return RedirectToAction("Login", "Account", new { returnUrl = "/cart" });
-        }
-
-        var model = await _cartService.GetCartAsync(user!.Id, cancellationToken);
-        if (model is null)
-        {
-            return RedirectToAction("Login", "Account", new { returnUrl = "/cart" });
-        }
+        var model = CanAccessCart(user)
+            ? await _cartService.GetCartAsync(user!.Id, cancellationToken)
+            : await _guestSessionService.GetCartAsync(cancellationToken);
 
         ViewData["Title"] = "Sepetim";
-        ViewData["MetaDescription"] = "Vitacure sepetinizdeki ürünleri görüntüleyin ve siparişinizi hazırlayın.";
+        ViewData["MetaDescription"] = "Vitacure sepetinizdeki urunleri goruntuleyin ve siparisinizi hazirlayin.";
         ViewData["CanonicalPath"] = "/cart";
+        ViewData["RequiresLoginForCheckout"] = !CanAccessCart(user);
 
-        return View(model);
+        return View(model ?? new CartViewModel());
     }
 
     [HttpPost("/cart/checkout")]
@@ -77,12 +72,10 @@ public class CartController : Controller
     public async Task<IActionResult> AddItem([FromBody] AddCartItemRequest request, CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (!CanAccessCart(user))
-        {
-            return Unauthorized();
-        }
+        var result = CanAccessCart(user)
+            ? await _cartService.AddItemAsync(user!.Id, request.ProductSlug, request.Quantity, cancellationToken)
+            : await _guestSessionService.AddCartItemAsync(request.ProductSlug, request.Quantity, cancellationToken);
 
-        var result = await _cartService.AddItemAsync(user!.Id, request.ProductSlug, request.Quantity, cancellationToken);
         if (!result.IsSuccess)
         {
             return BadRequest(result);
@@ -96,12 +89,15 @@ public class CartController : Controller
     public async Task<IActionResult> UpdateQuantity(string productSlug, [FromForm] int quantity, CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (!CanAccessCart(user))
+        if (CanAccessCart(user))
         {
-            return RedirectToAction("Login", "Account", new { returnUrl = "/cart" });
+            await _cartService.UpdateQuantityAsync(user!.Id, productSlug, quantity, cancellationToken);
+        }
+        else
+        {
+            await _guestSessionService.UpdateCartQuantityAsync(productSlug, quantity, cancellationToken);
         }
 
-        await _cartService.UpdateQuantityAsync(user!.Id, productSlug, quantity, cancellationToken);
         return RedirectToAction(nameof(Index));
     }
 
@@ -110,12 +106,15 @@ public class CartController : Controller
     public async Task<IActionResult> RemoveItem(string productSlug, CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (!CanAccessCart(user))
+        if (CanAccessCart(user))
         {
-            return RedirectToAction("Login", "Account", new { returnUrl = "/cart" });
+            await _cartService.RemoveItemAsync(user!.Id, productSlug, cancellationToken);
+        }
+        else
+        {
+            await _guestSessionService.RemoveCartItemAsync(productSlug, cancellationToken);
         }
 
-        await _cartService.RemoveItemAsync(user!.Id, productSlug, cancellationToken);
         return RedirectToAction(nameof(Index));
     }
 

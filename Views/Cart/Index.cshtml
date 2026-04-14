@@ -8,7 +8,7 @@
     <div class="container section-container">
         <div class="cart-page-header">
             <h1>Sepetim</h1>
-            <p>Eklediğiniz ürünleri burada görebilir, miktarlarını güncelleyebilir ve sipariş adımına hazırlanabilirsiniz.</p>
+            <p>Eklediginiz urunleri burada gorebilir, miktarlarini guncelleyebilir ve siparis adimina hazirlanabilirsiniz.</p>
         </div>
 
         @if (TempData["CheckoutMessage"] is string checkoutMessage)
@@ -21,9 +21,9 @@
         @if (Model.IsEmpty)
         {
             <div class="cart-empty-state">
-                <h2>Sepetiniz şu an boş</h2>
-                <p>Beğendiğiniz ürünleri sepete eklediğinizde burada listelenecek.</p>
-                <a href="/" class="btn btn-primary cart-continue-btn">Ürünleri Keşfet</a>
+                <h2>Sepetiniz su an bos</h2>
+                <p>Begendiginiz urunleri sepete eklediginizde burada listelenecek.</p>
+                <a href="/" class="btn btn-primary cart-continue-btn">Urunleri Kesfet</a>
             </div>
         }
         else
@@ -52,12 +52,12 @@
                                                    min="1"
                                                    value="@item.Quantity"
                                                    class="form-control cart-quantity-input" />
-                                            <button type="submit" class="btn btn-outline-secondary cart-update-btn">Güncelle</button>
+                                            <button type="submit" class="btn btn-outline-secondary cart-update-btn">Guncelle</button>
                                         </form>
                                         <div class="cart-item-total">&#8378; @item.LineTotal</div>
                                         <form method="post" action="/cart/items/@item.ProductSlug/remove">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-link cart-remove-btn">Kaldır</button>
+                                            <button type="submit" class="btn btn-link cart-remove-btn">Kaldir</button>
                                         </form>
                                     </div>
                                 </div>
@@ -68,23 +68,34 @@
 
                 <div class="col-lg-4">
                     <aside class="cart-summary-card">
-                        <h2>Sipariş Özeti</h2>
+                        <h2>Siparis Ozeti</h2>
                         <div class="cart-summary-row">
-                            <span>Toplam ürün</span>
+                            <span>Toplam urun</span>
                             <strong>@Model.TotalQuantity</strong>
                         </div>
                         <div class="cart-summary-row">
                             <span>Ara toplam</span>
                             <strong>&#8378; @Model.TotalAmount</strong>
                         </div>
-                        <div class="cart-summary-note">
-                            Sipariş varsayılan adresinizle oluşturulur. Varsayılan adresiniz yoksa hesabınızdaki ilk kayıtlı adres kullanılır.
-                        </div>
-                        <form method="post" action="/cart/checkout" class="mb-3">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-primary cart-summary-link">Siparişi Oluştur</button>
-                        </form>
-                        <a href="/" class="btn btn-outline-primary cart-summary-link">Alışverişe Devam Et</a>
+                        @if (ViewData["RequiresLoginForCheckout"] as bool? == true)
+                        {
+                            <div class="cart-summary-note">
+                                Gecici sepetin korunuyor. Siparisi tamamlamak icin giris yaptiginda bu sepet hesabina aktarilacak.
+                            </div>
+                            <a href="/login?returnUrl=%2Fcart" class="btn btn-primary cart-summary-link mb-3">Giris Yap ve Devam Et</a>
+                        }
+                        else
+                        {
+                            <div class="cart-summary-note">
+                                Siparis varsayilan adresinizle olusturulur. Varsayilan adresiniz yoksa hesabinizdaki ilk kayitli adres kullanilir.
+                            </div>
+                            <form method="post" action="/cart/checkout" class="mb-3">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-primary cart-summary-link">Siparisi Olustur</button>
+                            </form>
+                        }
+
+                        <a href="/" class="btn btn-outline-primary cart-summary-link">Alisverise Devam Et</a>
                     </aside>
                 </div>
             </div>

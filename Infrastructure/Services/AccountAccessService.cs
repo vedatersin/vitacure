@@ -8,7 +8,7 @@ public class AccountAccessService : IAccountAccessService
 {
     public bool CanAccessStorefront(AppUser? user)
     {
-        return user is { IsActive: true, AccountType: AccountType.Customer };
+        return user is { IsActive: true, EmailConfirmed: true, AccountType: AccountType.Customer };
     }
 
     public bool CanAccessBackOffice(AppUser? user)

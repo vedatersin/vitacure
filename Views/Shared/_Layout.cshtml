@@ -8,16 +8,25 @@
 @inject UserManager<AppUser> UserManager
 @inject ICustomerAccountService CustomerAccountService
 @inject ICartService CartService
+@inject IGuestSessionService GuestSessionService
 @{
     var antiForgeryTokens = Antiforgery.GetAndStoreTokens(Context);
     IReadOnlyList<string> favoriteSlugs = Array.Empty<string>();
     var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
     var isCustomerUser = currentUser is not null && currentUser.AccountType == AccountType.Customer && currentUser.IsActive;
     var cartItemCount = 0;
+    var favoriteCount = 0;
     if (isCustomerUser)
     {
         favoriteSlugs = await CustomerAccountService.GetFavoriteProductSlugsAsync(currentUser!.Id);
+        favoriteCount = favoriteSlugs.Count;
         cartItemCount = await CartService.GetCartItemCountAsync(currentUser.Id);
+    }
+    else
+    {
+        favoriteSlugs = GuestSessionService.GetFavoriteProductSlugs();
+        favoriteCount = GuestSessionService.GetFavoriteCount();
+        cartItemCount = GuestSessionService.GetCartItemCount();
     }
 }
 <!DOCTYPE html>
@@ -45,6 +54,7 @@
 <body class="d-flex flex-column min-vh-100 @(isHomePage ? "page-home" : "page-inner")"
       data-customer-authenticated="@(isCustomerUser.ToString().ToLowerInvariant())"
       data-favorite-slugs='@JsonSerializer.Serialize(favoriteSlugs)'
+      data-favorite-count="@favoriteCount"
       data-cart-item-count="@cartItemCount">
     <header class="vitacure-header">
         <nav class="navbar navbar-expand-lg navbar-dark bg-transparent w-100 position-absolute ag-navbar" style="z-index: 1050 !important;">
@@ -78,8 +88,9 @@
                         </li>
                     </ul>
                     <div class="ag-nav-icons ms-lg-4">
-                        <a href="/account#favorites" class="text-white fs-5 nav-icon-btn no-underline" title="Favoriler" style="cursor:pointer;">
+                        <a href="/account#favorites" class="text-white fs-5 nav-icon-btn no-underline position-relative" title="Favoriler" style="cursor:pointer;">
                             <i class="fa-solid fa-heart"></i>
+                            <span class="cart-badge favorite-badge">@favoriteCount</span>
                         </a>
                         <a href="/cart" class="text-white fs-5 nav-icon-btn position-relative" title="Sepetim" style="cursor:pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="1em" height="1em" fill="currentColor" style="vertical-align:-0.125em;">

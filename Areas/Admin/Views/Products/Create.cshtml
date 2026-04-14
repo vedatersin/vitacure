@@ -1,25 +1,38 @@
-﻿@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
+@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
 
 @{
-    ViewData["Title"] = "Yeni Ürün";
+    ViewData["Title"] = "Yeni Urun";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Yonetimi",
+        Title = "Yeni urun olustur",
+        Description = "Bu form storefront urun kartlarini ve detay sayfasini besleyecek kaydi olusturur.",
+        IconClass = "fa-solid fa-capsules",
+        AsideTitle = "Form akis notu",
+        AsideText = "Fiyat, stok, gorsel ve etiket secimleri storefront deneyimini aninda etkiler. Kayit oncesi kategori ve aktiflik durumunu kontrol etmek iyi olur.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Mod", Value = "Yeni" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Durum", Value = Model.IsActive ? "Aktif" : "Pasif" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Urunler", Url = "/admin/products" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Yeni", IsActive = true }
+        }
+    };
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Ürün Yönetimi</div>
-            <h1 class="auth-title">Yeni ürün oluştur</h1>
-            <p class="auth-subtitle">Bu form storefront ürün kartlarını ve detay sayfasını besleyecek kaydı oluşturur.</p>
-
-            <partial name="_Form" model="Model" />
-        </div>
-    </div>
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminCompactHeader.cshtml", hero)
+    <section class="admin-section-card">
+        <partial name="_Form" model="Model" />
+    </section>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/pages/admin-product-gallery.js" asp-append-version="true"></script>
 }

@@ -1,23 +1,35 @@
-﻿@model vitacure.Models.ViewModels.Admin.TagFormViewModel
+@model vitacure.Models.ViewModels.Admin.TagFormViewModel
 
 @{
     ViewData["Title"] = "Yeni Etiket";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Segmentasyon",
+        Title = "Yeni etiket olustur",
+        Description = "Bu kayit urun formunda secilebilir hale gelir ve gelecekte filtreleme icin kullanilir.",
+        IconClass = "fa-solid fa-tag",
+        AsideTitle = "Form akis notu",
+        AsideText = "Kisa ve tutarli etiket adlari urun segmentasyonunda daha saglikli bir secim deneyimi verir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Mod", Value = "Yeni" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Slug", Value = string.IsNullOrWhiteSpace(Model.Slug) ? "Taslak" : "Hazir" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Etiketler", Url = "/admin/tags" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Yeni", IsActive = true }
+        }
+    };
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Etiket Yönetimi</div>
-            <h1 class="auth-title">Yeni etiket oluştur</h1>
-            <p class="auth-subtitle">Bu kayıt ürün formunda seçilebilir hale gelir ve gelecekte filtreleme için kullanılabilir.</p>
-
-            <partial name="_Form" model="Model" />
-        </div>
-    </div>
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        <partial name="_Form" model="Model" />
+    </section>
 </div>
 
 @section Scripts {

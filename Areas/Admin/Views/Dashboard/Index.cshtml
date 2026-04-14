@@ -1,43 +1,112 @@
-﻿@model vitacure.Models.ViewModels.Admin.DashboardViewModel
+@model vitacure.Models.ViewModels.Admin.DashboardViewModel
 
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Dashboard";
+    var metricTones = new[] { "is-cyan", "is-amber", "is-rose", "is-violet", "is-teal", "is-sky" };
+    var actionTones = new[] { "is-cyan", "is-amber", "is-rose", "is-violet", "is-teal", "is-sky" };
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Admin Panel</div>
-            <h1 class="auth-title">Yönetim özeti</h1>
-            <p class="auth-subtitle">Backoffice tarafı artık canlı verilerden temel metrikleri okuyabiliyor.</p>
-
-            <div class="auth-account-grid mb-4">
-                @foreach (var card in Model.Cards)
-                {
-                    <div class="auth-account-item">
-                        <span>@card.Title</span>
-                        <strong>@card.Value</strong>
-                        <div class="auth-metric-description">@card.Description</div>
-                    </div>
-                }
+<div class="admin-page-grid">
+    <section class="admin-section-card admin-dashboard-metrics">
+        <div class="admin-section-head">
+            <div>
+                <div class="admin-page-eyebrow">Canli Metrikler</div>
+                <h2>Sistemin mevcut durumu</h2>
+                <p>Urun, kategori, hesap, siparis ve altyapi sinyallerini tek yuzeyde toplayan yonetim katmani.</p>
             </div>
-
-            <div class="auth-admin-actions mb-4">
-                <a href="/admin/users" class="btn auth-submit-btn auth-secondary-btn">Kullanıcıları Gör</a>
-                <a href="/admin/categories" class="btn auth-submit-btn auth-tertiary-btn">Kategorileri Gör</a>
-                <a href="/admin/products" class="btn auth-submit-btn auth-tertiary-btn">Ürünleri Gör</a>
-                <a href="/admin/orders" class="btn auth-submit-btn auth-tertiary-btn">Siparişleri Gör</a>
-                <a href="/admin/tags" class="btn auth-submit-btn auth-tertiary-btn">Etiketleri Gör</a>
-            </div>
-
-            <form method="post" action="/admin/logout">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn auth-submit-btn">Çıkış Yap</button>
-            </form>
         </div>
-    </div>
+        <div class="admin-metric-grid">
+            @for (var index = 0; index < Model.Cards.Count; index++)
+            {
+                var card = Model.Cards[index];
+                <div class="admin-metric-card @metricTones[index % metricTones.Length]">
+                    <span>@card.Title</span>
+                    <strong>@card.Value</strong>
+                    <p>@card.Description</p>
+                </div>
+            }
+            <div class="admin-metric-card is-teal">
+                <span>@Model.RedisStatus.Title</span>
+                <strong>@Model.RedisStatus.StatusLabel</strong>
+                <p>@Model.RedisStatus.Detail</p>
+            </div>
+            <div class="admin-metric-card is-violet">
+                <span>Output Cache</span>
+                <strong>@Model.CacheMetrics.HitRateLabel hit</strong>
+                <p>@Model.CacheMetrics.Detail</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin-actions-card admin-dashboard-actions">
+        <div class="admin-section-head">
+            <div>
+                <div class="admin-page-eyebrow">Moduller</div>
+                <h2>Yonetim alanlari</h2>
+                <p>Klasik sidebarli, moduler ve tasinabilir admin tasarimina uygun olarak hizli erisim alanlarini kartlara tasidim.</p>
+            </div>
+        </div>
+        <div class="admin-action-grid">
+            <a href="/admin/orders" class="admin-action-link @actionTones[0]">
+                <span>Operasyon</span>
+                <strong>Siparisler</strong>
+                <p>Bekleyen siparisleri, hacmi ve ciroyu izle.</p>
+            </a>
+            <a href="/admin/products" class="admin-action-link @actionTones[1]">
+                <span>Katalog</span>
+                <strong>Urunler</strong>
+                <p>Storefront kartlari ve detay kayitlari burada beslenir.</p>
+            </a>
+            <a href="/admin/categories" class="admin-action-link @actionTones[2]">
+                <span>Yapi</span>
+                <strong>Kategoriler</strong>
+                <p>Slug, route ve kategori hiyerarsisi bu modulle ilerler.</p>
+            </a>
+            <a href="/admin/tags" class="admin-action-link @actionTones[3]">
+                <span>Segmentasyon</span>
+                <strong>Etiketler</strong>
+                <p>Filtreleme ve urun iliski alanlarini yonet.</p>
+            </a>
+            <a href="/admin/users" class="admin-action-link @actionTones[4]">
+                <span>Erisim</span>
+                <strong>Kullanicilar</strong>
+                <p>Musteri ve backoffice hesaplarini ayri takip et.</p>
+            </a>
+            <a href="/yonetim" class="admin-action-link @actionTones[5]">
+                <span>Kisayol</span>
+                <strong>/yonetim</strong>
+                <p>Bugun path tabanli, yarin admin.site.com gecisine hazir.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="admin-section-card admin-dashboard-technical">
+        <div class="admin-section-head">
+            <div>
+                <div class="admin-page-eyebrow">Teknik Izleme</div>
+                <h2>Altyapi ve cache notlari</h2>
+                <p>Backoffice tarafinda operasyonel sinyalleri sade ve karar verilebilir halde tutuyoruz.</p>
+            </div>
+        </div>
+        <div class="admin-metric-grid">
+            <div class="admin-metric-card is-sky">
+                <span>Cache Durumu</span>
+                <strong>@Model.CacheMetrics.StatusLabel</strong>
+                <p>Okuma: @Model.CacheMetrics.TotalLookups · Hit: @Model.CacheMetrics.HitCount · Miss: @Model.CacheMetrics.MissCount</p>
+            </div>
+            <div class="admin-metric-card is-amber">
+                <span>Yazma ve Invalidation</span>
+                <strong>@Model.CacheMetrics.WriteCount / @Model.CacheMetrics.EvictionCount</strong>
+                <p>Yazma ve invalidation hareketi panelde gorulebilir.</p>
+            </div>
+            @if (Model.CacheMetrics.RecentEvictedTags.Count > 0)
+            {
+                <div class="admin-metric-card is-rose">
+                    <span>Son Temizlenen Tag'ler</span>
+                    <strong>@string.Join(", ", Model.CacheMetrics.RecentEvictedTags)</strong>
+                    <p>Admin CRUD sonrasi temizlenen cache tag listesi.</p>
+                </div>
+            }
+        </div>
+    </section>
 </div>

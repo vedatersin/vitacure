@@ -1,0 +1,86 @@
+@model vitacure.Models.ViewModels.Admin.AdminNotificationModuleViewModel
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", Model.Hero)
+
+<section class="admin-section-card">
+    <div class="admin-notification-toolbar">
+        <div class="admin-notification-categories">
+            @foreach (var category in Model.Categories)
+            {
+                <a href="@category.Url"
+                   class="admin-notification-category @(category.IsActive ? "is-active" : null)"
+                   data-admin-async-link="true">
+                    <span>@category.Label</span>
+                    <strong>@category.Count</strong>
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="admin-notification-module">
+        <div class="admin-notification-module-list">
+            @foreach (var notification in Model.Notifications)
+            {
+                <a href="@notification.Url"
+                   class="admin-notification-module-item @(notification.IsSelected ? "is-selected" : null)"
+                   data-admin-async-link="true">
+                    <div class="admin-notification-avatar @notification.AccentClass">
+                        <i class="@notification.IconClass"></i>
+                    </div>
+                    <div class="admin-notification-module-copy">
+                        <div class="admin-notification-module-meta">
+                            <strong>@notification.Actor</strong>
+                            <small>@notification.OccurredAt.ToLocalTime().ToString("dd MMM HH:mm")</small>
+                        </div>
+                        <h3>@notification.Title</h3>
+                        <p>@notification.Summary</p>
+                        <div class="admin-notification-module-tags">
+                            <span>@notification.Source</span>
+                            <span>@notification.CategoryLabel</span>
+                            @if (notification.IsUnread)
+                            {
+                                <span class="is-unread">Yeni</span>
+                            }
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <div class="admin-notification-module-detail">
+            @if (Model.SelectedNotification is not null)
+            {
+                <div class="admin-notification-detail-head">
+                    <div class="admin-notification-avatar @Model.SelectedNotification.AccentClass">
+                        <i class="@Model.SelectedNotification.IconClass"></i>
+                    </div>
+                    <div>
+                        <span class="admin-page-eyebrow">@Model.SelectedNotification.CategoryLabel</span>
+                        <h2>@Model.SelectedNotification.Title</h2>
+                        <p>@Model.SelectedNotification.Actor • @Model.SelectedNotification.Source</p>
+                    </div>
+                    <small>@Model.SelectedNotification.OccurredAt.ToLocalTime().ToString("dd MMMM yyyy HH:mm")</small>
+                </div>
+
+                <div class="admin-notification-detail-body">
+                    <p>@Model.SelectedNotification.Body</p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.SelectedNotification.TargetLabel) && !string.IsNullOrWhiteSpace(Model.SelectedNotification.TargetUrl))
+                {
+                    <div class="admin-notification-detail-actions">
+                        <a href="@Model.SelectedNotification.TargetUrl" class="admin-filter-action">@Model.SelectedNotification.TargetLabel</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="admin-notification-empty">
+                    <i class="fa-regular fa-bell-slash"></i>
+                    <strong>Bu filtre icin bildirim bulunamadi.</strong>
+                    <p>Kategori secimini degistirerek farkli bir akis inceleyebilirsin.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>

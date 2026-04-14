@@ -1,68 +1,13 @@
 @model vitacure.Models.ViewModels.Admin.AdminOrderListViewModel
 
 @{
-    ViewData["Title"] = "Siparişler";
+    ViewData["Title"] = "Siparisler";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
-}
-
-<div class="auth-page auth-page-admin">
-    <div class="container auth-container auth-container-wide">
-        <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Sipariş Yönetimi</div>
-            <h1 class="auth-title">Sipariş listesi</h1>
-            <p class="auth-subtitle">Sepetten oluşturulan siparişler burada izlenir.</p>
-
-            <div class="auth-account-grid mb-4">
-                <div class="auth-account-item">
-                    <span>Toplam Sipariş</span>
-                    <strong>@Model.TotalCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Açık Sipariş</span>
-                    <strong>@Model.PendingCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Tamamlanan</span>
-                    <strong>@Model.CompletedCount</strong>
-                </div>
-                <div class="auth-account-item">
-                    <span>Ciro</span>
-                    <strong>@Model.TotalRevenue.ToString("0.00") TL</strong>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table auth-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Müşteri</th>
-                            <th>E-posta</th>
-                            <th>Durum</th>
-                            <th>Adet</th>
-                            <th>Tutar</th>
-                            <th>Tarih</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in Model.Orders)
-                        {
-                            <tr>
-                                <td>@order.OrderNumber</td>
-                                <td>@order.CustomerName</td>
-                                <td>@order.CustomerEmail</td>
-                                <td>@order.Status</td>
-                                <td>@order.TotalQuantity</td>
-                                <td>@order.TotalAmount.ToString("0.00") TL</td>
-                                <td>@order.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/orders">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Orders/_ListContent.cshtml", Model)
 </div>
+
+@section Scripts {
+    <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+}

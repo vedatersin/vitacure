@@ -8,11 +8,13 @@ namespace vitacure.Infrastructure.Services;
 
 public class AdminCategoryService : IAdminCategoryService
 {
+    private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
 
-    public AdminCategoryService(AppDbContext dbContext)
+    public AdminCategoryService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
     {
         _dbContext = dbContext;
+        _cacheInvalidationService = cacheInvalidationService;
     }
 
     public async Task<CategoryListViewModel> GetCategoriesAsync(CancellationToken cancellationToken = default)
@@ -91,6 +93,7 @@ public class AdminCategoryService : IAdminCategoryService
 
         _dbContext.Categories.Add(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateCategoryAsync(cancellationToken);
         return entity.Id;
     }
 
@@ -116,6 +119,7 @@ public class AdminCategoryService : IAdminCategoryService
         entity.IsActive = model.IsActive;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await _cacheInvalidationService.InvalidateCategoryAsync(cancellationToken);
         return true;
     }
 

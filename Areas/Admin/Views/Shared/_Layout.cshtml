@@ -1,0 +1,178 @@
+@using Microsoft.AspNetCore.Identity
+@using vitacure.Domain.Entities
+@inject UserManager<AppUser> UserManager
+@{
+    var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
+    var currentUserRoles = currentUser is not null ? await UserManager.GetRolesAsync(currentUser) : Array.Empty<string>();
+    var currentUserRoleLabel = currentUserRoles.FirstOrDefault() ?? "Admin";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+
+    var notificationItems = new[]
+    {
+        new { Title = "Yeni siparis olusturuldu", Source = "Musteri", Time = "Az once", Icon = "fa-solid fa-bag-shopping", Accent = "is-order", Url = "/admin/notifications?category=orders&notificationId=101" },
+        new { Title = "Urun favorilere eklendi", Source = "Storefront", Time = "2 dk once", Icon = "fa-solid fa-heart", Accent = "is-favorite", Url = "/admin/notifications?category=favorites&notificationId=103" },
+        new { Title = "Yeni uye kaydi tamamlandi", Source = "Auth", Time = "10 dk once", Icon = "fa-solid fa-user-plus", Accent = "is-member", Url = "/admin/notifications?category=members&notificationId=104" },
+        new { Title = "Sepete urun eklendi", Source = "Storefront", Time = "18 dk once", Icon = "fa-solid fa-cart-plus", Accent = "is-cart", Url = "/admin/notifications?category=cart&notificationId=102" }
+    };
+
+    bool IsActive(string controller, string action = "Index")
+        => string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)
+           && string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "Yonetim") | VitaCure Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <a href="/admin/dashboard" class="admin-brand">
+                <img src="~/img/logo.png" alt="VitaCure Logo" class="admin-brand-logo" />
+                <div class="admin-brand-copy">
+                    <strong>YONETIM PANELI</strong>
+                </div>
+            </a>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Genel</div>
+                <a href="/admin/dashboard" class="admin-nav-link @(IsActive("Dashboard") ? "is-active" : null)">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/orders" class="admin-nav-link @(IsActive("Orders") ? "is-active" : null)">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Siparisler</span>
+                </a>
+                <a href="/admin/users" class="admin-nav-link @(IsActive("Users") ? "is-active" : null)">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Kullanicilar</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Katalog</div>
+                <a href="/admin/categories" class="admin-nav-link @(IsActive("Categories") ? "is-active" : null)">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Kategoriler</span>
+                </a>
+                <a href="/admin/products" class="admin-nav-link @(IsActive("Products") ? "is-active" : null)">
+                    <i class="fa-solid fa-capsules"></i>
+                    <span>Urunler</span>
+                </a>
+                <a href="/admin/tags" class="admin-nav-link @(IsActive("Tags") ? "is-active" : null)">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>Etiketler</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Planlanan Moduller</div>
+                <a href="/admin/notifications" class="admin-nav-link @(IsActive("Notifications") ? "is-active" : null)">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Bildirimler</span>
+                </a>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Yetkilendirme</span>
+                    <small>yakinda</small>
+                </div>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Raporlar</span>
+                    <small>yakinda</small>
+                </div>
+            </div>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-spacer"></div>
+                <div class="admin-topbar-actions">
+                    <details class="admin-topbar-dropdown admin-notification-dropdown">
+                        <summary class="admin-icon-button" aria-label="Bildirimler">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="admin-icon-badge">4</span>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-notification-panel">
+                            <div class="admin-dropdown-head">
+                                <strong>Bildirimler</strong>
+                                <i class="fa-regular fa-envelope-open"></i>
+                            </div>
+                            <div class="admin-notification-list">
+                                @foreach (var notification in notificationItems)
+                                {
+                                    <a href="@notification.Url" class="admin-notification-item">
+                                        <div class="admin-notification-avatar @notification.Accent">
+                                            <i class="@notification.Icon"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>@notification.Title</strong>
+                                            <span>@notification.Source</span>
+                                            <small>@notification.Time</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                }
+                            </div>
+                            <a href="/admin/notifications" class="admin-dropdown-footer">Tum Bildirimleri Gor</a>
+                        </div>
+                    </details>
+
+                    <details class="admin-topbar-dropdown admin-profile-dropdown">
+                        <summary class="admin-profile-trigger">
+                            <div class="admin-topbar-profile-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div class="admin-topbar-profile-copy">
+                                <strong>@(currentUser?.FullName ?? "Vitacure Admin")</strong>
+                                <span>@currentUserRoleLabel</span>
+                            </div>
+                            <i class="fa-solid fa-angle-down admin-profile-caret"></i>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-profile-panel">
+                            <div class="admin-profile-panel-head">
+                                <div class="admin-topbar-profile-icon">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div class="admin-topbar-profile-copy">
+                                    <strong>@(currentUser?.FullName ?? "Vitacure Admin")</strong>
+                                    <span>@currentUserRoleLabel</span>
+                                </div>
+                            </div>
+                            <a href="/admin/dashboard" class="admin-profile-link">
+                                <i class="fa-regular fa-user"></i>
+                                <span>Profil</span>
+                            </a>
+                            <form method="post" action="/admin/logout">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="admin-profile-link admin-profile-link-button">
+                                    <i class="fa-solid fa-power-off"></i>
+                                    <span>Cikis</span>
+                                </button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

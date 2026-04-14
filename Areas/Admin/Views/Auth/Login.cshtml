@@ -1,15 +1,22 @@
-﻿@model vitacure.Models.ViewModels.Auth.LoginViewModel
+@model vitacure.Models.ViewModels.Auth.LoginViewModel
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AuthLayout.cshtml";
+    ViewData["Title"] = "Yonetim Girisi";
 }
 
 <div class="auth-page auth-page-admin">
     <div class="container auth-container">
         <div class="auth-card auth-card-admin">
-            <div class="auth-eyebrow">Yönetim Girişi</div>
-            <h1 class="auth-title">Admin paneline giriş yap</h1>
-            <p class="auth-subtitle">Bu alan yalnızca sistem yöneten backoffice hesapları içindir.</p>
+            <div class="auth-eyebrow">Yonetim Girisi</div>
+            <h1 class="auth-title">Admin paneline giris yap</h1>
+            <p class="auth-subtitle">Bu alan storefront'tan bagimsiz backoffice olarak dusunuluyor. Bugun /yonetim ve /admin altinda; ileride admin subdomain'e tasinabilir.</p>
+
+            <div class="admin-operator-card mb-4">
+                <span>Gelistirme kisayolu</span>
+                <strong>/yonetim</strong>
+                <small>Path tabanli kisayol, subdomain gecisi icin gecici kopru.</small>
+            </div>
 
             <form method="post" class="auth-form">
                 @Html.AntiForgeryToken()
@@ -29,7 +36,7 @@
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
 
-                <button type="submit" class="btn auth-submit-btn">Admin Girişi</button>
+                <button type="submit" class="btn auth-submit-btn">Admin Girisi</button>
             </form>
         </div>
     </div>

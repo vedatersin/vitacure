@@ -11,7 +11,8 @@ public class AccountAccessServiceTests
     {
         var service = new AccountAccessService();
 
-        Assert.True(service.CanAccessStorefront(new AppUser { IsActive = true, AccountType = AccountType.Customer }));
+        Assert.True(service.CanAccessStorefront(new AppUser { IsActive = true, EmailConfirmed = true, AccountType = AccountType.Customer }));
+        Assert.False(service.CanAccessStorefront(new AppUser { IsActive = true, EmailConfirmed = false, AccountType = AccountType.Customer }));
         Assert.False(service.CanAccessStorefront(new AppUser { IsActive = true, AccountType = AccountType.BackOffice }));
         Assert.False(service.CanAccessStorefront(new AppUser { IsActive = false, AccountType = AccountType.Customer }));
         Assert.False(service.CanAccessStorefront(null));

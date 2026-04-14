@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Threading.RateLimiting;
 using vitacure.Application.Abstractions;
 using vitacure.Domain.Entities;
 using vitacure.Infrastructure.Identity;
@@ -13,8 +16,23 @@ var builder = WebApplication.CreateBuilder(args);
 var redisConnection = builder.Configuration.GetConnectionString("Redis");
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 builder.Services.AddOutputCache(options =>
 {
     options.AddPolicy("StorefrontHome", policyBuilder => policyBuilder
@@ -38,6 +56,8 @@ builder.Services.AddOutputCache(options =>
         .Tag("product"));
 });
 
+var outputCacheStoreDescriptor = builder.Services.Single(service => service.ServiceType == typeof(IOutputCacheStore));
+
 if (!string.IsNullOrWhiteSpace(redisConnection))
 {
     builder.Services.AddStackExchangeRedisCache(options =>
@@ -46,6 +66,20 @@ if (!string.IsNullOrWhiteSpace(redisConnection))
         options.InstanceName = "Vitacure:";
     });
 }
+
+builder.Services.AddSingleton<ICacheObservabilityService, CacheObservabilityService>();
+builder.Services.Remove(outputCacheStoreDescriptor);
+builder.Services.AddSingleton<IOutputCacheStore>(serviceProvider =>
+{
+    var innerStore =
+        outputCacheStoreDescriptor.ImplementationInstance as IOutputCacheStore ??
+        outputCacheStoreDescriptor.ImplementationFactory?.Invoke(serviceProvider) as IOutputCacheStore ??
+        (IOutputCacheStore)ActivatorUtilities.CreateInstance(serviceProvider, outputCacheStoreDescriptor.ImplementationType!);
+
+    return new ObservedOutputCacheStore(
+        innerStore,
+        serviceProvider.GetRequiredService<ICacheObservabilityService>());
+});
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
     {
@@ -69,7 +103,12 @@ builder.Services.AddScoped<IdentitySeeder>();
 builder.Services.AddScoped<IAccountAccessService, AccountAccessService>();
 builder.Services.AddScoped<ICustomerAccountService, CustomerAccountService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IGuestSessionService, GuestSessionService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+builder.Services.AddScoped<ICacheInvalidationService, CacheInvalidationService>();
+builder.Services.AddScoped<IRedisConnectionStatusService, RedisConnectionStatusService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
@@ -111,6 +150,7 @@ app.UseStaticFiles(new StaticFileOptions
     ContentTypeProvider = provider
 });
 app.UseRouting();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

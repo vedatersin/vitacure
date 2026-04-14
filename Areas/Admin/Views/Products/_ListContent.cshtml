@@ -1,0 +1,110 @@
+@model vitacure.Models.ViewModels.Admin.ProductListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Yonetimi",
+        Title = "Urun listesi",
+        Description = "Storefront kartlari ve urun detay sayfalari bu veri setinden besleniyor.",
+        IconClass = "fa-solid fa-capsules",
+        AsideTitle = "Katalog ozeti",
+        AsideText = "Aktif urun dagilimi ve stok sinyalleri bu alan uzerinden hizli okunur.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Stok Yok", Value = Model.OutOfStockCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Urunler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/products",
+        SearchPlaceholder = "Urun ara, kategori eslestir, stok kontrol et...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Urun",
+        PrimaryActionUrl = "/admin/products/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "stock",
+                Label = "Stok",
+                Value = Model.StockFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum stoklar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "instock", Label = "Stokta var" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "outofstock", Label = "Stok yok" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>Gorsel</th>
+                    <th>ID</th>
+                    <th>Ad</th>
+                    <th>Kategori</th>
+                    <th>Slug</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
+                    <th>Etiket</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <td>
+                            <img src="@product.ImageUrl" alt="@product.Name" class="admin-product-thumb" loading="lazy" />
+                        </td>
+                        <td>@product.Id</td>
+                        <td>@product.Name</td>
+                        <td>@product.CategoryName</td>
+                        <td>@product.Slug</td>
+                        <td>@product.Price.ToString("0.00") TL</td>
+                        <td>@product.Stock</td>
+                        <td>@product.TagCount</td>
+                        <td>
+                            <span class="auth-status-badge @(product.IsActive ? "is-active" : "is-passive")">
+                                @(product.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/products/edit/@product.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

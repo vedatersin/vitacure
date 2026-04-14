@@ -1,0 +1,81 @@
+@model vitacure.Models.ViewModels.Admin.TagListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Segmentasyon",
+        Title = "Etiket listesi",
+        Description = "Urun segmentasyonu ve storefront filtreleme hazirligi icin kullanilacak etiketler burada yonetilir.",
+        IconClass = "fa-solid fa-tags",
+        AsideTitle = "Etiket ozeti",
+        AsideText = "Urunlerle iliskili etiketlerin kullanim yogunlugu bu panelde kisa bir referans olarak tutulur.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kullanimda", Value = Model.UsedCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Etiketler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/tags",
+        SearchPlaceholder = "Etiket ara, slug incele, kullanim durumunu kontrol et...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Etiket",
+        PrimaryActionUrl = "/admin/tags/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "usage",
+                Label = "Kullanim",
+                Value = Model.UsageFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum etiketler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "used", Label = "Kullanimda" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "unused", Label = "Kullanim disi" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ad</th>
+                    <th>Slug</th>
+                    <th>Urun Sayisi</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tag in Model.Tags)
+                {
+                    <tr>
+                        <td>@tag.Id</td>
+                        <td>@tag.Name</td>
+                        <td>@tag.Slug</td>
+                        <td>@tag.ProductCount</td>
+                        <td class="text-end">
+                            <a href="/admin/tags/edit/@tag.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

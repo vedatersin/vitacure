@@ -166,6 +166,7 @@ public class StorefrontContentService : IStorefrontContentService
             Slug = product.Slug,
             Description = product.Description,
             ImageUrl = product.ImageUrl,
+            GalleryImages = BuildGalleryImages(product),
             Price = FormatPrice(product.Price),
             OldPrice = product.OldPrice.HasValue ? FormatPrice(product.OldPrice.Value) : string.Empty,
             Rating = product.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
@@ -188,6 +189,27 @@ public class StorefrontContentService : IStorefrontContentService
             },
             RelatedProducts = BuildProductCards(relatedProducts)
         };
+    }
+
+    private static IReadOnlyList<string> BuildGalleryImages(Product product)
+    {
+        var images = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+        {
+            images.Add(product.ImageUrl);
+        }
+
+        if (!string.IsNullOrWhiteSpace(product.GalleryImageUrls))
+        {
+            images.AddRange(product.GalleryImageUrls
+                .Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
+        }
+
+        return images
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
     }
 
     private async Task<IReadOnlyList<CategoryTagViewModel>> BuildCategoryTagOptionsAsync(string categorySlug, string? activeTagSlug, CancellationToken cancellationToken)

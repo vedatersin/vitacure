@@ -2,6 +2,8 @@
 
 public class TagListViewModel
 {
+    public string? SearchTerm { get; set; }
+    public string UsageFilter { get; set; } = "all";
     public int TotalCount { get; set; }
     public int UsedCount { get; set; }
     public IReadOnlyList<TagListItemViewModel> Tags { get; set; } = Array.Empty<TagListItemViewModel>();

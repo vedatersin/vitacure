@@ -1,0 +1,28 @@
+@model vitacure.Models.ViewModels.Auth.RegisterConfirmationViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/auth.css" asp-append-version="true" />
+}
+
+<div class="auth-page">
+    <div class="container auth-container">
+        <div class="auth-card">
+            <div class="auth-eyebrow">E-posta Doğrulama</div>
+            <h1 class="auth-title">Hesabın oluşturuldu</h1>
+            <p class="auth-subtitle">@Model.Email adresi için doğrulama gerekiyor.</p>
+
+            <div class="alert alert-info">@Model.Message</div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ConfirmationUrl))
+            {
+                <div class="auth-footer-link mt-3">
+                    Hesabı doğrula: <a href="@Model.ConfirmationUrl">Bağlantıyı aç</a>
+                </div>
+            }
+
+            <div class="auth-footer-link mt-3">
+                Doğrulama sonrası <a href="/login">giriş ekranına dönebilirsin</a>.
+            </div>
+        </div>
+    </div>
+</div>

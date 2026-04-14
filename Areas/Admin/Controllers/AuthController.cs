@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using vitacure.Application.Abstractions;
 using vitacure.Domain.Entities;
 using vitacure.Models.ViewModels.Auth;
@@ -25,13 +26,27 @@ public class AuthController : Controller
         _accountAccessService = accountAccessService;
     }
 
+    [HttpGet("/yonetim")]
+    public async Task<IActionResult> ManagementShortcut()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (_accountAccessService.CanAccessBackOffice(user))
+        {
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        return RedirectToAction(nameof(Login), new { returnUrl = "/admin/dashboard" });
+    }
+
     [HttpGet("/admin/login")]
+    [EnableRateLimiting("auth")]
     public IActionResult Login(string? returnUrl = null)
     {
         return View(new LoginViewModel { ReturnUrl = returnUrl });
     }
 
     [HttpPost("/admin/login")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {

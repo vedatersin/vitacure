@@ -2,6 +2,9 @@
 
 public class CategoryListViewModel
 {
+    public string? SearchTerm { get; set; }
+    public string StatusFilter { get; set; } = "all";
+    public string StructureFilter { get; set; } = "all";
     public int TotalCount { get; set; }
     public int RootCount { get; set; }
     public int ActiveCount { get; set; }

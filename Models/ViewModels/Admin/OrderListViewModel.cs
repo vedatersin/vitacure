@@ -2,6 +2,9 @@ namespace vitacure.Models.ViewModels.Admin;
 
 public class AdminOrderListViewModel
 {
+    public string? SearchTerm { get; set; }
+    public string StatusFilter { get; set; } = "all";
+    public string VolumeFilter { get; set; } = "all";
     public int TotalCount { get; set; }
     public int PendingCount { get; set; }
     public int CompletedCount { get; set; }

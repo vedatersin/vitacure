@@ -82,7 +82,10 @@ public class AdminDashboardServiceTests
 
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminDashboardService(dbContext);
+        var service = new AdminDashboardService(
+            dbContext,
+            new FakeRedisConnectionStatusService(),
+            new FakeCacheObservabilityService());
 
         var result = await service.GetDashboardAsync();
 
@@ -92,6 +95,10 @@ public class AdminDashboardServiceTests
         Assert.Equal(1, result.BackOfficeUserCount);
         Assert.Equal(1, result.OrderCount);
         Assert.Equal(5, result.Cards.Count);
+        Assert.Equal("Bağlandı", result.RedisStatus.StatusLabel);
+        Assert.Equal("%75", result.CacheMetrics.HitRateLabel);
+        Assert.Equal(4, result.CacheMetrics.TotalLookups);
+        Assert.Equal(1, result.CacheMetrics.EvictionCount);
     }
 
     private static AppDbContext CreateDbContext()
@@ -101,5 +108,50 @@ public class AdminDashboardServiceTests
             .Options;
 
         return new AppDbContext(options);
+    }
+
+    private sealed class FakeRedisConnectionStatusService : Application.Abstractions.IRedisConnectionStatusService
+    {
+        public Task<vitacure.Models.ViewModels.Admin.RedisConnectionStatusViewModel> GetStatusAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new vitacure.Models.ViewModels.Admin.RedisConnectionStatusViewModel
+            {
+                IsConfigured = true,
+                IsConnected = true,
+                StatusLabel = "Bağlandı",
+                Detail = "Test bağlantısı başarılı."
+            });
+        }
+    }
+
+    private sealed class FakeCacheObservabilityService : Application.Abstractions.ICacheObservabilityService
+    {
+        public vitacure.Models.ViewModels.Admin.CacheMetricsViewModel GetSnapshot()
+        {
+            return new vitacure.Models.ViewModels.Admin.CacheMetricsViewModel
+            {
+                TotalLookups = 4,
+                HitCount = 3,
+                MissCount = 1,
+                WriteCount = 2,
+                EvictionCount = 1,
+                HitRateLabel = "%75",
+                StatusLabel = "Isındı",
+                Detail = "Toplam 4 okuma, 3 hit, 1 miss, 2 yazma ve 1 invalidation gözlemlendi.",
+                RecentEvictedTags = new[] { "product" }
+            };
+        }
+
+        public void RecordLookup(bool hit)
+        {
+        }
+
+        public void RecordWrite()
+        {
+        }
+
+        public void RecordTagEviction(string tag)
+        {
+        }
     }
 }

@@ -30,7 +30,7 @@ public class AdminCategoryServiceTests
         });
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminCategoryService(dbContext);
+        var service = new AdminCategoryService(dbContext, new FakeCacheInvalidationService());
 
         var result = await service.GetCategoriesAsync();
 
@@ -45,7 +45,8 @@ public class AdminCategoryServiceTests
     public async Task CreateAsync_Persists_New_Category()
     {
         await using var dbContext = CreateDbContext();
-        var service = new AdminCategoryService(dbContext);
+        var cacheInvalidation = new FakeCacheInvalidationService();
+        var service = new AdminCategoryService(dbContext, cacheInvalidation);
 
         var id = await service.CreateAsync(new CategoryFormViewModel
         {
@@ -59,6 +60,7 @@ public class AdminCategoryServiceTests
         Assert.NotNull(created);
         Assert.Equal("Yeni Kategori", created!.Name);
         Assert.Equal("yeni-kategori", created.Slug);
+        Assert.Equal(1, cacheInvalidation.CategoryInvalidationCount);
     }
 
     private static AppDbContext CreateDbContext()
@@ -68,5 +70,20 @@ public class AdminCategoryServiceTests
             .Options;
 
         return new AppDbContext(options);
+    }
+
+    private sealed class FakeCacheInvalidationService : Application.Abstractions.ICacheInvalidationService
+    {
+        public int CategoryInvalidationCount { get; private set; }
+
+        public Task InvalidateStorefrontAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task InvalidateCategoryAsync(CancellationToken cancellationToken = default)
+        {
+            CategoryInvalidationCount++;
+            return Task.CompletedTask;
+        }
+
+        public Task InvalidateProductAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 }

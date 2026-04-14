@@ -7,6 +7,7 @@ public class AccountDashboardViewModel
 {
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? PhoneNumber { get; set; }
     public DateTime CreatedAt { get; set; }
     public int FavoriteCount { get; set; }
     public int AddressCount { get; set; }
@@ -14,7 +15,10 @@ public class AccountDashboardViewModel
     public IReadOnlyList<ProductCardViewModel> FavoriteProducts { get; set; } = Array.Empty<ProductCardViewModel>();
     public IReadOnlyList<AccountAddressViewModel> Addresses { get; set; } = Array.Empty<AccountAddressViewModel>();
     public IReadOnlyList<AccountOrderSummaryViewModel> Orders { get; set; } = Array.Empty<AccountOrderSummaryViewModel>();
+    public ProfileFormViewModel Profile { get; set; } = new();
     public AddressFormViewModel NewAddress { get; set; } = new();
+    public AddressFormViewModel EditAddress { get; set; } = new();
+    public int? EditingAddressId { get; set; }
 }
 
 public class AccountAddressViewModel
@@ -32,6 +36,8 @@ public class AccountAddressViewModel
 
 public class AddressFormViewModel
 {
+    public int Id { get; set; }
+
     [Required]
     [Display(Name = "Adres Başlığı")]
     public string Title { get; set; } = string.Empty;
@@ -62,6 +68,22 @@ public class AddressFormViewModel
 
     [Display(Name = "Varsayılan Adres")]
     public bool IsDefault { get; set; }
+}
+
+public class ProfileFormViewModel
+{
+    [Required]
+    [Display(Name = "Ad Soyad")]
+    public string FullName { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    [Display(Name = "E-posta")]
+    public string Email { get; set; } = string.Empty;
+
+    [Phone]
+    [Display(Name = "Telefon")]
+    public string? PhoneNumber { get; set; }
 }
 
 public class FavoriteToggleResultViewModel

@@ -9,6 +9,7 @@ public class ProductDetailViewModel
     public string Slug { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
+    public IReadOnlyList<string> GalleryImages { get; set; } = Array.Empty<string>();
     public string Price { get; set; } = string.Empty;
     public string OldPrice { get; set; } = string.Empty;
     public string Rating { get; set; } = string.Empty;
