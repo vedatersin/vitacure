@@ -1,5 +1,6 @@
 (function () {
     const favoriteStore = window.__vitacureFavoriteStore || (window.__vitacureFavoriteStore = new Set());
+    const transitionDurationMs = 420;
     const slots = [
         { x: -252, y: -72, scale: 0.72, z: 4, blur: "2px" },
         { x: -168, y: -28, scale: 0.83, z: 5, blur: "2px" },
@@ -75,6 +76,9 @@
         const tagButtons = Array.from(document.querySelectorAll(".uyku-tag-btn"));
         const centerSlotIndex = Math.min(3, products.length - 1);
         let order = products.map((_, index) => index);
+        let transitionState = null;
+        let transitionTimer = null;
+        let isAnimating = false;
 
         bindTagProducts(products, tagButtons);
 
@@ -135,7 +139,8 @@
             items.forEach((item, index) => {
                 const slotIndex = order.indexOf(index);
                 const slot = slots[slotIndex] || slots[slots.length - 1];
-                item.style.zIndex = String(slot.z);
+                const shouldWrapBehind = transitionState?.wrappingIndex === index;
+                item.style.zIndex = String(shouldWrapBehind ? 1 : slot.z);
                 item.style.filter = `blur(${slot.blur})`;
                 item.style.transform = `translate(calc(-50% + ${slot.x}px), calc(-50% + ${slot.y}px)) scale(${slot.scale})`;
             });
@@ -201,14 +206,45 @@
             render();
         }
 
-        previous?.addEventListener("click", function () {
-            order.push(order.shift());
+        function completeTransition() {
+            if (transitionTimer) {
+                clearTimeout(transitionTimer);
+                transitionTimer = null;
+            }
+
+            transitionState = null;
+            isAnimating = false;
             render();
+        }
+
+        function rotate(direction) {
+            if (isAnimating) {
+                return;
+            }
+
+            const wrappingIndex = direction === "next"
+                ? order[order.length - 1]
+                : order[0];
+
+            if (direction === "next") {
+                order.unshift(order.pop());
+            } else {
+                order.push(order.shift());
+            }
+
+            transitionState = { direction, wrappingIndex };
+            isAnimating = true;
+            render();
+
+            transitionTimer = window.setTimeout(completeTransition, transitionDurationMs);
+        }
+
+        previous?.addEventListener("click", function () {
+            rotate("prev");
         });
 
         next?.addEventListener("click", function () {
-            order.unshift(order.pop());
-            render();
+            rotate("next");
         });
 
         tagButtons.forEach((button, index) => {

@@ -1,7 +1,7 @@
 # VITACURE ADMIN UI PIPELINE
 
 Bu dosya sadece admin arayuzunun tasarimi, bilgi mimarisi, moduller arasi UI butunlugu ve sonraki UI kararlarini takip etmek icin tutulur.
-Backend isleri ve sistemsel altyapi notlari ana `pipeline.md` dosyasina islenir.
+Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina islenir.
 
 ## Tasarim Ilkeleri
 
@@ -126,7 +126,7 @@ Her biri icin planlanan UI alanlari:
 
 ## Backend Bagimliliklari
 
-Bu UI islerinin backend bagimliliklari ana `pipeline.md` dosyasina da not dusulmelidir:
+Bu UI islerinin backend bagimliliklari `adminBackendPipeline.md` dosyasina da not dusulmelidir:
 
 - Gercek admin bildirim entity ve tablosu
 - Bildirim uretim servisleri

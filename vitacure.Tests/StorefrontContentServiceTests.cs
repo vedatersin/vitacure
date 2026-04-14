@@ -81,6 +81,8 @@ public class StorefrontContentServiceTests
             Assert.All(result.ProductGrid, product => Assert.Equal("Night Support", product.Name));
             Assert.Single(result.ProductGrid.Select(x => x.Id).Distinct());
             Assert.Contains(result.AvailableTags, x => x.Slug == "melatonin" && x.IsActive);
+            Assert.Equal(7, result.CoverflowProducts.Count);
+            Assert.All(result.CoverflowProducts, product => Assert.Equal("Night Support", product.Name));
         }
         finally
         {

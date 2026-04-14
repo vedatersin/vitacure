@@ -126,7 +126,7 @@ public class StorefrontContentService : IStorefrontContentService
                 TargetUrl = $"/{category.Slug}"
             },
             Filters = BuildFilters(document),
-            CoverflowProducts = BuildProductCards(productsForCategory.Take(4).ToList()),
+            CoverflowProducts = BuildCoverflowProducts(productsForCategory),
             ProductGrid = BuildCategoryGrid(productsForCategory),
             Breadcrumbs = new[]
             {
@@ -395,6 +395,26 @@ public class StorefrontContentService : IStorefrontContentService
         }
 
         return grid;
+    }
+
+    private static IReadOnlyList<ProductCardViewModel> BuildCoverflowProducts(IReadOnlyList<Product> products)
+    {
+        var cards = BuildProductCards(products);
+        var coverflow = new List<ProductCardViewModel>();
+        while (coverflow.Count < 7 && cards.Count > 0)
+        {
+            foreach (var card in cards)
+            {
+                if (coverflow.Count == 7)
+                {
+                    break;
+                }
+
+                coverflow.Add(card);
+            }
+        }
+
+        return coverflow;
     }
 
     private static string BuildProductSizeLabel(string? productName)
