@@ -30,7 +30,7 @@ public class AdminCategoryServiceTests
         });
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminCategoryService(dbContext, new FakeCacheInvalidationService());
+        var service = new AdminCategoryService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
 
         var result = await service.GetCategoriesAsync();
 
@@ -46,7 +46,7 @@ public class AdminCategoryServiceTests
     {
         await using var dbContext = CreateDbContext();
         var cacheInvalidation = new FakeCacheInvalidationService();
-        var service = new AdminCategoryService(dbContext, cacheInvalidation);
+        var service = new AdminCategoryService(dbContext, cacheInvalidation, new SlugService(dbContext));
 
         var id = await service.CreateAsync(new CategoryFormViewModel
         {
@@ -61,6 +61,37 @@ public class AdminCategoryServiceTests
         Assert.Equal("Yeni Kategori", created!.Name);
         Assert.Equal("yeni-kategori", created.Slug);
         Assert.Equal(1, cacheInvalidation.CategoryInvalidationCount);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Throws_When_Slug_Is_Already_Used_By_Product()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Categories.Add(new Category { Id = 1, Name = "Root", Slug = "root", Description = "A", IsActive = true });
+        dbContext.Products.Add(new Product
+        {
+            Id = 1,
+            Name = "Product A",
+            Slug = "ortak-slug",
+            Description = "A",
+            Price = 100m,
+            Rating = 4m,
+            ImageUrl = "/img/a.png",
+            Stock = 10,
+            CategoryId = 1,
+            IsActive = true
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new AdminCategoryService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
+
+        await Assert.ThrowsAsync<vitacure.Application.SlugConflictException>(() => service.CreateAsync(new CategoryFormViewModel
+        {
+            Name = "Yeni Kategori",
+            Slug = "ortak-slug",
+            Description = "Test",
+            IsActive = true
+        }));
     }
 
     private static AppDbContext CreateDbContext()

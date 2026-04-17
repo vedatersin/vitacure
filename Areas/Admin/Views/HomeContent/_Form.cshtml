@@ -1,0 +1,116 @@
+@model vitacure.Models.ViewModels.Admin.HomeContentFormViewModel
+
+<form method="post" class="auth-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div class="admin-operator-card mb-4">
+        <span>Form Notu</span>
+        <strong>Bu kayit ana sayfadaki yonetilebilir alanlari besler</strong>
+        <small>Hero copy, section basliklari, CTA linkleri ve banner listeleri storefront home ekranina direkt yansir.</small>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12">
+            <label asp-for="MetaDescription" class="form-label"></label>
+            <input asp-for="MetaDescription" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="HeroTitle" class="form-label"></label>
+            <input asp-for="HeroTitle" class="form-control auth-input" />
+            <span asp-validation-for="HeroTitle" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="HeroSubtitle" class="form-label"></label>
+            <input asp-for="HeroSubtitle" class="form-control auth-input" />
+            <span asp-validation-for="HeroSubtitle" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="MainPlaceholder" class="form-label"></label>
+            <textarea asp-for="MainPlaceholder" class="form-control auth-textarea" rows="3"></textarea>
+            <span asp-validation-for="MainPlaceholder" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="SearchPlaceholder" class="form-label"></label>
+            <input asp-for="SearchPlaceholder" class="form-control auth-input" />
+            <span asp-validation-for="SearchPlaceholder" class="text-danger"></span>
+            <label asp-for="SearchPlaceholderLocked" class="form-label mt-3"></label>
+            <input asp-for="SearchPlaceholderLocked" class="form-control auth-input" />
+            <span asp-validation-for="SearchPlaceholderLocked" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="FeaturedTitle" class="form-label"></label>
+            <input asp-for="FeaturedTitle" class="form-control auth-input" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="FeaturedActionLabel" class="form-label"></label>
+            <input asp-for="FeaturedActionLabel" class="form-control auth-input" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="FeaturedActionUrl" class="form-label"></label>
+            <input asp-for="FeaturedActionUrl" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="PopularTitle" class="form-label"></label>
+            <input asp-for="PopularTitle" class="form-control auth-input" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="CampaignsTitle" class="form-label"></label>
+            <input asp-for="CampaignsTitle" class="form-control auth-input" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="DealsTitle" class="form-label"></label>
+            <input asp-for="DealsTitle" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="DealsActionLabel" class="form-label"></label>
+            <input asp-for="DealsActionLabel" class="form-control auth-input" />
+        </div>
+        <div class="col-md-9">
+            <label asp-for="DealsActionUrl" class="form-label"></label>
+            <input asp-for="DealsActionUrl" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="FeaturedBannerName" class="form-label"></label>
+            <input asp-for="FeaturedBannerName" class="form-control auth-input" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="FeaturedBannerAltText" class="form-label"></label>
+            <input asp-for="FeaturedBannerAltText" class="form-control auth-input" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="FeaturedBannerImageUrl" class="form-label"></label>
+            <input asp-for="FeaturedBannerImageUrl" class="form-control auth-input" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="FeaturedBannerTargetUrl" class="form-label"></label>
+            <input asp-for="FeaturedBannerTargetUrl" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="PopularSupplementsContent" class="form-label"></label>
+            <textarea asp-for="PopularSupplementsContent" class="form-control auth-textarea" rows="8"></textarea>
+            <small class="text-muted d-block mt-2">Her satir: Baslik | Gorsel URL | Hedef URL | Gradient | Yazi Rengi</small>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="CampaignBannersContent" class="form-label"></label>
+            <textarea asp-for="CampaignBannersContent" class="form-control auth-textarea" rows="8"></textarea>
+            <small class="text-muted d-block mt-2">Her satir: Gorsel URL | Hedef URL | Alt Metin</small>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/dashboard" class="btn auth-submit-btn auth-tertiary-btn">Dashboard</a>
+    </div>
+</form>

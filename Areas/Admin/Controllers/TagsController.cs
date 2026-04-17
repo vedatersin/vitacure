@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
 
@@ -46,7 +47,16 @@ public class TagsController : Controller
             return View(model);
         }
 
-        await _adminTagService.CreateAsync(model, cancellationToken);
+        try
+        {
+            await _adminTagService.CreateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            return View(model);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -76,7 +86,17 @@ public class TagsController : Controller
             return View(model);
         }
 
-        var updated = await _adminTagService.UpdateAsync(model, cancellationToken);
+        bool updated;
+        try
+        {
+            updated = await _adminTagService.UpdateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            return View(model);
+        }
+
         if (!updated)
         {
             return NotFound();

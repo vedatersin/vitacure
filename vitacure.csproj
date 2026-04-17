@@ -18,8 +18,14 @@
 
   <ItemGroup>
     <Compile Remove="vitacure.Tests\\**\\*.cs" />
+    <Compile Remove=".codex-*\\**\\*.cs" />
+    <Compile Remove="obj-codex\\**\\*.cs" />
     <EmbeddedResource Remove="vitacure.Tests\\**\\*" />
+    <EmbeddedResource Remove=".codex-*\\**\\*" />
+    <EmbeddedResource Remove="obj-codex\\**\\*" />
     <None Remove="vitacure.Tests\\**\\*" />
+    <None Remove=".codex-*\\**\\*" />
+    <None Remove="obj-codex\\**\\*" />
   </ItemGroup>
 
 </Project>

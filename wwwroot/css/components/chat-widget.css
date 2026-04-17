@@ -186,6 +186,27 @@
     align-items: center;
 }
 
+.ag-chat-fullscreen-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 12, 24, 0.28);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+    z-index: 2890;
+}
+
+.ag-chat-fullscreen-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ag-chat-fullscreen-backdrop.chat-theme-light {
+    background: rgba(15, 23, 42, 0.16);
+}
+
 .ag-chat-panel {
     position: relative;
     width: 70%;
@@ -211,15 +232,26 @@
 
 .ag-chat-panel.fullscreen-mode {
     position: fixed !important;
-    top: 80px !important;
+    top: 72px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    height: calc(100vh - 100px) !important;
-    width: 90% !important;
-    max-width: 1200px;
-    border-radius: 20px;
-    background: rgba(35, 40, 48, 0.85);
-    z-index: 1200;
+    height: calc(100vh - 96px) !important;
+    width: min(88vw, 1280px) !important;
+    max-width: 1280px;
+    border-radius: 28px;
+    background: rgba(35, 40, 48, 0.96);
+    z-index: 2900;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
 }
 
 .ag-chat-header {
@@ -339,6 +371,153 @@
 
 .ag-chat-input.has-scrollbar {
     overflow-y: auto;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-top {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    display: flex;
+    align-items: stretch;
+    padding-right: 64px;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input {
+    height: 100% !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow-y: hidden !important;
+    padding: 8px 12px 0 10px;
+    line-height: 1.7;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input:not(.has-scrollbar) {
+    scrollbar-width: none;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input:not(.has-scrollbar)::-webkit-scrollbar {
+    width: 0;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input.has-scrollbar {
+    overflow-y: auto !important;
+    scrollbar-width: auto;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar {
+    width: 12px;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar-track {
+    background: rgba(148, 163, 184, 0.22);
+    border-radius: 999px;
+    margin: 0;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar-thumb {
+    background: rgba(96, 165, 250, 0.82);
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.95);
+}
+
+.ag-chat-panel.fullscreen-mode .btn-fullscreen {
+    top: 8px;
+    right: 10px;
+    opacity: 1;
+    pointer-events: auto;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-bottom {
+    margin-top: 0;
+    padding-top: 14px;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-header,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-header {
+    margin-bottom: 12px;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-file-list:empty {
+    display: none;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-header,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-header a,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-header .cat-name,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-btn-add,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-btn-send,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .btn-fullscreen,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-mode-btn.active,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-search-filter,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input {
+    color: #0f172a;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::placeholder {
+    color: rgba(51, 65, 85, 0.62);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-mode-btn {
+    color: rgba(51, 65, 85, 0.72);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-mode-btn.active,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-btn-add:hover,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-btn-send:hover,
+.ag-chat-panel.fullscreen-mode.chat-theme-light .btn-fullscreen:hover {
+    background: rgba(37, 99, 235, 0.12);
+    color: #0f172a;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-search-filter {
+    background: rgba(226, 232, 240, 0.82);
+    border-color: rgba(148, 163, 184, 0.28);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-add-file-menu {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(148, 163, 184, 0.22);
+    box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-add-menu-item {
+    color: #0f172a;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-add-menu-item:hover {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-track {
+    background: rgba(100, 116, 139, 0.22);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.72);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(51, 65, 85, 0.9);
 }
 
 .ag-chat-input::-webkit-scrollbar {
@@ -523,6 +702,11 @@
     min-height: var(--chat-input-base-height) !important;
     height: var(--chat-input-base-height) !important;
     max-height: var(--chat-input-base-height) !important;
+}
+
+body.chat-fullscreen-active {
+    overflow: hidden;
+    height: 100vh;
 }
 
 @media (max-width: 991px) {

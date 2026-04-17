@@ -1,0 +1,9 @@
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.csproj.AssemblyReference.cache
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.AssemblyInfoInputs.cache
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.AssemblyInfo.cs
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.csproj.CoreCompileInputs.cache
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.RazorAssemblyInfo.cache
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.RazorAssemblyInfo.cs
+C:\Users\vedat\Documents\GitHub\vitacure\.codex-verify\test-obj\Debug\net8.0\vitacure.sourcelink.json

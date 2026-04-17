@@ -1,0 +1,36 @@
+@model vitacure.Models.ViewModels.Admin.HomeContentFormViewModel
+
+@{
+    ViewData["Title"] = "Home Icerigi";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Storefront Yonetimi",
+        Title = "Ana sayfa icerigini yonet",
+        Description = "Hero, section basliklari, banner ve kampanya alanlari storefront home deneyimini dogrudan besler.",
+        IconClass = "fa-solid fa-house",
+        AsideTitle = "Yonetim notu",
+        AsideText = "Bu ekrandaki her alan home UI tarafinda canli kullanilir. CTA linkleri ve gorsel URL'leri yayin akisina direkt etki eder.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Alan", Value = "Home" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kaynak", Value = Model.Id.HasValue ? "DB" : "Fallback" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Home Icerigi", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        @await Html.PartialAsync("~/Areas/Admin/Views/HomeContent/_Form.cshtml", Model)
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

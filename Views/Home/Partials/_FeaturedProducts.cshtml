@@ -4,9 +4,9 @@
     <div class="featured-section">
         @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel
         {
-            Title = Model.SectionTitles["featured"],
-            ActionLabel = "Tümünü Gör",
-            ActionUrl = "#tum-urunler"
+            Title = Model.SectionHeaders["featured"].Title,
+            ActionLabel = Model.SectionHeaders["featured"].ActionLabel,
+            ActionUrl = Model.SectionHeaders["featured"].ActionUrl
         })
         <div class="swiper featured-swiper pb-5">
             <div class="swiper-wrapper">

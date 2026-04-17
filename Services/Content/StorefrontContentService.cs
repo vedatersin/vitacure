@@ -12,13 +12,19 @@ public class StorefrontContentService : IStorefrontContentService
 {
     private readonly AppDbContext _dbContext;
     private readonly IWebHostEnvironment _environment;
+    private readonly IHomeContentConfigurationService _homeContentConfigurationService;
     private readonly IProductService _productService;
     private readonly Lazy<StorefrontUiDocument> _document;
 
-    public StorefrontContentService(AppDbContext dbContext, IWebHostEnvironment environment, IProductService productService)
+    public StorefrontContentService(
+        AppDbContext dbContext,
+        IWebHostEnvironment environment,
+        IProductService productService,
+        IHomeContentConfigurationService homeContentConfigurationService)
     {
         _dbContext = dbContext;
         _environment = environment;
+        _homeContentConfigurationService = homeContentConfigurationService;
         _productService = productService;
         _document = new Lazy<StorefrontUiDocument>(LoadDocument, true);
     }
@@ -26,7 +32,9 @@ public class StorefrontContentService : IStorefrontContentService
     public async Task<HomeViewModel> GetHomePageContentAsync(CancellationToken cancellationToken = default)
     {
         var document = _document.Value;
+        var homeConfiguration = await _homeContentConfigurationService.GetConfigurationAsync(cancellationToken);
         var categories = await BuildCategoriesAsync(cancellationToken);
+        var showcases = await BuildHomeShowcasesAsync(cancellationToken);
         var products = await _dbContext.Products
             .AsNoTracking()
             .Where(x => x.IsActive)
@@ -44,28 +52,171 @@ public class StorefrontContentService : IStorefrontContentService
         return new HomeViewModel
         {
             Title = "Ana Sayfa",
-            MetaDescription = BuildHomeMetaDescription(document),
+            MetaDescription = homeConfiguration.MetaDescription,
             CanonicalPath = "/",
+            Showcases = showcases,
             Categories = categories,
-            ChatWidget = BuildChatWidget(document, categories, null, "home"),
+            ChatWidget = BuildChatWidget(document, categories, showcases, null, "home", homeConfiguration.Chat),
             FeaturedProducts = BuildProductCards(featuredProducts),
-            PopularSupplements = BuildPopularSupplementCards(document),
-            FeaturedBanner = new BannerViewModel
-            {
-                Name = "Vitacure AI Banner",
-                AltText = "Vitacure AI Banner",
-                ImageUrl = "/img/banners/vitacureai.png",
-                TargetUrl = "#vitacure-ai"
-            },
-            CampaignBanners = BuildCampaignBanners(document),
+            PopularSupplements = homeConfiguration.PopularSupplements,
+            FeaturedBanner = homeConfiguration.FeaturedBanner,
+            CampaignBanners = homeConfiguration.CampaignBanners,
             OpportunityProducts = BuildProductCards(opportunityProducts),
-            SectionTitles = new Dictionary<string, string>
+            SectionTitles = homeConfiguration.SectionHeaders.ToDictionary(x => x.Key, x => x.Value.Title, StringComparer.OrdinalIgnoreCase),
+            SectionHeaders = homeConfiguration.SectionHeaders
+        };
+    }
+
+    public async Task<ShowcaseViewModel?> GetShowcasePageContentAsync(string slug, string? categorySlug = null, CancellationToken cancellationToken = default)
+    {
+        var document = _document.Value;
+        var showcase = await _dbContext.Showcases
+            .AsNoTracking()
+            .Include(x => x.ShowcaseCategories)
+            .ThenInclude(x => x.Category)
+            .Include(x => x.FeaturedProducts)
+            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x!.Category)
+            .FirstOrDefaultAsync(x => x.IsActive && x.Slug == slug, cancellationToken);
+
+        if (showcase is null)
+        {
+            return null;
+        }
+
+        var categories = await BuildCategoriesAsync(cancellationToken);
+        var selectedCategoryIds = showcase.ShowcaseCategories
+            .Select(x => x.CategoryId)
+            .Distinct()
+            .ToArray();
+        if (selectedCategoryIds.Length == 0)
+        {
+            var fallbackCategorySlug = ResolveShowcaseCategorySlug(showcase.Slug);
+            if (!string.IsNullOrWhiteSpace(fallbackCategorySlug))
             {
-                ["featured"] = FindSectionTitle(document, "Öne Çıkan Ürünler"),
-                ["popular"] = FindSectionTitle(document, "Popüler Takviyeler"),
-                ["campaigns"] = FindSectionTitle(document, "Kampanyalar"),
-                ["deals"] = FindSectionTitle(document, "Fırsat Ürünleri")
+                selectedCategoryIds = await _dbContext.Categories
+                    .AsNoTracking()
+                    .Where(x => x.IsActive && x.Slug == fallbackCategorySlug)
+                    .Select(x => x.Id)
+                    .Take(1)
+                    .ToArrayAsync(cancellationToken);
             }
+        }
+        var selectedCategories = showcase.ShowcaseCategories
+            .Where(x => x.Category is not null && x.Category.IsActive)
+            .Select(x => x.Category!)
+            .DistinctBy(x => x.Id)
+            .OrderBy(x => x.ParentId.HasValue)
+            .ThenBy(x => x.Name)
+            .ToList();
+        if (selectedCategories.Count == 0)
+        {
+            var fallbackCategorySlug = ResolveShowcaseCategorySlug(showcase.Slug);
+            if (!string.IsNullOrWhiteSpace(fallbackCategorySlug))
+            {
+                selectedCategories = await _dbContext.Categories
+                    .AsNoTracking()
+                    .Where(x => x.IsActive && x.Slug == fallbackCategorySlug)
+                    .OrderBy(x => x.ParentId.HasValue)
+                    .ThenBy(x => x.Name)
+                    .ToListAsync(cancellationToken);
+            }
+        }
+
+        var productQuery = _dbContext.Products
+            .AsNoTracking()
+            .Include(x => x.Category)
+            .Where(x => x.IsActive && selectedCategoryIds.Contains(x.CategoryId));
+
+        if (!string.IsNullOrWhiteSpace(categorySlug))
+        {
+            productQuery = productQuery.Where(x => x.Category != null && x.Category.Slug == categorySlug);
+        }
+
+        var poolProducts = await productQuery
+            .OrderByDescending(x => x.Rating)
+            .ThenBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+
+        var featuredProducts = showcase.FeaturedProducts
+            .Where(x => x.Product is not null && x.Product.IsActive)
+            .OrderBy(x => x.SortOrder)
+            .Select(x => x.Product!)
+            .ToList();
+
+        if (featuredProducts.Count == 0)
+        {
+            featuredProducts = poolProducts.Take(7).ToList();
+        }
+
+        var coverflowProducts = BuildCoverflowProducts(featuredProducts);
+        var categoryOptions = selectedCategories
+            .Select(category => new CategoryTagViewModel
+            {
+                Label = category.Name,
+                Slug = category.Slug,
+                Url = string.Equals(categorySlug, category.Slug, StringComparison.OrdinalIgnoreCase)
+                    ? $"/{showcase.Slug}"
+                    : $"/{showcase.Slug}?tag={category.Slug}",
+                IsActive = string.Equals(categorySlug, category.Slug, StringComparison.OrdinalIgnoreCase)
+            })
+            .ToList();
+
+        categoryOptions.Insert(0, new CategoryTagViewModel
+        {
+            Label = "Tümü",
+            Slug = string.Empty,
+            Url = $"/{showcase.Slug}",
+            IsActive = string.IsNullOrWhiteSpace(categorySlug)
+        });
+
+        var showcaseTags = showcase.TagsContent
+            .Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.CurrentCultureIgnoreCase)
+            .Select(tag => new CategoryTagViewModel
+            {
+                Label = tag,
+                Slug = tag,
+                Url = "#product-grid",
+                IsActive = false
+            })
+            .ToList();
+
+        var activeTag = categoryOptions.FirstOrDefault(x => x.IsActive);
+        var sortFilter = document.Filters.FirstOrDefault(x => string.Equals(x.Group, "Sırala", StringComparison.OrdinalIgnoreCase))
+            ?? document.Filters.FirstOrDefault(x => string.Equals(x.Group, "Sirala", StringComparison.OrdinalIgnoreCase));
+
+        return new ShowcaseViewModel
+        {
+            Title = $"{showcase.Title} | VitaCure",
+            MetaDescription = string.IsNullOrWhiteSpace(showcase.MetaDescription) ? showcase.Description : showcase.MetaDescription!,
+            CanonicalPath = string.IsNullOrWhiteSpace(categorySlug) ? $"/{showcase.Slug}" : $"/{showcase.Slug}?tag={categorySlug}",
+            ChatWidget = BuildChatWidget(document, categories, Array.Empty<ShowcaseSummaryViewModel>(), null, "category"),
+            Showcase = new ShowcaseSummaryViewModel
+            {
+                Name = showcase.Name,
+                Title = showcase.Title,
+                Slug = showcase.Slug,
+                IconClass = showcase.IconClass,
+                BackgroundImageUrl = ResolveShowcaseBackgroundImage(showcase.Slug, showcase.BackgroundImageUrl),
+                IsDark = showcase.IsDark
+            },
+            DescriptionHtml = showcase.Description,
+            Tags = showcaseTags,
+            FeaturedProducts = coverflowProducts,
+            ProductGrid = BuildCategoryGrid(poolProducts),
+            Filters = new[]
+            {
+                new ShowcaseFilterGroupViewModel
+                {
+                    Title = "Kategoriler",
+                    Options = categoryOptions
+                }
+            },
+            ResultLabel = $"{poolProducts.Count} ürün bulundu",
+            SortLabel = sortFilter?.Label ?? "Sırala:",
+            SortOptions = sortFilter?.SortOptions ?? Array.Empty<string>(),
+            ActiveCategorySlug = activeTag?.Slug
         };
     }
 
@@ -117,7 +268,7 @@ public class StorefrontContentService : IStorefrontContentService
             MetaDescription = string.IsNullOrWhiteSpace(category.Description) ? BuildHomeMetaDescription(document) : category.Description,
             CanonicalPath = string.IsNullOrWhiteSpace(tagSlug) ? $"/{slug}" : $"/{slug}?tag={tagSlug}",
             Category = category,
-            ChatWidget = BuildChatWidget(document, categories, category, "category"),
+            ChatWidget = BuildChatWidget(document, categories, Array.Empty<ShowcaseSummaryViewModel>(), category, "category"),
             HeroBanner = new BannerViewModel
             {
                 Name = $"{category.Name} Banner",
@@ -161,7 +312,7 @@ public class StorefrontContentService : IStorefrontContentService
         {
             Title = $"{product.Name} | VitaCure",
             MetaDescription = string.IsNullOrWhiteSpace(product.Description) ? $"{product.Name} detay sayfasi." : product.Description,
-            CanonicalPath = $"/urun/{product.Slug}",
+            CanonicalPath = $"/{product.Slug}",
             Name = product.Name,
             Slug = product.Slug,
             Description = product.Description,
@@ -185,7 +336,7 @@ public class StorefrontContentService : IStorefrontContentService
             {
                 new BreadcrumbItemViewModel { Label = "Ana Sayfa", Url = "/", IsActive = false },
                 new BreadcrumbItemViewModel { Label = product.Category.Name, Url = $"/{product.Category.Slug}", IsActive = false },
-                new BreadcrumbItemViewModel { Label = product.Name, Url = $"/urun/{product.Slug}", IsActive = true }
+                new BreadcrumbItemViewModel { Label = product.Name, Url = $"/{product.Slug}", IsActive = true }
             },
             RelatedProducts = BuildProductCards(relatedProducts)
         };
@@ -272,11 +423,11 @@ public class StorefrontContentService : IStorefrontContentService
         var backgrounds = new Dictionary<string, (string Image, string Overlay, string Pill, string BackgroundClass)>(StringComparer.OrdinalIgnoreCase)
         {
             ["uyku-sagligi"] = ("/img/uykuBg.png", "linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.1) 100%)", "bg-uyku", "category-theme-sleep"),
-            ["multivitamin-enerji"] = ("/img/banners/pharmaton-mobil-banner.jpg", "linear-gradient(to right, rgba(88,38,0,0.92) 0%, rgba(154,84,16,0.65) 50%, rgba(0,0,0,0.1) 100%)", "bg-multi", "category-theme-energy"),
-            ["zihin-hafiza-guclendirme"] = ("/img/banners/nutraxin-banner-mobile.jpg", "linear-gradient(to right, rgba(32,10,64,0.9) 0%, rgba(113,64,160,0.6) 50%, rgba(0,0,0,0.08) 100%)", "bg-zihin", "category-theme-mind"),
-            ["hastaliklara-karsi-koruma"] = ("/img/banners/easyfishoil-banner-mobile.jpg", "linear-gradient(to right, rgba(3,54,56,0.92) 0%, rgba(13,111,104,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-koruma", "category-theme-protection"),
-            ["kas-ve-iskelet-sagligi"] = ("/img/banners/corega-banner-mobile.jpg", "linear-gradient(to right, rgba(70,9,27,0.92) 0%, rgba(182,54,95,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-kas", "category-theme-muscle"),
-            ["zayiflama-destegi"] = ("/img/banners/dynavit-mobil-banner.jpg", "linear-gradient(to right, rgba(86,56,0,0.92) 0%, rgba(198,136,0,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-zayiflama", "category-theme-weight")
+            ["multivitamin-enerji"] = ("/img/multivitaminBg.png", "linear-gradient(to right, rgba(88,38,0,0.92) 0%, rgba(154,84,16,0.65) 50%, rgba(0,0,0,0.1) 100%)", "bg-multi", "category-theme-energy"),
+            ["zihin-hafiza-guclendirme"] = ("/img/zekaHafızaBg.png", "linear-gradient(to right, rgba(32,10,64,0.9) 0%, rgba(113,64,160,0.6) 50%, rgba(0,0,0,0.08) 100%)", "bg-zihin", "category-theme-mind"),
+            ["hastaliklara-karsi-koruma"] = ("/img/hastalıkKorumaBg.png", "linear-gradient(to right, rgba(3,54,56,0.92) 0%, rgba(13,111,104,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-koruma", "category-theme-protection"),
+            ["kas-ve-iskelet-sagligi"] = ("/img/kasİskeletBg.png", "linear-gradient(to right, rgba(70,9,27,0.92) 0%, rgba(182,54,95,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-kas", "category-theme-muscle"),
+            ["zayiflama-destegi"] = ("/img/zayıflamaBg.png", "linear-gradient(to right, rgba(86,56,0,0.92) 0%, rgba(198,136,0,0.62) 50%, rgba(0,0,0,0.08) 100%)", "bg-zayiflama", "category-theme-weight")
         };
 
         var descriptionHtml = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -309,11 +460,97 @@ public class StorefrontContentService : IStorefrontContentService
         }).ToList();
     }
 
+    private async Task<IReadOnlyList<ShowcaseSummaryViewModel>> BuildHomeShowcasesAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Showcases
+            .AsNoTracking()
+            .Include(x => x.ShowcaseCategories)
+            .Where(x => x.IsActive && x.ShowOnHome)
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.Name)
+            .Take(6)
+            .Select(x => new ShowcaseSummaryViewModel
+            {
+                Name = x.Name,
+                Title = x.Title,
+                Slug = x.Slug,
+                CategorySlug = x.ShowcaseCategories
+                    .OrderBy(sc => sc.CategoryId)
+                    .Select(sc => sc.Category != null ? sc.Category.Slug : string.Empty)
+                    .FirstOrDefault() ?? string.Empty,
+                IconClass = x.IconClass,
+                PillCssClass = ResolveShowcasePillClass(
+                    x.ShowcaseCategories
+                        .OrderBy(sc => sc.CategoryId)
+                        .Select(sc => sc.Category != null ? sc.Category.Slug : string.Empty)
+                        .FirstOrDefault(),
+                    x.Slug),
+                BackgroundImageUrl = ResolveShowcaseBackgroundImage(x.Slug, x.BackgroundImageUrl),
+                IsDark = x.IsDark
+            })
+            .ToListAsync(cancellationToken);
+    }
+
+    private static string ResolveShowcaseBackgroundImage(string? slug, string? currentValue)
+    {
+        if (!string.IsNullOrWhiteSpace(currentValue))
+        {
+            return currentValue;
+        }
+
+        var explicitMatch = slug?.Trim().ToLowerInvariant() switch
+        {
+            "uyku-sagligi" or "uyku-rutini" => "/img/uykuBg.png",
+            "multivitamin-enerji" or "multivitamin-enerji-plani" => "/img/multivitaminBg.png",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "/img/zekaHafızaBg.png",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "/img/hastalıkKorumaBg.png",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "/img/kasİskeletBg.png",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "/img/zayıflamaBg.png",
+            _ => string.Empty
+        };
+
+        return string.IsNullOrWhiteSpace(explicitMatch)
+            ? currentValue ?? string.Empty
+            : explicitMatch;
+    }
+
+    private static string ResolveShowcasePillClass(string? categorySlug, string? showcaseSlug)
+    {
+        var normalizedSlug = !string.IsNullOrWhiteSpace(categorySlug) ? categorySlug : showcaseSlug;
+
+        return normalizedSlug?.Trim().ToLowerInvariant() switch
+        {
+            "uyku-sagligi" or "uyku-rutini" => "bg-uyku",
+            "multivitamin-enerji" or "multivitamin-enerji-plani" => "bg-multi",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "bg-zihin",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "bg-koruma",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "bg-kas",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "bg-zayiflama",
+            _ => string.Empty
+        };
+    }
+
+    private static string ResolveShowcaseCategorySlug(string? showcaseSlug)
+    {
+        return showcaseSlug?.Trim().ToLowerInvariant() switch
+        {
+            "uyku-sagligi" or "uyku-rutini" => "uyku-sagligi",
+            "multivitamin-enerji" or "multivitamin-enerji-plani" => "multivitamin-enerji",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "zihin-hafiza-guclendirme",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "hastaliklara-karsi-koruma",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "kas-ve-iskelet-sagligi",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "zayiflama-destegi",
+            _ => string.Empty
+        };
+    }
+
     private static ChatWidgetViewModel BuildChatWidget(
         StorefrontUiDocument data,
         IReadOnlyList<CategorySummaryViewModel> categories,
+        IReadOnlyList<ShowcaseSummaryViewModel> showcases,
         CategorySummaryViewModel? category,
-        string variant)
+        string variant,
+        HomeChatConfiguration? homeChat = null)
     {
         var global = data.ChatWidget.Global;
         var prompts = category is null
@@ -327,24 +564,25 @@ public class StorefrontContentService : IStorefrontContentService
             Variant = variant,
             HeaderTitle = category?.DisplayName ?? string.Empty,
             HeaderBackUrl = "/",
-            HeroTitle = global.HeroTitle,
-            HeroSubtitle = global.HeroSubtitle,
+            HeroTitle = category is null ? homeChat?.HeroTitle ?? global.HeroTitle : global.HeroTitle,
+            HeroSubtitle = category is null ? homeChat?.HeroSubtitle ?? global.HeroSubtitle : global.HeroSubtitle,
             CompactBackLabel = global.CompactBackLabel,
             CompactCategoryLabel = global.CompactCategoryLabel,
             SearchFilterLabel = global.SearchFilterLabel,
-            MainPlaceholder = global.MainPlaceholder,
+            MainPlaceholder = category is null ? homeChat?.MainPlaceholder ?? global.MainPlaceholder : global.MainPlaceholder,
             FullscreenTitle = global.FullscreenTitle,
             AddFileTitle = global.AddFileTitle,
             ChatModeLabel = global.ChatModeLabel,
             SearchModeLabel = global.SearchModeLabel,
             FileMenuDocumentLabel = global.FileMenuDocumentLabel,
             FileMenuImageLabel = global.FileMenuImageLabel,
-            SearchPlaceholder = global.SearchPlaceholder,
+            SearchPlaceholder = category is null ? homeChat?.SearchPlaceholder ?? global.SearchPlaceholder : global.SearchPlaceholder,
             SearchPlaceholderLocked = category is null
-                ? global.SearchPlaceholderLocked
+                ? homeChat?.SearchPlaceholderLocked ?? global.SearchPlaceholderLocked
                 : "Bu kategoride aramak istediğiniz ürünü yazın...",
             CategorySlug = category?.Slug ?? string.Empty,
             CategoryName = category?.DisplayName ?? string.Empty,
+            Showcases = showcases,
             Categories = categories,
             ExamplePrompts = prompts,
             PromptPoolByCategory = data.ExamplePrompts.ByCategory.ToDictionary(x => x.Key, x => (IReadOnlyList<string>)x.Value),
@@ -367,7 +605,7 @@ public class StorefrontContentService : IStorefrontContentService
             Rating = item.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
             RatingWidth = $"{Math.Round(item.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = item.Description ?? string.Empty,
-            Href = $"/urun/{item.Slug}",
+            Href = $"/{item.Slug}",
             CartProductSlug = item.Slug
         }).ToList();
     }
@@ -379,42 +617,12 @@ public class StorefrontContentService : IStorefrontContentService
 
     private static IReadOnlyList<ProductCardViewModel> BuildCategoryGrid(IReadOnlyList<Product> products)
     {
-        var cards = BuildProductCards(products);
-        var grid = new List<ProductCardViewModel>();
-        while (grid.Count < 12 && cards.Count > 0)
-        {
-            foreach (var card in cards)
-            {
-                if (grid.Count == 12)
-                {
-                    break;
-                }
-
-                grid.Add(card);
-            }
-        }
-
-        return grid;
+        return BuildProductCards(products);
     }
 
     private static IReadOnlyList<ProductCardViewModel> BuildCoverflowProducts(IReadOnlyList<Product> products)
     {
-        var cards = BuildProductCards(products);
-        var coverflow = new List<ProductCardViewModel>();
-        while (coverflow.Count < 7 && cards.Count > 0)
-        {
-            foreach (var card in cards)
-            {
-                if (coverflow.Count == 7)
-                {
-                    break;
-                }
-
-                coverflow.Add(card);
-            }
-        }
-
-        return coverflow;
+        return BuildProductCards(products);
     }
 
     private static string BuildProductSizeLabel(string? productName)

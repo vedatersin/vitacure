@@ -6,6 +6,7 @@ Kapsam: home content, category/product render verileri, musteri auth, hesabim, a
 ## Kapsam
 
 - Home ve storefront content servisleri
+- Home icindeki vitrin secim ve yayin kurallari
 - Category ve product detail veri akislari
 - Musteri login/register/logout
 - E-posta dogrulama ve sifre sifirlama
@@ -52,11 +53,17 @@ Kapsam: home content, category/product render verileri, musteri auth, hesabim, a
 
 ### Home content backend'i
 
-- [ ] `docs/mock-data.json` bagimliligini azaltacak `HomeContent` benzeri bir model tasarla
-- [ ] Hero copy, CTA, trust bloklari ve banner hedeflerini veri modeli ile temsil et
+- [x] `docs/mock-data.json` bagimliligini azaltacak `HomeContent` benzeri bir model tasarla
+- [~] Hero copy, CTA, trust bloklari ve banner hedeflerini veri modeli ile temsil et
 - [ ] Popular supplement alanini kategori/tag landing mantigina bagla
 - [ ] Home section secim kurallarini servis seviyesine tasi
-- [ ] Home content degisince cache invalidation tetikle
+- [x] Home content degisince cache invalidation tetikle
+- [x] Home section title, CTA, hero/chat copy ve banner alanlari icin ayri configuration service omurgasi kuruldu
+- [x] Bu configuration servisinin DB destekli admin CRUD katmanina tasinmasi
+- [x] `HomeContentSettings` tablosu, migration'i ve admin duzenleme servisi/controller'i eklendi
+- [x] Storefront tarafi DB kaydi varsa onu, yoksa mock fallback'i okuyacak sekilde guncellendi
+- [ ] Home vitrini icin showcase modulunden veri cekme akisi ekle
+- [ ] Home'da yayinlanacak vitrinleri `ShowOnHome` bayragina gore dondur
 
 ### Musteri hesap deneyimi
 
@@ -80,7 +87,7 @@ Kapsam: home content, category/product render verileri, musteri auth, hesabim, a
 
 ## Bir Sonraki Sira
 
-1. Home content modeli
-2. Hesabim backend sozlesmesini sidebar/tab yapisina gore netlestirme
-3. Siparis detay ve account telemetry
-4. 2FA hazirligi
+1. Home servisinde vitrin modulu veri akisi acildi
+2. Popular supplement alanini kategori/tag landing mantigina baglama
+3. Hesabim backend sozlesmesini sidebar/tab yapisina gore netlestirme
+4. Siparis detay ve account telemetry

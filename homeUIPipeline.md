@@ -8,6 +8,7 @@ Amac: ana sayfanin sadece gorunur olmasi degil, backend ile uyumlu, yonetilebili
 - `Views/Home/Index.cshtml` sayfayi partial bazli kuruyor.
 - `HomeController` yalnizca `IStorefrontContentService` uzerinden model aliyor.
 - `StorefrontContentService` ana sayfa verisini hem DB hem `docs/mock-data.json` kaynaklarindan derliyor.
+- Home tarafinda kategori modulu ile vitrin modulu ayrisacak; home yuzeyi kategori yerine vitrin odakli ilerleyecek.
 - Hero/chat, section basliklari, popular supplement kartlari ve campaign banner alanlari halen dekoratif mock bagimliligina sahip.
 - Featured ve opportunity alanlari gercek `Product` kayitlarindan geliyor.
 - Home UI tek sayfa hissi veriyor ancak kullanici niyetini olcme, dinamik segmentasyon ve admin yonetimi acisindan zayif.
@@ -20,6 +21,8 @@ Amac: ana sayfanin sadece gorunur olmasi degil, backend ile uyumlu, yonetilebili
 - [x] Home output cache policy aktif edildi
 - [x] Home CTA metinlerindeki bozuk encoding duzeltildi
 - [x] Hesabim ekrani storefront hissine yaklasacak sidebar entegrasyonu baslatildi
+- [x] Home section header ve CTA alanlari tek bir configuration kaynagina baglandi
+- [x] Home hero/section/banner alanlari admin tarafindan yonetilebilir backend omurgasina baglandi
 
 ## UI Tarafinda Acik Eksikler
 
@@ -27,8 +30,10 @@ Amac: ana sayfanin sadece gorunur olmasi degil, backend ile uyumlu, yonetilebili
 - [ ] Kullaniciya gore kisitli veya login durumuna gore farkli home akisi yok
 - [ ] Bos durum/fallback tasarimlari tanimli degil
 - [ ] Popular supplements kartlari tiklanabilir kategori ya da filtre aksiyonuna bagli degil
-- [ ] Campaign banner alaninda admin yonetilebilir hedef URL modeli yok
+- [x] Campaign banner alaninda admin yonetilebilir hedef URL modeli icin ilk yonetim omurgasi var
 - [ ] Home section CTA'lari kategori, listing ya da kampanya landing'lerine inmeden ayni sayfaya donuyor
+- [ ] Home vitrin modulu henuz aktif degil
+- [x] Home vitrin modulu aktif edildi
 - [ ] Analytics/telemetry hook'lari yok
 - [ ] SEO icin statik title/meta disinda zenginlestirilmis schema veya landing metni yok
 - [ ] Accessibility kontrol listesi tamam degil
@@ -40,6 +45,7 @@ Amac: ana sayfanin sadece gorunur olmasi degil, backend ile uyumlu, yonetilebili
 - Chat widget altina 3 guven karti eklenmeli: eczaci destekli, ayni gun kargo, guvenli odeme gibi.
 - Hero icinde kategori seciminin yanina hedef bazli giris eklenmeli: enerji, uyku, bagisiklik, odak.
 - Chat'e girmeden once kullaniciya hizli aksiyon butonlari sunulmali.
+- Ilk 6 tema kategorisi home'da kategori karti gibi degil, vitrin modulu olarak ele alinmali.
 
 ### 2. Section'lari niyet bazli kurgula
 
@@ -57,6 +63,7 @@ Amac: ana sayfanin sadece gorunur olmasi degil, backend ile uyumlu, yonetilebili
 
 - Home'daki section title, CTA label, banner target, hero copy ve trust bloklari admin panelinden yonetilebilir olmali.
 - Mock JSON sadece gelistirme fallback'i olarak kalmali.
+- Home UI tarafinda bu alanlar tekil sabitler yerine config bazli okunmali.
 
 ### 5. Hesap alanini storefront ile birlestir
 
@@ -71,10 +78,11 @@ Home UI su an bu veri katmanlarina bagli:
 - `Categories`: DB
 - `FeaturedProducts`: DB
 - `OpportunityProducts`: DB
+- `Showcases`: yeni modul, home entegrasyonu bekliyor
 - `PopularSupplements`: mock
-- `CampaignBanners`: mock
-- `SectionTitles`: mock agirlikli
-- `ChatWidget` global/category copy: mock
+- `CampaignBanners`: admin config + mock fallback
+- `SectionHeaders`: admin config + mock fallback
+- `ChatWidget` global/category copy: admin config + mock fallback
 
 Bu nedenle UI tarafinda yapilacak hemen her iyilestirme backend tarafinda yeni bir content modeli gerektiriyor.
 
@@ -83,9 +91,11 @@ Bu nedenle UI tarafinda yapilacak hemen her iyilestirme backend tarafinda yeni b
 ### UI + Backend birlikte
 
 - [ ] Home icin ayri bir content/config modeli tasarla
-- [ ] Banner hedef URL ve sira bilgisini veri modeline ekle
+- [x] Banner hedef URL bilgisini veri modeline ekle
+- [ ] Banner sira bilgisini veri modeline ekle
 - [ ] Section bazli urun secim kuralini veri tarafina tasi
-- [ ] Hero copy ve trust bloklarini admin yonetimine ac
+- [~] Hero copy ve trust bloklarini admin yonetimine ac
+- [x] Home vitrin section'i showcase modulune baglandi
 - [ ] Analytics event adlarini UI ve backend/log tarafinda standardize et
 
 ### UI oncelikli
@@ -104,11 +114,11 @@ Bu nedenle UI tarafinda yapilacak hemen her iyilestirme backend tarafinda yeni b
 
 ## Onerilen Siradaki Sprint
 
-1. Home content modeli ve admin yonetim sinirlarini tanimla
-2. Hero copy, banner ve CTA verilerini mock'tan cikar
-3. Featured/opportunity secim kurallarini netlestir
-4. UI tarafinda gercek route ve bos state duzenini uygula
-5. Test ve cache invalidation kapsamini buyut
+1. Home vitrin modulu section tasarimini showcase modulune bagla
+2. Home CTA'larini gercek route/landing'lere bagla
+3. Popular supplement kartlarini kategori/tag landing girisine cevir
+4. Featured/opportunity secim kurallarini netlestir
+5. Bos state ve telemetry kapsamini buyut
 
 ## Son Inceleme Ozeti
 

@@ -2,7 +2,7 @@
 
 <div id="markalar" class="brands-wrapper">
     <div class="container section-container">
-        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel { Title = Model.SectionTitles["campaigns"] })
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", Model.SectionHeaders["campaigns"])
         <div class="row g-4">
             @foreach (var banner in Model.CampaignBanners)
             {

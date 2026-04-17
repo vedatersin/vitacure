@@ -1,0 +1,9 @@
+@model vitacure.Models.ViewModels.Admin.ShowcaseListViewModel
+
+@{
+    ViewData["Title"] = "Vitrinler";
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Showcases/_ListContent.cshtml", Model)
+</div>

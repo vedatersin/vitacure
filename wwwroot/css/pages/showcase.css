@@ -1,0 +1,51 @@
+.showcase-page .category-main-banner {
+    min-height: 1020px;
+}
+
+.showcase-main-banner-overlay {
+    background:
+        linear-gradient(to right, rgba(5, 10, 22, 0.72) 0%, rgba(11, 17, 31, 0.58) 38%, rgba(5, 10, 22, 0.13) 100%),
+        linear-gradient(to top, rgba(5, 10, 22, 0.28) 0%, rgba(5, 10, 22, 0.05) 40%, rgba(5, 10, 22, 0.18) 100%);
+}
+
+.showcase-filter-sidebar {
+    padding: 1.5rem 1rem;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.showcase-filter-group h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 1rem;
+}
+
+.showcase-filter-options {
+    display: grid;
+    gap: 0.7rem;
+}
+
+.showcase-filter-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0.95rem;
+    border-radius: 14px;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid transparent;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.showcase-filter-option:hover,
+.showcase-filter-option.is-active {
+    color: #0f172a;
+    background: #e2eefc;
+    border-color: rgba(59, 130, 246, 0.28);
+    transform: translateY(-1px);
+}

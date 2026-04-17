@@ -10,11 +10,13 @@ public class AdminCategoryService : IAdminCategoryService
 {
     private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
+    private readonly ISlugService _slugService;
 
-    public AdminCategoryService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
+    public AdminCategoryService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService, ISlugService slugService)
     {
         _dbContext = dbContext;
         _cacheInvalidationService = cacheInvalidationService;
+        _slugService = slugService;
     }
 
     public async Task<CategoryListViewModel> GetCategoriesAsync(CancellationToken cancellationToken = default)
@@ -80,10 +82,13 @@ public class AdminCategoryService : IAdminCategoryService
 
     public async Task<int> CreateAsync(CategoryFormViewModel model, CancellationToken cancellationToken = default)
     {
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Category, cancellationToken: cancellationToken);
+
         var entity = new Category
         {
             Name = model.Name.Trim(),
-            Slug = model.Slug.Trim(),
+            Slug = normalizedSlug,
             Description = model.Description.Trim(),
             ParentId = model.ParentId,
             SeoTitle = string.IsNullOrWhiteSpace(model.SeoTitle) ? null : model.SeoTitle.Trim(),
@@ -110,8 +115,11 @@ public class AdminCategoryService : IAdminCategoryService
             return false;
         }
 
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Category, entity.Id, cancellationToken);
+
         entity.Name = model.Name.Trim();
-        entity.Slug = model.Slug.Trim();
+        entity.Slug = normalizedSlug;
         entity.Description = model.Description.Trim();
         entity.ParentId = model.ParentId;
         entity.SeoTitle = string.IsNullOrWhiteSpace(model.SeoTitle) ? null : model.SeoTitle.Trim();

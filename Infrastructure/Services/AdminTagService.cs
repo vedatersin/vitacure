@@ -10,11 +10,13 @@ public class AdminTagService : IAdminTagService
 {
     private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
+    private readonly ISlugService _slugService;
 
-    public AdminTagService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
+    public AdminTagService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService, ISlugService slugService)
     {
         _dbContext = dbContext;
         _cacheInvalidationService = cacheInvalidationService;
+        _slugService = slugService;
     }
 
     public async Task<TagListViewModel> GetTagsAsync(CancellationToken cancellationToken = default)
@@ -67,10 +69,13 @@ public class AdminTagService : IAdminTagService
 
     public async Task<int> CreateAsync(TagFormViewModel model, CancellationToken cancellationToken = default)
     {
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Tag, cancellationToken: cancellationToken);
+
         var entity = new Tag
         {
             Name = model.Name.Trim(),
-            Slug = model.Slug.Trim()
+            Slug = normalizedSlug
         };
 
         _dbContext.Tags.Add(entity);
@@ -92,8 +97,11 @@ public class AdminTagService : IAdminTagService
             return false;
         }
 
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Tag, entity.Id, cancellationToken);
+
         entity.Name = model.Name.Trim();
-        entity.Slug = model.Slug.Trim();
+        entity.Slug = normalizedSlug;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         await _cacheInvalidationService.InvalidateCategoryAsync(cancellationToken);

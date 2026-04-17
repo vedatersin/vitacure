@@ -10,11 +10,13 @@ public class AdminProductService : IAdminProductService
 {
     private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
+    private readonly ISlugService _slugService;
 
-    public AdminProductService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService)
+    public AdminProductService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService, ISlugService slugService)
     {
         _dbContext = dbContext;
         _cacheInvalidationService = cacheInvalidationService;
+        _slugService = slugService;
     }
 
     public async Task<ProductListViewModel> GetProductsAsync(CancellationToken cancellationToken = default)
@@ -92,10 +94,13 @@ public class AdminProductService : IAdminProductService
 
     public async Task<int> CreateAsync(ProductFormViewModel model, CancellationToken cancellationToken = default)
     {
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Product, cancellationToken: cancellationToken);
+
         var entity = new Product
         {
             Name = model.Name.Trim(),
-            Slug = model.Slug.Trim(),
+            Slug = normalizedSlug,
             Description = model.Description.Trim(),
             Price = model.Price,
             OldPrice = NormalizeOldPrice(model.OldPrice),
@@ -129,8 +134,11 @@ public class AdminProductService : IAdminProductService
             return false;
         }
 
+        var normalizedSlug = model.Slug.Trim();
+        await _slugService.EnsureAvailableAsync(normalizedSlug, SlugEntityType.Product, entity.Id, cancellationToken);
+
         entity.Name = model.Name.Trim();
-        entity.Slug = model.Slug.Trim();
+        entity.Slug = normalizedSlug;
         entity.Description = model.Description.Trim();
         entity.Price = model.Price;
         entity.OldPrice = NormalizeOldPrice(model.OldPrice);

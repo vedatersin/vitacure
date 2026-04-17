@@ -1,0 +1,118 @@
+@model vitacure.Models.ViewModels.Admin.ShowcaseListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Storefront Kurgusu",
+        Title = "Vitrin listesi",
+        Description = "Kategorilerden ayri olarak yonetilen vitrinler, landing deneyimi ve ana sayfa kurgusunu besler.",
+        IconClass = "fa-solid fa-panorama",
+        AsideTitle = "Vitrin akis notu",
+        AsideText = "Buradaki vitrinler kategori taksonomisinden ayri calisir. Arkaplan, etiket, secili kategoriler ve one cikan urunler burada yonetilir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Home", Value = Model.HomeVisibleCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Vitrinler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/showcases",
+        SearchPlaceholder = "Vitrin ara, slug kontrol et, home gorunurlugu incele...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Vitrin",
+        PrimaryActionUrl = "/admin/showcases/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "home",
+                Label = "Ana Sayfa",
+                Value = Model.HomeFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum vitriler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "home", Label = "Home'da gosterilen" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "hidden", Label = "Home'da gizli" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vitrin</th>
+                    <th>Slug</th>
+                    <th>Kategori Havuzu</th>
+                    <th>One Cikan</th>
+                    <th>Home</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var showcase in Model.Showcases)
+                {
+                    <tr>
+                        <td>@showcase.Id</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="@showcase.IconClass"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">@showcase.Name</strong>
+                                    <small class="text-muted">@showcase.Title</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@showcase.Slug</td>
+                        <td>@showcase.CategoryCount</td>
+                        <td>@showcase.FeaturedProductCount</td>
+                        <td>
+                            <span class="auth-status-badge @(showcase.ShowOnHome ? "is-active" : "is-passive")">
+                                @(showcase.ShowOnHome ? "Yayinda" : "Gizli")
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge @(showcase.IsActive ? "is-active" : "is-passive")">
+                                @(showcase.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/@showcase.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

@@ -38,6 +38,8 @@ Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina 
 - [x] Create/edit form ekranlarinda hero sag paneliyle ortak ust kurgu olusturuldu
 - [x] Bildirimler modulu icin iki kolonlu liste + detay UI omurgasi kuruldu
 - [x] Bildirimler modulu kategori bazli filtre yapisiyla UI seviyesinde hazirlandi
+- [x] Vitrinler modulu icin liste ve form UI omurgasi eklendi
+- [x] Vitrin formunda ikon preview, popup urun secimi ve surukle-birak slot yapisi eklendi
 
 ## Guncel UI Kararlari
 
@@ -85,6 +87,7 @@ Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina 
 ### Oncelik 1
 
 - [ ] Bildirim dropdown icindeki oge tiplerini ve aksiyon ikonlarini gercek senaryolara gore zenginlestirmek
+- [ ] Vitrin formundaki arkaplan secimini gorsellestirmek
 - [ ] Profil dropdown'ina hesap ayarlari veya profil sayfasi girisi eklemek
 - [ ] Form ekranlarindaki operator kartlarini yeni ust kurguya gore daha da sadeleştirmek
 - [ ] Bildirim detay paneline aksiyon gecmisi ve okunma durumu bloklari eklemek

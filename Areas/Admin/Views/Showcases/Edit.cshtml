@@ -1,0 +1,38 @@
+@model vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel
+
+@{
+    ViewData["Title"] = "Vitrin Duzenle";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Storefront Kurgusu",
+        Title = "Vitrin duzenle",
+        Description = "Bu ekran vitrin landing sayfasi ve home vitrin yayini icin temel kaynaktir.",
+        IconClass = "fa-solid fa-pen-to-square",
+        AsideTitle = "Form akis notu",
+        AsideText = "Secili kategoriler urun havuzunu belirler; one cikan urunler ise vitrin sahnesini besler.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Home", Value = Model.ShowOnHome ? "Acik" : "Kapali" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Vitrinler", Url = "/admin/showcases" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        @await Html.PartialAsync("~/Areas/Admin/Views/Showcases/_Form.cshtml", Model)
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/pages/admin-showcase-form.js" asp-append-version="true"></script>
+}

@@ -1,6 +1,5 @@
 (function () {
     const favoriteStore = window.__vitacureFavoriteStore || (window.__vitacureFavoriteStore = new Set());
-    const transitionDurationMs = 420;
     const slots = [
         { x: -252, y: -72, scale: 0.72, z: 4, blur: "2px" },
         { x: -168, y: -28, scale: 0.83, z: 5, blur: "2px" },
@@ -11,44 +10,20 @@
         { x: 252, y: -72, scale: 0.72, z: 4, blur: "3px" }
     ];
 
-    function normalizeTag(value) {
-        return (value || "")
-            .toLowerCase()
-            .replace(/ı/g, "i")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .trim();
-    }
+    function getSlotsForCount(count) {
+        if (count >= slots.length) {
+            return slots;
+        }
 
-    function findProductIndexByHints(products, hints) {
-        const normalizedHints = hints.map((hint) => hint.toLowerCase());
-        return products.findIndex((product) => {
-            const name = (product.name || product.Name || "").toLowerCase();
-            const src = (product.src || product.Src || "").toLowerCase();
-            return normalizedHints.some((hint) => name.includes(hint) || src.includes(hint));
-        });
-    }
-
-    function bindTagProducts(products, buttons) {
-        const lookupRules = [
-            { tagKey: "tumu", hints: ["magnezyum", "bottle_mag"] },
-            { tagKey: "melatonin", hints: ["omega", "bottle_omega"] },
-            { tagKey: "bitkisel", hints: ["multi", "bottle_multi"] },
-            { tagKey: "cocuklar", hints: ["d3", "bottle_d3"] }
-        ];
-
-        buttons.forEach((button, index) => {
-            const normalizedTag = normalizeTag(button.textContent);
-            const matchedRule = lookupRules.find((rule) => normalizedTag.includes(rule.tagKey));
-            const matchedIndex = matchedRule ? findProductIndexByHints(products, matchedRule.hints) : -1;
-            button.dataset.productIndex = String(matchedIndex >= 0 ? matchedIndex : index % Math.max(products.length, 1));
-        });
+        const centerIndex = Math.floor(slots.length / 2);
+        const start = Math.max(0, centerIndex - Math.floor(count / 2));
+        return slots.slice(start, start + count);
     }
 
     function renderStars(value) {
         const numeric = Number.parseFloat(String(value).replace(",", "."));
         const rounded = Number.isFinite(numeric) ? Math.max(0, Math.min(5, Math.round(numeric))) : 5;
-        return "★★★★★".slice(0, rounded) + "☆☆☆☆☆".slice(rounded);
+        return "\u2605\u2605\u2605\u2605\u2605".slice(0, rounded) + "\u2606\u2606\u2606\u2606\u2606".slice(rounded);
     }
 
     function initCoverflow(shell) {
@@ -62,6 +37,7 @@
             return;
         }
 
+        const pageRoot = shell.closest("[data-category-page]");
         const previous = shell.querySelector("[data-coverflow-prev]");
         const next = shell.querySelector("[data-coverflow-next]");
         const name = shell.querySelector("[data-coverflow-name]");
@@ -73,14 +49,15 @@
         const heartButton = shell.querySelector("[data-coverflow-heart]");
         const cartButton = shell.querySelector("[data-coverflow-cart]");
         const inspectButton = shell.querySelector("[data-coverflow-inspect]");
-        const tagButtons = Array.from(document.querySelectorAll(".uyku-tag-btn"));
-        const centerSlotIndex = Math.min(3, products.length - 1);
+        const tagButtons = Array.from(pageRoot?.querySelectorAll(".uyku-tag-btn") ?? []);
+        const productGridAnchor = pageRoot?.querySelector("[data-product-grid-anchor]");
+        const activeSlots = getSlotsForCount(products.length);
+        const centerSlotIndex = Math.floor(activeSlots.length / 2);
+        const transitionDurationMs = Number.parseInt(getComputedStyle(shell).getPropertyValue("--coverflow-transition-ms"), 10) || 420;
         let order = products.map((_, index) => index);
         let transitionState = null;
         let transitionTimer = null;
         let isAnimating = false;
-
-        bindTagProducts(products, tagButtons);
 
         const items = products.map((product) => {
             const item = document.createElement("div");
@@ -89,7 +66,7 @@
             item.style.left = "50%";
             item.style.top = "50%";
             item.style.transformOrigin = "center center";
-            item.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease, filter 420ms ease";
+            item.style.transition = `transform ${transitionDurationMs}ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease, filter ${transitionDurationMs}ms ease`;
 
             const src = product.src || product.Src;
             const alt = product.alt || product.Alt;
@@ -100,21 +77,6 @@
 
         function getActiveProductIndex() {
             return order[centerSlotIndex];
-        }
-
-        function setActiveTagByProductIndex(productIndex) {
-            if (!tagButtons.length) {
-                return;
-            }
-
-            const targetIndex = tagButtons.findIndex((button) => Number.parseInt(button.dataset.productIndex || "", 10) === productIndex);
-            if (targetIndex < 0) {
-                return;
-            }
-
-            tagButtons.forEach((button, index) => {
-                button.classList.toggle("active", index === targetIndex);
-            });
         }
 
         function syncHeart(activeProduct) {
@@ -138,7 +100,7 @@
         function render() {
             items.forEach((item, index) => {
                 const slotIndex = order.indexOf(index);
-                const slot = slots[slotIndex] || slots[slots.length - 1];
+                const slot = activeSlots[slotIndex] || activeSlots[activeSlots.length - 1];
                 const shouldWrapBehind = transitionState?.wrappingIndex === index;
                 item.style.zIndex = String(shouldWrapBehind ? 1 : slot.z);
                 item.style.filter = `blur(${slot.blur})`;
@@ -159,7 +121,7 @@
             }
 
             if (rating) {
-                rating.textContent = `${activeProduct.rating || activeProduct.Rating || "5"}/5 kullanıcı puanı`;
+                rating.textContent = `${activeProduct.rating || activeProduct.Rating || "5"}/5 kullanici puani`;
             }
 
             if (oldPrice) {
@@ -179,31 +141,6 @@
             }
 
             syncHeart(activeProduct);
-            setActiveTagByProductIndex(getActiveProductIndex());
-        }
-
-        function moveCenterToProduct(targetProductIndex) {
-            if (!Number.isInteger(targetProductIndex) || targetProductIndex < 0 || targetProductIndex >= products.length) {
-                return;
-            }
-
-            const maxSteps = products.length + 2;
-            let steps = 0;
-            while (getActiveProductIndex() !== targetProductIndex && steps < maxSteps) {
-                order.push(order.shift());
-                steps += 1;
-            }
-        }
-
-        function activateTagAt(tagIndex) {
-            if (!tagButtons.length) {
-                return;
-            }
-
-            const normalizedTagIndex = ((tagIndex % tagButtons.length) + tagButtons.length) % tagButtons.length;
-            const targetProductIndex = Number.parseInt(tagButtons[normalizedTagIndex].dataset.productIndex || "", 10);
-            moveCenterToProduct(targetProductIndex);
-            render();
         }
 
         function completeTransition() {
@@ -247,9 +184,10 @@
             rotate("next");
         });
 
-        tagButtons.forEach((button, index) => {
-            button.addEventListener("click", function () {
-                activateTagAt(index);
+        tagButtons.forEach((button) => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                productGridAnchor?.scrollIntoView({ behavior: "smooth", block: "start" });
             });
         });
 
@@ -291,12 +229,7 @@
             });
         }
 
-        const initiallyActiveTag = Math.max(0, tagButtons.findIndex((button) => button.classList.contains("active")));
-        if (tagButtons.length) {
-            activateTagAt(initiallyActiveTag);
-        } else {
-            render();
-        }
+        render();
     }
 
     document.addEventListener("DOMContentLoaded", function () {

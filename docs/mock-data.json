@@ -366,7 +366,7 @@
       "price": "299,00",
       "oldPrice": "399,00",
       "rating": "4.8",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler", "Uyku Coverflow", "Uyku Grid Clone"],
       "categoryRelation": ["multivitamin-enerji", "uyku-sagligi"],
       "description": "Günlük enerji dengesini, bağışıklığı ve temel vitamin desteğini tek kapsülde tamamlamaya yardımcı olur.",
@@ -384,7 +384,7 @@
       "price": "349,00",
       "oldPrice": "499,00",
       "rating": "4.9",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler", "Uyku Coverflow"],
       "categoryRelation": ["uyku-sagligi"],
       "description": "Rahat bir gece rutini için bedenin gevşemesine destek olur, zihinsel dinginlik hissini güçlendirmeye yardımcı olur.",
@@ -402,7 +402,7 @@
       "price": "199,00",
       "oldPrice": "279,00",
       "rating": "4.7",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler", "Uyku Coverflow"],
       "categoryRelation": ["uyku-sagligi"],
       "description": "Kemik ve kas desteği sağlarken düşük güneş maruziyetinde günlük D vitamini ihtiyacını destekler.",
@@ -420,7 +420,7 @@
       "price": "249,00",
       "oldPrice": "349,00",
       "rating": "4.3",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler", "Uyku Coverflow"],
       "categoryRelation": ["uyku-sagligi"],
       "description": "Kasların gevşemesine destek olur. Uyku öncesi rahatlamayı artırır. Gece rutininde daha sakin bir geçiş sağlar.",
@@ -438,7 +438,7 @@
       "price": "179,00",
       "oldPrice": "249,00",
       "rating": "4.6",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler", "Uyku Coverflow"],
       "categoryRelation": ["hastaliklara-karsi-koruma", "uyku-sagligi"],
       "description": "Yoğun günlerde bağışıklık desteği sunarken vücudun toparlanma sürecine destek olur.",
@@ -456,7 +456,7 @@
       "price": "499,00",
       "oldPrice": "699,00",
       "rating": "4.9",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler"],
       "categoryRelation": [],
       "source": {
@@ -472,7 +472,7 @@
       "price": "149,00",
       "oldPrice": "199,00",
       "rating": "4.4",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler"],
       "categoryRelation": ["multivitamin-enerji"],
       "source": {
@@ -488,7 +488,7 @@
       "price": "189,00",
       "oldPrice": "259,00",
       "rating": "4.5",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler"],
       "categoryRelation": ["hastaliklara-karsi-koruma"],
       "source": {
@@ -504,7 +504,7 @@
       "price": "329,00",
       "oldPrice": "449,00",
       "rating": "4.2",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler"],
       "categoryRelation": [],
       "source": {
@@ -520,7 +520,7 @@
       "price": "159,00",
       "oldPrice": "219,00",
       "rating": "4.1",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Öne Çıkan Ürünler"],
       "categoryRelation": [],
       "source": {
@@ -536,7 +536,7 @@
       "price": "199,00",
       "oldPrice": "259,00",
       "rating": "4.7",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Uyku Coverflow"],
       "categoryRelation": ["uyku-sagligi"],
       "description": "Kemik ve diş sağlığını destekler. İleri yaşlarda güçlü kemik yapısını korumaya yardımcı olur.",
@@ -553,7 +553,7 @@
       "price": "149,00",
       "oldPrice": "199,00",
       "rating": "4.9",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Uyku Coverflow", "Fırsat Ürünleri"],
       "categoryRelation": ["uyku-sagligi", "multivitamin-enerji"],
       "description": "Sinir sistemi sağlığını korur, yorgunluk ve bitkinliğin azalmasına destek olur.",
@@ -571,7 +571,7 @@
       "price": "199,00",
       "oldPrice": "279,00",
       "rating": "4.7",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -587,7 +587,7 @@
       "price": "349,00",
       "oldPrice": "499,00",
       "rating": "4.9",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -603,7 +603,7 @@
       "price": "179,00",
       "oldPrice": "249,00",
       "rating": "4.6",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -619,7 +619,7 @@
       "price": "249,00",
       "oldPrice": "349,00",
       "rating": "4.3",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -635,7 +635,7 @@
       "price": "299,00",
       "oldPrice": "399,00",
       "rating": "4.8",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": ["multivitamin-enerji"],
       "source": {
@@ -651,7 +651,7 @@
       "price": "199,00",
       "oldPrice": "299,00",
       "rating": "4.8",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -667,7 +667,7 @@
       "price": "149,00",
       "oldPrice": "199,00",
       "rating": "4.5",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": ["hastaliklara-karsi-koruma"],
       "source": {
@@ -683,7 +683,7 @@
       "price": "189,00",
       "oldPrice": "259,00",
       "rating": "4.7",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -699,7 +699,7 @@
       "price": "169,00",
       "oldPrice": "239,00",
       "rating": "4.4",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSections": ["Fırsat Ürünleri"],
       "categoryRelation": [],
       "source": {
@@ -715,7 +715,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Vitamin D",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -728,7 +728,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Demir",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -741,7 +741,7 @@
     {
       "type": "popular-supplement-card",
       "name": "B12",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -754,7 +754,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Folat/Folik asit",
-      "image": "/img/bottle_omega_nobg.png",
+      "image": "/img/products/bottle_omega_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -766,7 +766,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Kalsiyum",
-      "image": "/img/bottle_multi_nobg.png",
+      "image": "/img/products/bottle_multi_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -779,7 +779,7 @@
     {
       "type": "popular-supplement-card",
       "name": "İyot",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -791,7 +791,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Magnezyum",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -804,7 +804,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Potasyum",
-      "image": "/img/bottle_d3_nobg.png",
+      "image": "/img/products/bottle_d3_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",
@@ -816,7 +816,7 @@
     {
       "type": "popular-supplement-card",
       "name": "Çinko",
-      "image": "/img/bottle_mag_nobg.png",
+      "image": "/img/products/bottle_mag_nobg.png",
       "usageSection": "Popüler Takviyeler",
       "source": {
         "file": "/Views/Home/Index.cshtml",

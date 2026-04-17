@@ -396,6 +396,115 @@ namespace vitacure.Migrations
                     b.ToTable("CustomerFavorites", (string)null);
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.HomeContentSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CampaignBannersContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CampaignsTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("DealsActionLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("DealsActionUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DealsTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FeaturedActionLabel")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FeaturedActionUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FeaturedBannerAltText")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FeaturedBannerImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FeaturedBannerName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FeaturedBannerTargetUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FeaturedTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("HeroSubtitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("HeroTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("MainPlaceholder")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("MetaDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PopularSupplementsContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PopularTitle")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("SearchPlaceholder")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("SearchPlaceholderLocked")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HomeContentSettings", (string)null);
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -580,6 +689,116 @@ namespace vitacure.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("ProductTags", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.Showcase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BackgroundImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IconClass")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDark")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("MetaDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("SeoTitle")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<bool>("ShowOnHome")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TagsContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Showcases", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseCategory", b =>
+                {
+                    b.Property<int>("ShowcaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShowcaseId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("ShowcaseCategories", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseFeaturedProduct", b =>
+                {
+                    b.Property<int>("ShowcaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShowcaseId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ShowcaseFeaturedProducts", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Tag", b =>
@@ -777,6 +996,44 @@ namespace vitacure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseCategory", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Category", "Category")
+                        .WithMany("ShowcaseCategories")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.Showcase", "Showcase")
+                        .WithMany("ShowcaseCategories")
+                        .HasForeignKey("ShowcaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Showcase");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseFeaturedProduct", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Product", "Product")
+                        .WithMany("ShowcaseFeaturedProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.Showcase", "Showcase")
+                        .WithMany("FeaturedProducts")
+                        .HasForeignKey("ShowcaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Showcase");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.AppUser", b =>
                 {
                     b.Navigation("Addresses");
@@ -793,6 +1050,8 @@ namespace vitacure.Migrations
                     b.Navigation("Children");
 
                     b.Navigation("Products");
+
+                    b.Navigation("ShowcaseCategories");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Order", b =>
@@ -803,6 +1062,15 @@ namespace vitacure.Migrations
             modelBuilder.Entity("vitacure.Domain.Entities.Product", b =>
                 {
                     b.Navigation("ProductTags");
+
+                    b.Navigation("ShowcaseFeaturedProducts");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.Showcase", b =>
+                {
+                    b.Navigation("FeaturedProducts");
+
+                    b.Navigation("ShowcaseCategories");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Tag", b =>

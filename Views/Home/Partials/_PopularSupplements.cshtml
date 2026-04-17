@@ -2,7 +2,7 @@
 
 <div id="populer-takviyeler" class="popular-supplements-section">
     <div class="container section-container">
-        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", new SectionHeaderViewModel { Title = Model.SectionTitles["popular"] })
+        @await Html.PartialAsync("~/Views/Shared/Partials/_SectionHeader.cshtml", Model.SectionHeaders["popular"])
         <div class="row align-items-stretch g-3">
             <div class="col-lg-8">
                 <div class="row g-3 h-100">

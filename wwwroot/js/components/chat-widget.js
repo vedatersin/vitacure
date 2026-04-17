@@ -10,6 +10,8 @@
     function initChatWidget(widget) {
         const panel = widget.querySelector("[data-chat-panel]");
         const input = widget.querySelector("[data-chat-input]");
+        const inputWrap = widget.querySelector(".ag-chat-input-wrap");
+        const backdrop = widget.querySelector("[data-chat-backdrop]");
         const fullscreenButton = widget.querySelector("[data-chat-fullscreen]");
         const sendButton = widget.querySelector("[data-chat-send]");
         const modeButtons = widget.querySelectorAll("[data-chat-mode]");
@@ -38,6 +40,72 @@
         let isPlaceholderErasing = false;
         let isPlaceholderReadyToSend = false;
         const promptQueues = buildPromptQueues();
+        const fullscreenAnchor = document.createElement("span");
+        fullscreenAnchor.hidden = true;
+        panel.parentNode?.insertBefore(fullscreenAnchor, panel);
+        const isLightTheme = !!widget.closest(".showcase-theme-light");
+        panel.classList.toggle("chat-theme-light", isLightTheme);
+        backdrop?.classList.toggle("chat-theme-light", isLightTheme);
+
+        function isFullscreen() {
+            return panel.classList.contains("fullscreen-mode");
+        }
+
+        function moveFullscreenLayerToBody() {
+            if (panel.parentNode !== document.body) {
+                document.body.appendChild(backdrop);
+                document.body.appendChild(panel);
+            }
+        }
+
+        function restoreFullscreenLayer() {
+            const parent = fullscreenAnchor.parentNode;
+            if (!parent) {
+                return;
+            }
+
+            parent.insertBefore(backdrop, fullscreenAnchor);
+            parent.insertBefore(panel, fullscreenAnchor.nextSibling);
+        }
+
+        function syncBodyScrollLock() {
+            const fullscreenActive = isFullscreen();
+            document.body.classList.toggle("chat-fullscreen-active", fullscreenActive);
+            backdrop?.classList.toggle("visible", fullscreenActive);
+            const fullscreenIcon = fullscreenButton?.querySelector("i");
+            if (fullscreenIcon) {
+                fullscreenIcon.classList.toggle("fa-expand", !fullscreenActive);
+                fullscreenIcon.classList.toggle("fa-compress", fullscreenActive);
+            }
+        }
+
+        function scheduleFullscreenResize() {
+            window.requestAnimationFrame(() => resizeInput());
+            window.setTimeout(() => resizeInput(), 180);
+            window.setTimeout(() => resizeInput(), 420);
+        }
+
+        function enterFullscreen() {
+            if (isFullscreen()) {
+                return;
+            }
+
+            moveFullscreenLayerToBody();
+            panel.classList.add("fullscreen-mode");
+            syncBodyScrollLock();
+            scheduleFullscreenResize();
+        }
+
+        function exitFullscreen() {
+            if (!isFullscreen()) {
+                return;
+            }
+
+            panel.classList.remove("fullscreen-mode");
+            syncBodyScrollLock();
+            restoreFullscreenLayer();
+            scheduleFullscreenResize();
+        }
 
         function normalizeCategory(category) {
             return {
@@ -79,10 +147,30 @@
         }
 
         function resizeInput() {
-            input.style.height = "auto";
             const baseHeight = parseFloat(getComputedStyle(input).getPropertyValue("--chat-input-base-height")) || 84;
+            input.style.height = "auto";
+
+            if (currentMode !== "chat") {
+                input.style.height = `${baseHeight}px`;
+                input.classList.remove("has-scrollbar");
+                updateFullscreenVisibility();
+                return;
+            }
+
+            if (isFullscreen() && inputWrap) {
+                const availableHeight = Math.max(inputWrap.clientHeight - 16, baseHeight);
+                input.style.height = `${availableHeight}px`;
+                const hasOverflow = input.scrollHeight - availableHeight > 12;
+                input.classList.toggle("has-scrollbar", hasOverflow);
+                if (!hasOverflow) {
+                    input.scrollTop = 0;
+                }
+                updateFullscreenVisibility();
+                return;
+            }
+
             input.style.height = `${baseHeight}px`;
-            input.classList.toggle("has-scrollbar", currentMode === "chat" && input.scrollHeight > input.clientHeight);
+            input.classList.toggle("has-scrollbar", input.scrollHeight - input.clientHeight > 4);
             updateFullscreenVisibility();
         }
 
@@ -293,7 +381,38 @@
 
         fullscreenButton?.addEventListener("click", function (event) {
             event.preventDefault();
-            panel.classList.toggle("fullscreen-mode");
+            if (isFullscreen()) {
+                exitFullscreen();
+                return;
+            }
+
+            enterFullscreen();
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && isFullscreen()) {
+                exitFullscreen();
+            }
+        });
+
+        backdrop?.addEventListener("click", function () {
+            if (!isFullscreen()) {
+                return;
+            }
+
+            exitFullscreen();
+        });
+
+        panel.addEventListener("transitionend", function (event) {
+            if (event.propertyName === "height" || event.propertyName === "width" || event.propertyName === "top") {
+                resizeInput();
+            }
+        });
+
+        window.addEventListener("resize", function () {
+            if (isFullscreen()) {
+                scheduleFullscreenResize();
+            }
         });
 
         modeButtons.forEach((button) => {
@@ -347,6 +466,7 @@
         input.placeholder = mainPlaceholder;
         resizeInput();
         updateSendState();
+        syncBodyScrollLock();
         if (canRotatePrompts()) {
             startPromptRotation();
         } else {
@@ -360,5 +480,9 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll("[data-chat-widget]").forEach(initChatWidget);
+    });
+
+    window.addEventListener("beforeunload", function () {
+        document.body.classList.remove("chat-fullscreen-active");
     });
 })();

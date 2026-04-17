@@ -115,8 +115,12 @@ builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IAdminTagService, AdminTagService>();
+builder.Services.AddScoped<IAdminShowcaseService, AdminShowcaseService>();
+builder.Services.AddScoped<IAdminHomeContentService, AdminHomeContentService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISlugService, SlugService>();
+builder.Services.AddScoped<IHomeContentConfigurationService, HomeContentConfigurationService>();
 builder.Services.AddScoped<IStorefrontContentService, StorefrontContentService>();
 builder.Services.AddSingleton<IMockContentService, MockContentService>();
 
@@ -161,14 +165,14 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "product",
+    name: "legacy_product",
     pattern: "urun/{slug}",
     defaults: new { controller = "Product", action = "Detail" });
 
 app.MapControllerRoute(
-    name: "category",
+    name: "slug",
     pattern: "{slug}",
-    defaults: new { controller = "Category", action = "Detail" });
+    defaults: new { controller = "Slug", action = "Resolve" });
 
 app.MapControllerRoute(
     name: "default",

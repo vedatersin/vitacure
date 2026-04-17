@@ -48,7 +48,7 @@ public class AdminTagServiceTests
 
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminTagService(dbContext, new FakeCacheInvalidationService());
+        var service = new AdminTagService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
 
         var result = await service.GetTagsAsync();
 
@@ -62,7 +62,7 @@ public class AdminTagServiceTests
     {
         await using var dbContext = CreateDbContext();
         var cacheInvalidation = new FakeCacheInvalidationService();
-        var service = new AdminTagService(dbContext, cacheInvalidation);
+        var service = new AdminTagService(dbContext, cacheInvalidation, new SlugService(dbContext));
 
         var id = await service.CreateAsync(new TagFormViewModel
         {

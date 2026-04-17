@@ -35,7 +35,7 @@ public class ProductServiceTests
             Price = 249m,
             OldPrice = 349m,
             Rating = 4.3m,
-            ImageUrl = "/img/bottle_mag_nobg.png",
+            ImageUrl = "/img/products/bottle_mag_nobg.png",
             Stock = 100,
             CategoryId = 1,
             IsActive = true

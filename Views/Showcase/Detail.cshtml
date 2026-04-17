@@ -1,0 +1,150 @@
+@model ShowcaseViewModel
+
+@{
+    var coverflowJson = System.Text.Json.JsonSerializer.Serialize(Model.FeaturedProducts.Select(product => new
+    {
+        product.Id,
+        product.CartProductSlug,
+        product.Href,
+        Src = product.ImageUrl,
+        Alt = product.Name,
+        product.Name,
+        product.Description,
+        product.Rating,
+        PriceNew = $"₺{product.Price}",
+        PriceOld = $"₺{product.OldPrice}"
+    }));
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/components/chat-widget.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components/product-card.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/category.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/showcase.css" asp-append-version="true" />
+}
+
+<div class="category-page showcase-page @(Model.Showcase.IsDark ? "showcase-theme-dark" : "showcase-theme-light")" data-category-page data-category-slug="@Model.Showcase.Slug">
+    <div class="category-main-banner">
+        <img src="@Model.Showcase.BackgroundImageUrl" alt="@Model.Showcase.Title" class="category-main-banner-image" />
+        <div class="category-main-banner-overlay showcase-main-banner-overlay"></div>
+
+        <div class="container h-100 position-relative section-container category-hero-container">
+            <div class="category-top-widget-row">
+                <div class="category-widget-frame">
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_ChatWidget.cshtml", Model.ChatWidget)
+                </div>
+            </div>
+
+            <div class="row align-items-stretch category-hero-row">
+                <div class="col-12 col-xl-6 pe-xl-4 d-flex flex-column justify-content-center category-copy-column">
+                    <div class="category-copy-block">
+                        <h1 class="category-title-heading">@Model.Showcase.Title</h1>
+                        <p class="category-description">@Html.Raw(Model.DescriptionHtml)</p>
+                        <div class="uyku-tag-cloud">
+                            @foreach (var tag in Model.Tags)
+                            {
+                                <a href="@tag.Url" class="uyku-tag-btn @(tag.IsActive ? "active" : string.Empty)">@tag.Label</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-xl-6 position-relative mt-4 mt-xl-0 d-flex flex-column align-items-center justify-content-center category-widget-column">
+                    <div class="category-coverflow-shell" data-coverflow data-products='@Html.Raw(coverflowJson)'>
+                        <div class="category-coverflow-nav prev" data-coverflow-prev><i class="fa-solid fa-chevron-left"></i></div>
+                        <div class="category-coverflow-nav next" data-coverflow-next><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="category-coverflow-stage" data-coverflow-stage></div>
+                        <div class="category-coverflow-info">
+                            <div class="category-coverflow-card">
+                                <button class="coverflow-heart-btn" type="button" title="Favorilere Ekle" aria-label="Favorilere ekle" aria-pressed="false" data-coverflow-heart>
+                                    <i class="fa-regular fa-heart"></i>
+                                </button>
+                                <div class="category-coverflow-copy">
+                                    <div class="category-coverflow-name" data-coverflow-name></div>
+                                    <div class="category-coverflow-description" data-coverflow-description></div>
+                                    <div class="category-coverflow-rating">
+                                        <span class="category-coverflow-stars" data-coverflow-stars></span>
+                                        <span class="category-coverflow-rating-value" data-coverflow-rating></span>
+                                    </div>
+                                    <div class="category-coverflow-footer">
+                                        <div class="category-coverflow-price">
+                                            <span class="category-coverflow-price-old" data-coverflow-old-price></span>
+                                            <span class="category-coverflow-price-new" data-coverflow-new-price></span>
+                                        </div>
+                                        <div class="coverflow-action-row">
+                                            <button class="coverflow-action-btn secondary" type="button" data-coverflow-inspect data-default-label="Ürünü İncele" data-added-label="Eklendi">
+                                                <i class="fa-solid fa-magnifying-glass coverflow-action-icon coverflow-action-icon-search"></i>
+                                                <i class="fa-solid fa-spinner coverflow-action-icon coverflow-action-icon-spinner"></i>
+                                                <i class="fa-regular fa-circle-check coverflow-action-icon coverflow-action-icon-check"></i>
+                                                <span class="coverflow-action-btn-text">Ürünü İncele</span>
+                                            </button>
+                                            <button class="coverflow-action-btn primary" type="button" data-coverflow-cart data-default-label="Sepete Ekle" data-added-label="Eklendi">
+                                                <i class="fa-solid fa-cart-shopping coverflow-action-icon coverflow-action-icon-cart"></i>
+                                                <i class="fa-solid fa-spinner coverflow-action-icon coverflow-action-icon-spinner"></i>
+                                                <i class="fa-regular fa-circle-check coverflow-action-icon coverflow-action-icon-check"></i>
+                                                <span class="coverflow-action-btn-text">Sepete Ekle</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-products-section" data-product-grid-anchor id="product-grid">
+        <div class="container section-container">
+            <div class="row">
+                <div class="col-lg-2 col-md-3">
+                    <aside class="showcase-filter-sidebar">
+                        @foreach (var group in Model.Filters)
+                        {
+                            <div class="showcase-filter-group">
+                                <h3>@group.Title</h3>
+                                <div class="showcase-filter-options">
+                                    @foreach (var option in group.Options)
+                                    {
+                                        <a href="@option.Url" class="showcase-filter-option @(option.IsActive ? "is-active" : string.Empty)">@option.Label</a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </aside>
+                </div>
+
+                <div class="col-lg-10 col-md-9">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="text-muted category-result-label">@Model.ResultLabel</span>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-2 category-sort-label">@Model.SortLabel</span>
+                            <select class="form-select form-select-sm border-0 bg-transparent text-dark shadow-none category-sort-select">
+                                @foreach (var option in Model.SortOptions)
+                                {
+                                    <option>@option</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        @foreach (var product in Model.ProductGrid)
+                        {
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+                                @await Html.PartialAsync("~/Views/Shared/Partials/_ProductCard.cshtml", product)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/components/chat-widget.js" asp-append-version="true"></script>
+    <script src="~/js/components/product-card.js" asp-append-version="true"></script>
+    <script src="~/js/pages/category.js" asp-append-version="true"></script>
+}

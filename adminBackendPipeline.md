@@ -20,6 +20,8 @@ Kapsam: admin auth, dashboard verileri, katalog CRUD, bildirim backend'i, cache 
 - [x] Category CRUD servisleri yazildi
 - [x] Product CRUD servisleri yazildi
 - [x] Tag CRUD servisleri yazildi
+- [x] Showcase CRUD servisleri ve entity omurgasi baslatildi
+- [x] Showcase ikon, 7 urun slotu ve popup secim omurgasi eklendi
 - [x] Order listeleme modulu acildi
 - [x] Admin CRUD sonrasi output cache invalidation eklendi
 - [x] Cache gozlemlenebilirligi dashboard'a baglandi
@@ -35,6 +37,7 @@ Kapsam: admin auth, dashboard verileri, katalog CRUD, bildirim backend'i, cache 
 ### Katalog ve icerik
 
 - [ ] Category delete ve guclu validasyon
+- [ ] Showcase delete/archive ve preview akislarina gec
 - [ ] Product delete, gorsel yukleme ve guclu validasyon
 - [ ] Tag delete
 - [ ] Admin tarafi toplu islemler

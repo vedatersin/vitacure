@@ -100,7 +100,7 @@ public class GuestSessionService : IGuestSessionService
                     ProductSlug = product.Slug,
                     ProductName = product.Name,
                     ProductImageUrl = product.ImageUrl,
-                    ProductHref = $"/urun/{product.Slug}",
+                    ProductHref = $"/{product.Slug}",
                     Quantity = x.Quantity,
                     UnitPriceValue = product.Price,
                     UnitPrice = FormatPrice(product.Price),

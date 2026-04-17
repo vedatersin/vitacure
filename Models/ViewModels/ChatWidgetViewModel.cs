@@ -21,6 +21,7 @@ public class ChatWidgetViewModel
     public string SearchPlaceholderLocked { get; set; } = string.Empty;
     public string CategorySlug { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
+    public IReadOnlyList<ShowcaseSummaryViewModel> Showcases { get; set; } = Array.Empty<ShowcaseSummaryViewModel>();
     public IReadOnlyList<CategorySummaryViewModel> Categories { get; set; } = Array.Empty<CategorySummaryViewModel>();
     public IReadOnlyList<string> ExamplePrompts { get; set; } = Array.Empty<string>();
     public IDictionary<string, IReadOnlyList<string>> PromptPoolByCategory { get; set; } = new Dictionary<string, IReadOnlyList<string>>();

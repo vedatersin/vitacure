@@ -22,6 +22,8 @@
         <h2 class="ag-subtitle hero-element">@Model.HeroSubtitle</h2>
     }
 
+    <div class="ag-chat-fullscreen-backdrop" data-chat-backdrop></div>
+
     <div class="ag-chat-panel" data-chat-panel>
         @if (!string.IsNullOrWhiteSpace(Model.HeaderTitle))
         {
@@ -34,9 +36,9 @@
         @if (Model.Variant == "home")
         {
             <div class="ag-top-categories hero-element">
-                @foreach (var category in Model.Categories)
+                @foreach (var showcase in Model.Showcases)
                 {
-                    @await Html.PartialAsync("~/Views/Shared/Partials/_CategoryPill.cshtml", category)
+                    @await Html.PartialAsync("~/Views/Shared/Partials/_ShowcasePill.cshtml", showcase)
                 }
             </div>
         }

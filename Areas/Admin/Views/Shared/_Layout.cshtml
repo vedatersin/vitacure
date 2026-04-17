@@ -65,6 +65,10 @@
                     <i class="fa-solid fa-layer-group"></i>
                     <span>Kategoriler</span>
                 </a>
+                <a href="/admin/showcases" class="admin-nav-link @(IsActive("Showcases") ? "is-active" : null)">
+                    <i class="fa-solid fa-panorama"></i>
+                    <span>Vitrinler</span>
+                </a>
                 <a href="/admin/products" class="admin-nav-link @(IsActive("Products") ? "is-active" : null)">
                     <i class="fa-solid fa-capsules"></i>
                     <span>Urunler</span>
@@ -72,6 +76,14 @@
                 <a href="/admin/tags" class="admin-nav-link @(IsActive("Tags") ? "is-active" : null)">
                     <i class="fa-solid fa-tags"></i>
                     <span>Etiketler</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Storefront</div>
+                <a href="/admin/home-content" class="admin-nav-link @(IsActive("HomeContent") ? "is-active" : null)">
+                    <i class="fa-solid fa-house-circle-check"></i>
+                    <span>Home Icerigi</span>
                 </a>
             </div>
 

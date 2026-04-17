@@ -44,7 +44,7 @@ public class CartService : ICartService
                 ProductSlug = x.Product!.Slug,
                 ProductName = x.Product.Name,
                 ProductImageUrl = x.Product.ImageUrl,
-                ProductHref = $"/urun/{x.Product.Slug}",
+                ProductHref = $"/{x.Product.Slug}",
                 Quantity = x.Quantity,
                 UnitPriceValue = x.Product.Price,
                 UnitPrice = FormatPrice(x.Product.Price),

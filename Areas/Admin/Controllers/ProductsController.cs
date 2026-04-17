@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
 
@@ -49,7 +50,19 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        await _adminProductService.CreateAsync(model, cancellationToken);
+        try
+        {
+            await _adminProductService.CreateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
+            model.CategoryOptions = createModel.CategoryOptions;
+            model.TagOptions = createModel.TagOptions;
+            return View(model);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -82,7 +95,20 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        var updated = await _adminProductService.UpdateAsync(model, cancellationToken);
+        bool updated;
+        try
+        {
+            updated = await _adminProductService.UpdateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
+            model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+            model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
+            return View(model);
+        }
+
         if (!updated)
         {
             return NotFound();

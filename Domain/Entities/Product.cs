@@ -18,4 +18,5 @@ public class Product
 
     public Category? Category { get; set; }
     public ICollection<ProductTag> ProductTags { get; set; } = new List<ProductTag>();
+    public ICollection<ShowcaseFeaturedProduct> ShowcaseFeaturedProducts { get; set; } = new List<ShowcaseFeaturedProduct>();
 }

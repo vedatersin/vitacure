@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
 
@@ -47,7 +48,17 @@ public class CategoriesController : Controller
             return View(model);
         }
 
-        await _adminCategoryService.CreateAsync(model, cancellationToken);
+        try
+        {
+            await _adminCategoryService.CreateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            model.ParentOptions = (await _adminCategoryService.GetCreateModelAsync(cancellationToken)).ParentOptions;
+            return View(model);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -79,7 +90,19 @@ public class CategoriesController : Controller
             return View(model);
         }
 
-        var updated = await _adminCategoryService.UpdateAsync(model, cancellationToken);
+        bool updated;
+        try
+        {
+            updated = await _adminCategoryService.UpdateAsync(model, cancellationToken);
+        }
+        catch (SlugConflictException ex)
+        {
+            ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            var editModel = await _adminCategoryService.GetEditModelAsync(id, cancellationToken);
+            model.ParentOptions = editModel?.ParentOptions ?? Array.Empty<CategoryOptionViewModel>();
+            return View(model);
+        }
+
         if (!updated)
         {
             return NotFound();

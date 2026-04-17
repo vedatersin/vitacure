@@ -22,6 +22,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
     public DbSet<CustomerCartItem> CustomerCartItems => Set<CustomerCartItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<HomeContentSettings> HomeContentSettings => Set<HomeContentSettings>();
+    public DbSet<Showcase> Showcases => Set<Showcase>();
+    public DbSet<ShowcaseCategory> ShowcaseCategories => Set<ShowcaseCategory>();
+    public DbSet<ShowcaseFeaturedProduct> ShowcaseFeaturedProducts => Set<ShowcaseFeaturedProduct>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -212,6 +216,85 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
                 .WithMany()
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<HomeContentSettings>(entity =>
+        {
+            entity.ToTable("HomeContentSettings");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.MetaDescription).HasMaxLength(500);
+            entity.Property(x => x.HeroTitle).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.HeroSubtitle).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.MainPlaceholder).HasMaxLength(1000).IsRequired();
+            entity.Property(x => x.SearchPlaceholder).HasMaxLength(300).IsRequired();
+            entity.Property(x => x.SearchPlaceholderLocked).HasMaxLength(300).IsRequired();
+            entity.Property(x => x.FeaturedTitle).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.FeaturedActionLabel).HasMaxLength(100);
+            entity.Property(x => x.FeaturedActionUrl).HasMaxLength(500);
+            entity.Property(x => x.PopularTitle).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.CampaignsTitle).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.DealsTitle).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.DealsActionLabel).HasMaxLength(100);
+            entity.Property(x => x.DealsActionUrl).HasMaxLength(500);
+            entity.Property(x => x.FeaturedBannerName).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.FeaturedBannerAltText).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.FeaturedBannerImageUrl).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.FeaturedBannerTargetUrl).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.PopularSupplementsContent).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.CampaignBannersContent).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.UpdatedAt).IsRequired();
+        });
+
+        modelBuilder.Entity<Showcase>(entity =>
+        {
+            entity.ToTable("Showcases");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Slug).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.IconClass).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Title).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Description).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.TagsContent).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.BackgroundImageUrl).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.IsDark).HasDefaultValue(true);
+            entity.Property(x => x.SeoTitle).HasMaxLength(300);
+            entity.Property(x => x.MetaDescription).HasMaxLength(500);
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+            entity.HasIndex(x => x.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<ShowcaseCategory>(entity =>
+        {
+            entity.ToTable("ShowcaseCategories");
+            entity.HasKey(x => new { x.ShowcaseId, x.CategoryId });
+
+            entity.HasOne(x => x.Showcase)
+                .WithMany(x => x.ShowcaseCategories)
+                .HasForeignKey(x => x.ShowcaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Category)
+                .WithMany(x => x.ShowcaseCategories)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ShowcaseFeaturedProduct>(entity =>
+        {
+            entity.ToTable("ShowcaseFeaturedProducts");
+            entity.HasKey(x => new { x.ShowcaseId, x.ProductId });
+            entity.Property(x => x.SortOrder).IsRequired();
+
+            entity.HasOne(x => x.Showcase)
+                .WithMany(x => x.FeaturedProducts)
+                .HasForeignKey(x => x.ShowcaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ShowcaseFeaturedProducts)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
     }

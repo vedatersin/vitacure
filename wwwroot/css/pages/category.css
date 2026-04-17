@@ -148,6 +148,11 @@
 }
 
 .category-coverflow-shell {
+    --coverflow-shell-lift: -20px;
+    --coverflow-stage-z: 7;
+    --coverflow-info-z: 5;
+    --coverflow-info-offset: -26px;
+    --coverflow-transition-ms: 420ms;
     position: relative;
     width: 100%;
     max-width: 760px;
@@ -159,7 +164,7 @@
     padding: 34px 0 34px;
     margin-left: auto;
     margin-right: 0;
-    transform: translateY(-20px);
+    transform: translateY(var(--coverflow-shell-lift));
     z-index: 3;
 }
 
@@ -214,6 +219,28 @@
     display: none !important;
 }
 
+.ag-chat-panel.fullscreen-mode .ag-chat-top,
+.category-widget-frame .ag-chat-widget[data-variant="category"] .ag-chat-panel.fullscreen-mode .ag-chat-top {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0 !important;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-chat-input-wrap,
+.category-widget-frame .ag-chat-widget[data-variant="category"] .ag-chat-panel.fullscreen-mode .ag-chat-input-wrap {
+    order: initial !important;
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.ag-chat-panel.fullscreen-mode .ag-search-filter,
+.category-widget-frame .ag-chat-widget[data-variant="category"] .ag-chat-panel.fullscreen-mode .ag-search-filter {
+    order: initial !important;
+    margin: 0 0 10px 0 !important;
+    align-self: flex-start !important;
+}
+
 .category-coverflow-nav {
     position: absolute;
     top: 50%;
@@ -241,7 +268,7 @@
     margin: 0 auto;
     overflow: visible;
     isolation: isolate;
-    z-index: 7;
+    z-index: var(--coverflow-stage-z);
 }
 
 .uyku-coverflow-item {
@@ -261,9 +288,9 @@
     width: 100%;
     max-width: 700px;
     color: rgba(255, 255, 255, 0.96);
-    margin: -26px auto 0;
+    margin: var(--coverflow-info-offset) auto 0;
     position: relative;
-    z-index: 5;
+    z-index: var(--coverflow-info-z);
 }
 
 .category-coverflow-card {
@@ -277,6 +304,137 @@
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     position: relative;
     margin: 0 auto;
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-panel {
+    background: rgba(255, 255, 255, 0.84);
+    border-color: rgba(255, 255, 255, 0.52);
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-panel.fullscreen-mode {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-header,
+.showcase-theme-light .category-widget-frame .ag-chat-widget[data-variant="category"] .ag-chat-header a,
+.showcase-theme-light .category-widget-frame .ag-chat-widget[data-variant="category"] .ag-chat-header .cat-name,
+.showcase-theme-light .category-widget-frame .ag-search-filter,
+.showcase-theme-light .category-widget-frame .ag-mode-btn.active,
+.showcase-theme-light .category-widget-frame .ag-btn-add,
+.showcase-theme-light .category-widget-frame .ag-btn-send,
+.showcase-theme-light .category-widget-frame .btn-fullscreen {
+    color: #0f172a;
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input {
+    color: rgba(15, 23, 42, 0.88);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input::placeholder {
+    color: rgba(51, 65, 85, 0.62);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input {
+    scrollbar-color: rgba(59, 130, 246, 0.52) rgba(148, 163, 184, 0.22);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input::-webkit-scrollbar-track {
+    background: rgba(148, 163, 184, 0.18);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.52);
+}
+
+.showcase-theme-light .category-widget-frame .ag-chat-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(37, 99, 235, 0.68);
+}
+
+.showcase-theme-light .category-widget-frame .ag-mode-btn {
+    color: rgba(51, 65, 85, 0.72);
+}
+
+.showcase-theme-light .category-widget-frame .ag-mode-btn.active,
+.showcase-theme-light .category-widget-frame .ag-btn-add:hover,
+.showcase-theme-light .category-widget-frame .ag-btn-send:hover,
+.showcase-theme-light .category-widget-frame .btn-fullscreen:hover {
+    background: rgba(37, 99, 235, 0.12);
+    color: #0f172a;
+}
+
+.showcase-theme-light .category-widget-frame .ag-search-filter {
+    background: rgba(226, 232, 240, 0.72);
+    border-color: rgba(148, 163, 184, 0.28);
+}
+
+.showcase-theme-light .category-widget-frame .ag-add-file-menu {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(148, 163, 184, 0.22);
+    box-shadow: 0 18px 34px rgba(15, 23, 42, 0.16);
+}
+
+.showcase-theme-light .category-widget-frame .ag-add-menu-item {
+    color: #0f172a;
+}
+
+.showcase-theme-light .category-widget-frame .ag-add-menu-item:hover {
+    background: rgba(37, 99, 235, 0.08);
+}
+
+.showcase-theme-light .category-coverflow-info {
+    color: #0f172a;
+}
+
+.showcase-theme-light .category-coverflow-card {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+    border-color: rgba(255, 255, 255, 0.54);
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+}
+
+.showcase-theme-light .category-coverflow-description,
+.showcase-theme-light .category-coverflow-rating-value,
+.showcase-theme-light .category-coverflow-price-old {
+    color: rgba(51, 65, 85, 0.82);
+}
+
+.showcase-theme-light .category-coverflow-price-new,
+.showcase-theme-light .category-coverflow-name {
+    color: #0f172a;
+}
+
+.showcase-theme-light .coverflow-heart-btn {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(226, 232, 240, 0.92);
+    color: rgba(148, 163, 184, 0.88);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+}
+
+.showcase-theme-light .coverflow-heart-btn:hover {
+    color: #ef4444;
+    border-color: rgba(254, 202, 202, 0.96);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 14px 28px rgba(239, 68, 68, 0.16);
+}
+
+.showcase-theme-light .coverflow-heart-btn.is-active {
+    color: #ef4444;
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(254, 202, 202, 0.96);
+    box-shadow: 0 14px 28px rgba(239, 68, 68, 0.16);
+}
+
+.showcase-theme-light .coverflow-action-btn.secondary {
+    background: #eef4ff;
+    color: #0f172a;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.showcase-theme-light .coverflow-action-btn.secondary:hover {
+    background: #e0edff;
+    color: #0f172a;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.14), 0 4px 12px rgba(15, 23, 42, 0.08);
 }
 
 .coverflow-heart-btn {

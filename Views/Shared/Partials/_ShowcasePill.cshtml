@@ -1,0 +1,10 @@
+@model ShowcaseSummaryViewModel
+
+<a href="/@Model.Slug"
+   class="ag-category-pill @Model.PillCssClass"
+   data-category-pill
+   data-category-slug="@(string.IsNullOrWhiteSpace(Model.CategorySlug) ? Model.Slug : Model.CategorySlug)"
+   data-category-name="@Model.Title">
+    <i class="@Model.IconClass"></i>
+    <span>@Model.Name</span>
+</a>

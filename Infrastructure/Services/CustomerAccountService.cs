@@ -269,7 +269,7 @@ public class CustomerAccountService : ICustomerAccountService
             Rating = product.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
             RatingWidth = $"{Math.Round(product.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = product.Description ?? string.Empty,
-            Href = $"/urun/{product.Slug}",
+            Href = $"/{product.Slug}",
             CartProductSlug = product.Slug
         };
     }

@@ -60,7 +60,7 @@ public class AdminProductServiceTests
 
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService());
+        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
 
         var result = await service.GetProductsAsync();
 
@@ -89,7 +89,7 @@ public class AdminProductServiceTests
         await dbContext.SaveChangesAsync();
 
         var cacheInvalidation = new FakeCacheInvalidationService();
-        var service = new AdminProductService(dbContext, cacheInvalidation);
+        var service = new AdminProductService(dbContext, cacheInvalidation, new SlugService(dbContext));
 
         var id = await service.CreateAsync(new ProductFormViewModel
         {
@@ -113,6 +113,36 @@ public class AdminProductServiceTests
         Assert.Equal(1, created.CategoryId);
         Assert.Equal(2, await dbContext.ProductTags.CountAsync(x => x.ProductId == id));
         Assert.Equal(1, cacheInvalidation.ProductInvalidationCount);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Throws_When_Slug_Is_Reserved()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Categories.Add(new Category
+        {
+            Id = 1,
+            Name = "Uyku",
+            Slug = "uyku",
+            Description = "A",
+            IsActive = true
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
+
+        await Assert.ThrowsAsync<vitacure.Application.SlugConflictException>(() => service.CreateAsync(new ProductFormViewModel
+        {
+            Name = "Yeni Urun",
+            Slug = "login",
+            Description = "Test aciklamasi",
+            Price = 249m,
+            Rating = 4.7m,
+            ImageUrl = "/img/yeni-urun.png",
+            Stock = 25,
+            CategoryId = 1,
+            IsActive = true
+        }));
     }
 
     private static AppDbContext CreateDbContext()

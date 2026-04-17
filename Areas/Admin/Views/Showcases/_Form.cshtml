@@ -1,0 +1,271 @@
+@model vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel
+
+@{
+    var selectedFeaturedIds = Model.SelectedFeaturedProductIds.Take(7).ToArray();
+    var selectedProducts = selectedFeaturedIds
+        .Select(id => Model.ProductOptions.FirstOrDefault(product => product.Id == id))
+        .ToArray();
+}
+
+<form method="post" enctype="multipart/form-data" class="auth-form" data-showcase-form>
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control auth-input" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Slug" class="form-label"></label>
+            <input asp-for="Slug" class="form-control auth-input" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label asp-for="IconClass" class="form-label"></label>
+            <input asp-for="IconClass" class="form-control auth-input" />
+            <span asp-validation-for="IconClass" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <div class="admin-showcase-icon-preview">
+                <i class="@Model.IconClass" data-showcase-icon-preview></i>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control auth-input" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-3">
+            <label asp-for="SortOrder" class="form-label"></label>
+            <input asp-for="SortOrder" class="form-control auth-input" type="number" step="1" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <div class="d-flex gap-4 flex-wrap mb-2">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label"></label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="ShowOnHome" class="form-check-input" />
+                    <label asp-for="ShowOnHome" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description"
+                      class="form-control auth-textarea"
+                      rows="5"
+                      data-showcase-description-input
+                      data-showcase-description-limit="@vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel.MaxDescriptionLength"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="TagsContent" class="form-label"></label>
+            <textarea asp-for="TagsContent" class="d-none" data-showcase-tags-hidden></textarea>
+            <div class="admin-showcase-tag-editor" data-showcase-tags-editor>
+                <div class="admin-showcase-tag-list" data-showcase-tags-list></div>
+                <input type="text"
+                       class="admin-showcase-tag-input"
+                       placeholder="Etiketleri virgulle ekleyin"
+                       data-showcase-tags-input />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="BackgroundImageUrl" class="form-label"></label>
+            <input asp-for="BackgroundImageUrl" type="hidden" />
+            <input asp-for="BackgroundImageFile"
+                   type="file"
+                   accept="image/png,image/jpeg,image/webp,image/gif"
+                   class="d-none"
+                   data-showcase-background-file-input />
+            <span asp-validation-for="BackgroundImageUrl" class="text-danger"></span>
+            <div class="admin-showcase-background-shell mt-3">
+                <button type="button"
+                        class="admin-showcase-background-preview @(string.IsNullOrWhiteSpace(Model.BackgroundImageUrl) ? "is-empty" : null)"
+                        data-showcase-background-preview
+                        aria-label="Arkaplan gorselini onizle">
+                    <img src="@Model.BackgroundImageUrl"
+                         alt="@Model.Title"
+                         data-showcase-background-preview-image
+                         @(string.IsNullOrWhiteSpace(Model.BackgroundImageUrl) ? "hidden" : null) />
+                    <span class="admin-showcase-background-empty" data-showcase-background-empty @(string.IsNullOrWhiteSpace(Model.BackgroundImageUrl) ? null : "hidden")>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong>Gorsel secebilirsiniz</strong>
+                        <small>Browse ile bir arkaplan gorseli secin</small>
+                    </span>
+                    <span class="admin-showcase-background-actions">
+                        <span class="admin-showcase-background-action" data-showcase-background-remove title="Gorseli kaldir" @(string.IsNullOrWhiteSpace(Model.BackgroundImageUrl) ? "hidden" : null)>
+                            <i class="fa-solid fa-xmark"></i>
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="IsDark" class="form-label"></label>
+            <div class="auth-checkbox-grid">
+                <label class="auth-checkbox-card">
+                    <input type="radio" name="IsDark" value="true" @(Model.IsDark ? "checked" : null) />
+                    <span>Dark</span>
+                </label>
+                <label class="auth-checkbox-card">
+                    <input type="radio" name="IsDark" value="false" @(!Model.IsDark ? "checked" : null) />
+                    <span>Light</span>
+                </label>
+            </div>
+            <span asp-validation-for="IsDark" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="SeoTitle" class="form-label"></label>
+            <input asp-for="SeoTitle" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="MetaDescription" class="form-label"></label>
+            <input asp-for="MetaDescription" class="form-control auth-input" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Kategori Havuzu</label>
+            <div class="auth-checkbox-grid" data-showcase-category-grid>
+                @foreach (var category in Model.CategoryOptions)
+                {
+                    var isChecked = Model.SelectedCategoryIds.Contains(category.Id);
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="@category.Id" @(isChecked ? "checked" : null) data-showcase-category-option />
+                        <span>@category.Name</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="admin-showcase-products-head">
+                <div>
+                    <label class="form-label">Urun Vitrini</label>
+                </div>
+            </div>
+
+            <div class="admin-showcase-product-slots" data-showcase-product-slots>
+                @for (var index = 0; index < 7; index++)
+                {
+                    var selectedProduct = index < selectedProducts.Length ? selectedProducts[index] : null;
+                    <button type="button"
+                            class="admin-showcase-product-slot @(selectedProduct is not null ? "has-product" : null)"
+                            draggable="@(selectedProduct is not null ? "true" : "false")"
+                            data-showcase-slot
+                            data-slot-index="@index"
+                            data-product-id="@(selectedProduct?.Id ?? 0)">
+                        <span class="admin-showcase-product-slot-index">@(index + 1)</span>
+                        <div class="admin-showcase-product-slot-body">
+                            @if (selectedProduct is not null)
+                            {
+                                <img src="@selectedProduct.ImageUrl" alt="@selectedProduct.Name" />
+                                <strong>@selectedProduct.Name</strong>
+                                <small>@selectedProduct.CategoryName</small>
+                            }
+                            else
+                            {
+                                <strong>Urun Sec</strong>
+                                <small>Bu slot icin vitrin urunu ekle</small>
+                            }
+                        </div>
+                    </button>
+                }
+            </div>
+
+            <div data-showcase-selected-inputs>
+                @foreach (var productId in selectedFeaturedIds)
+                {
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="@productId" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/showcases" class="btn auth-submit-btn auth-tertiary-btn">Listeye Don</a>
+    </div>
+</form>
+
+<div class="admin-showcase-image-modal" data-showcase-image-modal hidden>
+    <button type="button" class="admin-showcase-image-modal-backdrop" data-showcase-image-modal-close aria-label="Kapat"></button>
+    <div class="admin-showcase-image-modal-dialog">
+        <button type="button" class="admin-icon-button admin-showcase-image-modal-dismiss" data-showcase-image-modal-close aria-label="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <img src="" alt="Arkaplan onizleme" data-showcase-image-modal-image />
+    </div>
+</div>
+
+<div class="admin-showcase-picker-backdrop" data-showcase-picker hidden>
+    <div class="admin-showcase-picker">
+        <div class="admin-showcase-picker-head">
+            <div>
+                <strong>Urun Havuzu</strong>
+                <span>Secilen kategorilerdeki urunlerden vitrin slotunu doldur.</span>
+            </div>
+            <button type="button" class="admin-icon-button" data-showcase-picker-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-showcase-picker-toolbar">
+            <input type="search" class="form-control auth-input" placeholder="Urun adi ara..." data-showcase-product-search />
+            <select class="form-control auth-input" data-showcase-product-category-filter>
+                <option value="">Tum kategoriler</option>
+            </select>
+            <select class="form-control auth-input" data-showcase-product-tag-filter>
+                <option value="">Tum etiketler</option>
+            </select>
+        </div>
+
+        <div class="admin-showcase-picker-list" data-showcase-picker-list>
+            @foreach (var product in Model.ProductOptions)
+            {
+                var tagNames = product.TagNames.Any()
+                    ? string.Join("|", product.TagNames)
+                    : string.Empty;
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="@product.Id"
+                        data-category-id="@product.CategoryId"
+                        data-category-slug="@product.CategorySlug"
+                        data-product-name="@product.Name"
+                        data-product-category="@product.CategoryName"
+                        data-product-tags="@tagNames">
+                    <img src="@product.ImageUrl" alt="@product.Name" />
+                    <div>
+                        <strong>@product.Name</strong>
+                        <small>@product.CategoryName</small>
+                        @if (product.TagNames.Any())
+                        {
+                            <span>@string.Join(", ", product.TagNames)</span>
+                        }
+                    </div>
+                </button>
+            }
+        </div>
+        <div class="admin-showcase-picker-empty" data-showcase-picker-empty hidden>
+            Bu vitrinle eslesen bir urun bulunmadi.
+        </div>
+    </div>
+</div>
