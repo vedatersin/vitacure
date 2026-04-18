@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
 
@@ -7,13 +8,15 @@ namespace vitacure.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Admin,Editor")]
-public class HomeContentController : Controller
+public class HomeContentController : AdminControllerBase
 {
     private readonly IAdminHomeContentService _adminHomeContentService;
+    private readonly ILogger<HomeContentController> _logger;
 
-    public HomeContentController(IAdminHomeContentService adminHomeContentService)
+    public HomeContentController(IAdminHomeContentService adminHomeContentService, ILogger<HomeContentController> logger)
     {
         _adminHomeContentService = adminHomeContentService;
+        _logger = logger;
     }
 
     [HttpGet("/admin/home-content")]
@@ -29,10 +32,22 @@ public class HomeContentController : Controller
     {
         if (!ModelState.IsValid)
         {
+            SetValidationToast("Ana sayfa ayarlari guncellenemedi");
             return View(model);
         }
 
-        await _adminHomeContentService.UpdateAsync(model, cancellationToken);
+        try
+        {
+            await _adminHomeContentService.UpdateAsync(model, cancellationToken);
+            SetRedirectToast("success", "Kayit basariyla guncellendi", "Ana sayfa ayarlari guncellendi.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ana sayfa ayarlari guncellenirken beklenmedik hata.");
+            SetUnexpectedErrorToast("Ana sayfa ayarlari guncellenemedi", ex);
+            return View(model);
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }

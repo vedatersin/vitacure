@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
@@ -8,13 +9,15 @@ namespace vitacure.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Admin,Editor")]
-public class TagsController : Controller
+public class TagsController : AdminControllerBase
 {
     private readonly IAdminTagService _adminTagService;
+    private readonly ILogger<TagsController> _logger;
 
-    public TagsController(IAdminTagService adminTagService)
+    public TagsController(IAdminTagService adminTagService, ILogger<TagsController> logger)
     {
         _adminTagService = adminTagService;
+        _logger = logger;
     }
 
     [HttpGet("/admin/tags")]
@@ -44,16 +47,25 @@ public class TagsController : Controller
     {
         if (!ModelState.IsValid)
         {
+            SetValidationToast("Etiket kaydi guncellenemedi");
             return View(model);
         }
 
         try
         {
             await _adminTagService.CreateAsync(model, cancellationToken);
+            SetRedirectToast("success", "Kayit basariyla eklendi", "Etiket kaydi olusturuldu.");
         }
         catch (SlugConflictException ex)
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            SetValidationToast("Etiket kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Etiket olusturma sirasinda beklenmedik hata.");
+            SetUnexpectedErrorToast("Etiket kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -83,6 +95,7 @@ public class TagsController : Controller
 
         if (!ModelState.IsValid)
         {
+            SetValidationToast("Etiket kaydi guncellenemedi");
             return View(model);
         }
 
@@ -94,6 +107,13 @@ public class TagsController : Controller
         catch (SlugConflictException ex)
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
+            SetValidationToast("Etiket kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Etiket guncelleme sirasinda beklenmedik hata. TagId: {TagId}", id);
+            SetUnexpectedErrorToast("Etiket kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -102,6 +122,7 @@ public class TagsController : Controller
             return NotFound();
         }
 
+        SetRedirectToast("success", "Kayit basariyla guncellendi", "Etiket kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
     }
 

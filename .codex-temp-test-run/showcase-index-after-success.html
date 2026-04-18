@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vitrinler | VitaCure Admin</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/pages/auth.css?v=E5QrAa0vsS21w3nssZa6gI9L810uAmQpNfDZCPZb6-s" />
+    <link rel="stylesheet" href="/css/pages/admin.css?v=U2r_xflvC0PDeTeRjw1g63ygBmLXtCjKaX9VETmS-pU" />
+    
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <a href="/admin/dashboard" class="admin-brand">
+                <img src="/img/logo.png" alt="VitaCure Logo" class="admin-brand-logo" />
+                <div class="admin-brand-copy">
+                    <strong>YONETIM PANELI</strong>
+                </div>
+            </a>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Genel</div>
+                <a href="/admin/dashboard" class="admin-nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/orders" class="admin-nav-link">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Siparisler</span>
+                </a>
+                <a href="/admin/users" class="admin-nav-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Kullanicilar</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Katalog</div>
+                <a href="/admin/categories" class="admin-nav-link">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Kategoriler</span>
+                </a>
+                <a href="/admin/showcases" class="admin-nav-link is-active">
+                    <i class="fa-solid fa-panorama"></i>
+                    <span>Vitrinler</span>
+                </a>
+                <a href="/admin/products" class="admin-nav-link">
+                    <i class="fa-solid fa-capsules"></i>
+                    <span>Urunler</span>
+                </a>
+                <a href="/admin/tags" class="admin-nav-link">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>Etiketler</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Storefront</div>
+                <a href="/admin/home-content" class="admin-nav-link">
+                    <i class="fa-solid fa-house-circle-check"></i>
+                    <span>Home Icerigi</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Planlanan Moduller</div>
+                <a href="/admin/notifications" class="admin-nav-link">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Bildirimler</span>
+                </a>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Yetkilendirme</span>
+                    <small>yakinda</small>
+                </div>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Raporlar</span>
+                    <small>yakinda</small>
+                </div>
+            </div>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-spacer"></div>
+                <div class="admin-topbar-actions">
+                    <details class="admin-topbar-dropdown admin-notification-dropdown">
+                        <summary class="admin-icon-button" aria-label="Bildirimler">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="admin-icon-badge">4</span>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-notification-panel">
+                            <div class="admin-dropdown-head">
+                                <strong>Bildirimler</strong>
+                                <i class="fa-regular fa-envelope-open"></i>
+                            </div>
+                            <div class="admin-notification-list">
+                                    <a href="/admin/notifications?category=orders&amp;notificationId=101" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-order">
+                                            <i class="fa-solid fa-bag-shopping"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Yeni siparis olusturuldu</strong>
+                                            <span>Musteri</span>
+                                            <small>Az once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=favorites&amp;notificationId=103" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-favorite">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Urun favorilere eklendi</strong>
+                                            <span>Storefront</span>
+                                            <small>2 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=members&amp;notificationId=104" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-member">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Yeni uye kaydi tamamlandi</strong>
+                                            <span>Auth</span>
+                                            <small>10 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=cart&amp;notificationId=102" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-cart">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Sepete urun eklendi</strong>
+                                            <span>Storefront</span>
+                                            <small>18 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                            </div>
+                            <a href="/admin/notifications" class="admin-dropdown-footer">Tum Bildirimleri Gor</a>
+                        </div>
+                    </details>
+
+                    <details class="admin-topbar-dropdown admin-profile-dropdown">
+                        <summary class="admin-profile-trigger">
+                            <div class="admin-topbar-profile-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div class="admin-topbar-profile-copy">
+                                <strong>Vitacure Admin</strong>
+                                <span>Admin</span>
+                            </div>
+                            <i class="fa-solid fa-angle-down admin-profile-caret"></i>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-profile-panel">
+                            <div class="admin-profile-panel-head">
+                                <div class="admin-topbar-profile-icon">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div class="admin-topbar-profile-copy">
+                                    <strong>Vitacure Admin</strong>
+                                    <span>Admin</span>
+                                </div>
+                            </div>
+                            <a href="/admin/dashboard" class="admin-profile-link">
+                                <i class="fa-regular fa-user"></i>
+                                <span>Profil</span>
+                            </a>
+                            <form method="post" action="/admin/logout">
+                                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Ly3Yy59r7pBnA29VnYHAVciNE4_3GttYEwD306IOuA8fjK2LfqPqmJ2cX3N2SD0O6yJfh2fvbFtZUOeHfXunasxpEd2GRQ8uAbE1A78Y3_dqhOU9Akf-Jg-aj8LlD3PEhGPRpFI9MoFp-yfrJexxhA9QBAQtcp14fAIq7ci9MmvbJuoaPuTSz3POz_4OcvqkQ" />
+                                <button type="submit" class="admin-profile-link admin-profile-link-button">
+                                    <i class="fa-solid fa-power-off"></i>
+                                    <span>Cikis</span>
+                                </button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                
+    <div class="admin-toast-stack" data-admin-toast-stack>
+        <section class="admin-toast is-success" data-admin-toast data-sticky="false" role="status" aria-live="polite">
+            <div class="admin-toast-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="admin-toast-body">
+                <strong>Kayit basariyla guncellendi</strong>
+                <p>Vitrin kaydi guncellendi. Kaydedilen mod: Dark.</p>
+            </div>
+            <button type="button" class="admin-toast-close" data-admin-toast-close aria-label="Bildirimi kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </section>
+    </div>
+
+                
+
+<div class="admin-page-grid">
+    
+
+
+<section class="admin-hero-card">
+    
+    <nav class="admin-breadcrumb" aria-label="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <span class="is-active">Vitrinler</span>
+    </nav>
+
+    <div class="admin-page-hero">
+        <div class="admin-page-hero-main">
+            <div class="admin-page-hero-icon">
+                <i class="fa-solid fa-panorama"></i>
+            </div>
+            <div>
+                <div class="admin-page-eyebrow">Storefront Kurgusu</div>
+                <h2 class="admin-page-title">Vitrin listesi</h2>
+                <p class="admin-page-subtitle">Kategorilerden ayri olarak yonetilen vitrinler, landing deneyimi ve ana sayfa kurgusunu besler.</p>
+            </div>
+        </div>
+            <aside class="admin-page-hero-aside">
+                    <div class="admin-hero-stat-list">
+                            <div class="admin-hero-stat">
+                                <span>Toplam</span>
+                                <strong>6</strong>
+                            </div>
+                            <div class="admin-hero-stat">
+                                <span>Aktif</span>
+                                <strong>6</strong>
+                            </div>
+                            <div class="admin-hero-stat">
+                                <span>Home</span>
+                                <strong>6</strong>
+                            </div>
+                    </div>
+                    <div class="admin-hero-manifest">
+                            <strong>Vitrin akis notu</strong>
+                            <p>Buradaki vitrinler kategori taksonomisinden ayri calisir. Arkaplan, etiket, secili kategoriler ve one cikan urunler burada yonetilir.</p>
+                    </div>
+            </aside>
+    </div>
+</section>
+
+
+<section class="admin-section-card">
+    
+<form method="get" action="/admin/showcases" class="admin-filter-bar" data-admin-async-form="true">
+    <div class="admin-filter-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" name="q" placeholder="Vitrin ara, slug kontrol et, home gorunurlugu incele..." />
+    </div>
+
+        <label class="admin-filter-select">
+            <span>Durum</span>
+            <select name="status">
+                        <option value="all" selected>Tum durumlar</option>
+                        <option value="active">Aktif</option>
+                        <option value="passive">Pasif</option>
+            </select>
+        </label>
+        <label class="admin-filter-select">
+            <span>Ana Sayfa</span>
+            <select name="home">
+                        <option value="all" selected>Tum vitriler</option>
+                        <option value="home">Home&#x27;da gosterilen</option>
+                        <option value="hidden">Home&#x27;da gizli</option>
+            </select>
+        </label>
+
+    <div class="admin-filter-meta">
+        <button type="submit" class="admin-filter-ghost">Uygula</button>
+            <a href="/admin/showcases/create" class="admin-filter-action">Yeni Vitrin</a>
+    </div>
+</form>
+
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vitrin</th>
+                    <th>Slug</th>
+                    <th>Kategori Havuzu</th>
+                    <th>One Cikan</th>
+                    <th>Home</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-moon"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</strong>
+                                    <small class="text-muted">Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>uyku-rutini</td>
+                        <td>1</td>
+                        <td>7</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/1" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-sun"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Multivitamin &amp; Enerji</strong>
+                                    <small class="text-muted">Multivitamin &amp; Enerji</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>multivitamin-enerji-plani</td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/2" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Zihin &amp; Haf&#x131;za G&#xFC;&#xE7;lendirme</strong>
+                                    <small class="text-muted">Zihin &amp; Haf&#x131;za G&#xFC;&#xE7;lendirme</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>zihin-hafiza-rotasi</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/3" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-shield-heart"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</strong>
+                                    <small class="text-muted">Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>bagisiklik-koruma-plani</td>
+                        <td>1</td>
+                        <td>3</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/4" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-bone"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Kas ve &#x130;skelet Sa&#x11F;l&#x131;&#x11F;&#x131;</strong>
+                                    <small class="text-muted">Kas ve &#x130;skelet Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>kas-iskelet-destegi</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/5" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="admin-showcase-icon-preview">
+                                    <i class="fa-solid fa-person-running"></i>
+                                </div>
+                                <div>
+                                    <strong class="d-block">Zay&#x131;flama Deste&#x11F;i</strong>
+                                    <small class="text-muted">Zay&#x131;flama Deste&#x11F;i</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>zayiflama-rotasi</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Yayinda
+                            </span>
+                        </td>
+                        <td>
+                            <span class="auth-status-badge is-active">
+                                Aktif
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/showcases/edit/6" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/pages/admin-feedback.js?v=DwuD4UsUvxYQ6bXYGixy-QRBDBeL7iEj-eRN9BmPufg"></script>
+    
+</body>
+</html>

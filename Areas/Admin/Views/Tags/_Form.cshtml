@@ -1,6 +1,6 @@
 ﻿@model vitacure.Models.ViewModels.Admin.TagFormViewModel
 
-<form method="post" class="auth-form">
+<form method="post" action="@Context.Request.Path" class="auth-form">
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
 

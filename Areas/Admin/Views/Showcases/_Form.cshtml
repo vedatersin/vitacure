@@ -7,7 +7,7 @@
         .ToArray();
 }
 
-<form method="post" enctype="multipart/form-data" class="auth-form" data-showcase-form>
+<form method="post" action="@Context.Request.Path" enctype="multipart/form-data" class="auth-form" data-showcase-form>
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
 
@@ -69,6 +69,7 @@
                       rows="5"
                       data-showcase-description-input
                       data-showcase-description-limit="@vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel.MaxDescriptionLength"></textarea>
+            <div class="text-danger small mt-1">Maksimum @vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel.MaxDescriptionLength karakter girebilirsiniz.</div>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
@@ -119,12 +120,20 @@
         <div class="col-md-6">
             <label asp-for="IsDark" class="form-label"></label>
             <div class="auth-checkbox-grid">
-                <label class="auth-checkbox-card">
-                    <input type="radio" name="IsDark" value="true" @(Model.IsDark ? "checked" : null) />
+                <label class="auth-checkbox-card" for="showcase-theme-dark" data-showcase-theme-card>
+                    <input type="radio"
+                           asp-for="IsDark"
+                           id="showcase-theme-dark"
+                           data-showcase-theme-option
+                           value="true" />
                     <span>Dark</span>
                 </label>
-                <label class="auth-checkbox-card">
-                    <input type="radio" name="IsDark" value="false" @(!Model.IsDark ? "checked" : null) />
+                <label class="auth-checkbox-card" for="showcase-theme-light" data-showcase-theme-card>
+                    <input type="radio"
+                           asp-for="IsDark"
+                           id="showcase-theme-light"
+                           data-showcase-theme-option
+                           value="false" />
                     <span>Light</span>
                 </label>
             </div>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yonetim Girisi | VitaCure Admin</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/pages/auth.css?v=E5QrAa0vsS21w3nssZa6gI9L810uAmQpNfDZCPZb6-s" />
+    <link rel="stylesheet" href="/css/pages/admin.css?v=U2r_xflvC0PDeTeRjw1g63ygBmLXtCjKaX9VETmS-pU" />
+    
+</head>
+<body class="admin-auth-body">
+    <main class="admin-auth-shell">
+        
+
+<div class="auth-page auth-page-admin">
+    <div class="container auth-container">
+        <div class="auth-card auth-card-admin">
+            <div class="auth-eyebrow">Yonetim Girisi</div>
+            <h1 class="auth-title">Admin paneline giris yap</h1>
+            <p class="auth-subtitle">Bu alan storefront'tan bagimsiz backoffice olarak dusunuluyor. Bugun /yonetim ve /admin altinda; ileride admin subdomain'e tasinabilir.</p>
+
+            <div class="admin-operator-card mb-4">
+                <span>Gelistirme kisayolu</span>
+                <strong>/yonetim</strong>
+                <small>Path tabanli kisayol, subdomain gecisi icin gecici kopru.</small>
+            </div>
+
+            <form method="post" class="auth-form">
+                
+                <input type="hidden" id="ReturnUrl" name="ReturnUrl" value="/admin/showcases/edit/1" />
+
+                
+
+                <div class="mb-3">
+                    <label class="form-label" for="Email">Email</label>
+                    <input class="form-control auth-input" type="email" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Email" name="Email" value="" />
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="Password">Password</label>
+                    <input class="form-control auth-input" type="password" data-val="true" data-val-required="The Password field is required." id="Password" name="Password" />
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                </div>
+
+                <button type="submit" class="btn auth-submit-btn">Admin Girisi</button>
+            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Ly3Yy59r7pBnA29VnYHAVcNGFUsBC0p69SPXRYO8HklfpTr-JcJEaW1bGLTH1icg7yNRZEsEzREcX56CCr4LGBK0L6TelVsf86q9Kg9OfR5MUKrMrd33MEbmwCV-89eHlu9EkXoZdqAI6jee893VrU" /></form>
+        </div>
+    </div>
+</div>
+
+
+    </main>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
+</body>
+</html>

@@ -1,146 +1,250 @@
 (function () {
     const editors = Array.from(document.querySelectorAll("[data-product-gallery-editor='true']"));
+    const fallbackImage = "/img/logo.png";
 
     editors.forEach((editor) => {
+        const form = editor.closest("form");
         const coverInput = editor.querySelector("[data-gallery-cover-input]");
         const hiddenInput = editor.querySelector("[data-gallery-hidden]");
-        const addButton = editor.querySelector("[data-gallery-add]");
-        const list = editor.querySelector("[data-gallery-list]");
         const strip = editor.querySelector("[data-gallery-strip]");
         const mainPreview = editor.querySelector("[data-gallery-main-preview]");
-        const template = document.getElementById("adminProductGalleryItemTemplate");
+        const mainTrigger = editor.querySelector("[data-gallery-main-trigger]");
+        const mainEmpty = editor.querySelector("[data-gallery-main-empty]");
+        const mainRemove = editor.querySelector("[data-gallery-main-remove]");
+        const fileInput = editor.querySelector("[data-gallery-file-input]");
+        const uploadUrl = editor.getAttribute("data-gallery-upload-url") || "";
+        const maxItems = Number.parseInt(editor.getAttribute("data-gallery-max-items") || "4", 10);
+        const antiforgeryToken = form?.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
+        const slugInput = form?.querySelector('input[name="Slug"]');
+        const modal = document.querySelector("[data-gallery-modal]");
+        const modalImage = document.querySelector("[data-gallery-modal-image]");
+        const modalCloseButtons = Array.from(document.querySelectorAll("[data-gallery-modal-close]"));
 
-        if (!coverInput || !hiddenInput || !addButton || !list || !strip || !mainPreview || !template) {
+        if (!coverInput || !hiddenInput || !strip || !mainPreview || !mainTrigger || !fileInput) {
             return;
         }
 
-        const initialItems = hiddenInput.value
-            .split(/\r?\n|,|;/)
-            .map((value) => value.trim())
-            .filter(Boolean);
+        const initialItems = [coverInput.value.trim()]
+            .concat(
+                hiddenInput.value
+                    .split(/\r?\n|,|;/)
+                    .map((value) => value.trim())
+                    .filter(Boolean)
+            )
+            .filter(Boolean)
+            .slice(0, Math.max(maxItems, 1));
 
-        const render = () => {
-            hiddenInput.value = Array.from(list.querySelectorAll("[data-gallery-item-input]"))
-                .map((input) => input.value.trim())
-                .filter(Boolean)
-                .join("\n");
+        let items = initialItems;
+        let dragIndex = -1;
 
-            strip.querySelectorAll("[data-gallery-strip-item='true']").forEach((item) => item.remove());
+        const syncHiddenInputs = () => {
+            coverInput.value = items[0] || "";
+            hiddenInput.value = items.slice(1).join("\n");
+        };
 
-            Array.from(list.querySelectorAll("[data-gallery-item]")).forEach((item, index) => {
-                const input = item.querySelector("[data-gallery-item-input]");
-                const preview = item.querySelector("[data-gallery-item-preview]");
-                const value = input?.value.trim() || "";
+        const renderMainPreview = () => {
+            const activeImage = items[0] || "";
+            if (activeImage) {
+                mainPreview.src = activeImage;
+                mainPreview.hidden = false;
+                mainRemove?.removeAttribute("hidden");
+                mainEmpty?.setAttribute("hidden", "hidden");
+                return;
+            }
 
-                item.dataset.index = String(index);
-                if (preview) {
-                    preview.src = value || coverInput.value || "/img/logo.png";
-                }
+            mainPreview.hidden = true;
+            mainPreview.removeAttribute("src");
+            mainRemove?.setAttribute("hidden", "hidden");
+            mainEmpty?.removeAttribute("hidden");
+        };
 
+        const openModal = (src) => {
+            if (!modal || !modalImage || !src) {
+                return;
+            }
+
+            modalImage.src = src;
+            modal.hidden = false;
+            document.body.classList.add("is-modal-open");
+        };
+
+        const closeModal = () => {
+            if (!modal) {
+                return;
+            }
+
+            modal.hidden = true;
+            document.body.classList.remove("is-modal-open");
+        };
+
+        const renderStrip = () => {
+            strip.innerHTML = "";
+
+            items.forEach((src, index) => {
                 const tile = document.createElement("button");
                 tile.type = "button";
-                tile.className = "admin-product-media-tile";
-                tile.setAttribute("data-gallery-strip-item", "true");
-                tile.setAttribute("data-gallery-preview-src", value);
-                tile.innerHTML = `<img src="${value || coverInput.value || "/img/logo.png"}" alt="Galeri gorseli" /><span>${index + 1}. Gorsel</span>`;
+                tile.className = `admin-product-media-tile${index === 0 ? " is-active" : ""}`;
+                tile.draggable = true;
+                tile.innerHTML = `
+                    <img src="${src || fallbackImage}" alt="Urun gorseli ${index + 1}" />
+                    <span>${index === 0 ? "Kapak" : `${index + 1}. Gorsel`}</span>
+                    <span class="admin-product-media-tile-overlay">Kapak yap</span>
+                    <span class="admin-product-media-tile-remove"><i class="fa-solid fa-xmark"></i></span>
+                `;
 
                 tile.addEventListener("click", () => {
-                    setActiveTile(tile, value || coverInput.value);
+                    if (index === 0) {
+                        openModal(src);
+                        return;
+                    }
+
+                    const [selected] = items.splice(index, 1);
+                    items.unshift(selected);
+                    render();
+                });
+
+                tile.addEventListener("dragstart", (event) => {
+                    dragIndex = index;
+                    tile.classList.add("is-dragging");
+                    event.dataTransfer?.setData("text/plain", String(index));
+                });
+
+                tile.addEventListener("dragend", () => {
+                    dragIndex = -1;
+                    tile.classList.remove("is-dragging");
+                });
+
+                tile.addEventListener("dragover", (event) => {
+                    event.preventDefault();
+                    tile.classList.add("is-drop-target");
+                });
+
+                tile.addEventListener("dragleave", () => {
+                    tile.classList.remove("is-drop-target");
+                });
+
+                tile.addEventListener("drop", (event) => {
+                    event.preventDefault();
+                    tile.classList.remove("is-drop-target");
+                    const fromIndex = Number.parseInt(event.dataTransfer?.getData("text/plain") || String(dragIndex), 10);
+                    if (Number.isNaN(fromIndex) || fromIndex === index || fromIndex < 0 || fromIndex >= items.length) {
+                        return;
+                    }
+
+                    const [moved] = items.splice(fromIndex, 1);
+                    items.splice(index, 0, moved);
+                    render();
+                });
+
+                tile.querySelector(".admin-product-media-tile-remove")?.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    if (!window.confirm("Bu gorseli silmek istiyor musunuz?")) {
+                        return;
+                    }
+
+                    items.splice(index, 1);
+                    render();
                 });
 
                 strip.appendChild(tile);
             });
 
-            const active = strip.querySelector(".is-active") || strip.querySelector(".is-cover");
-            if (active instanceof HTMLElement) {
-                const src = active.getAttribute("data-gallery-preview-src") || coverInput.value;
-                setActiveTile(active, src);
+            if (items.length < maxItems) {
+                const addTile = document.createElement("button");
+                addTile.type = "button";
+                addTile.className = "admin-product-media-tile is-add";
+                addTile.innerHTML = `
+                    <span class="admin-product-media-add-icon"><i class="fa-solid fa-plus"></i></span>
+                    <span>Gorsel Ekle</span>
+                `;
+                addTile.addEventListener("click", () => fileInput.click());
+                strip.appendChild(addTile);
             }
         };
 
-        const createItem = (value) => {
-            const fragment = template.content.cloneNode(true);
-            const item = fragment.querySelector("[data-gallery-item]");
-            const input = fragment.querySelector("[data-gallery-item-input]");
-            const previewButton = fragment.querySelector("[data-gallery-item-preview-button]");
-            const upButton = fragment.querySelector("[data-gallery-item-up]");
-            const downButton = fragment.querySelector("[data-gallery-item-down]");
-            const removeButton = fragment.querySelector("[data-gallery-item-remove]");
+        const render = () => {
+            syncHiddenInputs();
+            renderMainPreview();
+            renderStrip();
+        };
 
-            if (!(item instanceof HTMLElement) || !(input instanceof HTMLInputElement)) {
+        const uploadImage = async (file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("slug", slugInput?.value?.trim() || "product");
+            formData.append("__RequestVerificationToken", antiforgeryToken);
+
+            const response = await fetch(uploadUrl, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const payload = await response.json().catch(() => ({}));
+                throw new Error(payload.error || "Gorsel yuklenemedi.");
+            }
+
+            const payload = await response.json();
+            return payload.url || "";
+        };
+
+        fileInput.addEventListener("change", async () => {
+            const [file] = fileInput.files || [];
+            if (!file) {
                 return;
             }
 
-            input.value = value || "";
-            input.addEventListener("input", render);
-
-            previewButton?.addEventListener("click", () => {
-                mainPreview.setAttribute("src", input.value.trim() || coverInput.value);
-                strip.querySelectorAll(".admin-product-media-tile").forEach((tile) => tile.classList.remove("is-active"));
-            });
-
-            upButton?.addEventListener("click", () => {
-                const previous = item.previousElementSibling;
-                if (previous) {
-                    list.insertBefore(item, previous);
-                    render();
-                }
-            });
-
-            downButton?.addEventListener("click", () => {
-                const next = item.nextElementSibling;
-                if (next) {
-                    list.insertBefore(next, item);
-                    render();
-                }
-            });
-
-            removeButton?.addEventListener("click", () => {
-                item.remove();
-                render();
-            });
-
-            list.appendChild(fragment);
-        };
-
-        const setActiveTile = (tile, src) => {
-            strip.querySelectorAll(".admin-product-media-tile").forEach((item) => item.classList.remove("is-active"));
-            tile.classList.add("is-active");
-            mainPreview.setAttribute("src", src || coverInput.value);
-        };
-
-        coverInput.addEventListener("input", () => {
-            const coverTile = strip.querySelector(".admin-product-media-tile.is-cover");
-            if (coverTile) {
-                coverTile.setAttribute("data-gallery-preview-src", coverInput.value.trim());
-                const image = coverTile.querySelector("img");
-                if (image) {
-                    image.src = coverInput.value.trim() || "/img/logo.png";
-                }
+            if (items.length >= maxItems) {
+                window.alert(`En fazla ${maxItems} gorsel ekleyebilirsiniz.`);
+                fileInput.value = "";
+                return;
             }
 
-            if (strip.querySelector(".admin-product-media-tile.is-cover.is-active")) {
-                mainPreview.setAttribute("src", coverInput.value.trim() || "/img/logo.png");
+            try {
+                const uploadedUrl = await uploadImage(file);
+                if (uploadedUrl) {
+                    items.push(uploadedUrl);
+                    render();
+                }
+            } catch (error) {
+                window.alert(error instanceof Error ? error.message : "Gorsel yuklenemedi.");
+            } finally {
+                fileInput.value = "";
+            }
+        });
+
+        mainTrigger.addEventListener("click", () => {
+            if (items[0]) {
+                openModal(items[0]);
+            }
+        });
+
+        mainRemove?.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (!items[0] || !window.confirm("Bu gorseli silmek istiyor musunuz?")) {
+                return;
             }
 
+            items.shift();
             render();
         });
 
-        strip.querySelector(".admin-product-media-tile.is-cover")?.addEventListener("click", (event) => {
-            const tile = event.currentTarget;
-            if (tile instanceof HTMLElement) {
-                setActiveTile(tile, coverInput.value.trim());
+        modalCloseButtons.forEach((button) => {
+            button.addEventListener("click", closeModal);
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closeModal();
             }
         });
-
-        addButton.addEventListener("click", () => {
-            createItem("");
-            render();
-        });
-
-        if (initialItems.length > 0) {
-            initialItems.forEach((item) => createItem(item));
-        }
 
         render();
     });

@@ -29,6 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pickerCategoryFilter = document.querySelector("[data-showcase-product-category-filter]");
     const pickerTagFilter = document.querySelector("[data-showcase-product-tag-filter]");
     const pickerEmpty = document.querySelector("[data-showcase-picker-empty]");
+    const themeOptions = Array.from(form.querySelectorAll("[data-showcase-theme-option]"));
+    const themeCards = Array.from(form.querySelectorAll("[data-showcase-theme-card]"));
     const descriptionLimit = Number.parseInt(descriptionInput?.dataset.showcaseDescriptionLimit || "0", 10);
 
     const productLookup = new Map(
@@ -193,6 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const isValid = descriptionInput.value.length <= descriptionLimit;
         setDescriptionValidationMessage(isValid ? "" : `Aciklama en fazla ${descriptionLimit} karakter olabilir.`);
         return isValid;
+    }
+
+    function syncThemeCards() {
+        themeCards.forEach((card) => {
+            const option = card.querySelector("[data-showcase-theme-option]");
+            card.classList.toggle("is-selected", Boolean(option?.checked));
+        });
     }
 
     function resetImageSelection() {
@@ -444,6 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setPreviewState(currentPreviewUrl);
     renderTags();
     validateDescription();
+    syncThemeCards();
 
     previewButton?.addEventListener("click", () => {
         if (!currentPreviewUrl) {
@@ -540,6 +550,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     descriptionInput?.addEventListener("input", () => {
         validateDescription();
+    });
+
+    themeCards.forEach((card) => {
+        card.addEventListener("click", () => {
+            const option = card.querySelector("[data-showcase-theme-option]");
+            if (!option) {
+                return;
+            }
+
+            option.checked = true;
+            option.dispatchEvent(new Event("change", { bubbles: true }));
+            syncThemeCards();
+        });
+    });
+
+    themeOptions.forEach((option) => {
+        option.addEventListener("change", syncThemeCards);
     });
 
     form.addEventListener("submit", (event) => {

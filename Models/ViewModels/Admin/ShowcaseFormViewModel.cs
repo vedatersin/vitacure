@@ -5,7 +5,7 @@ namespace vitacure.Models.ViewModels.Admin;
 
 public class ShowcaseFormViewModel : IValidatableObject
 {
-    public const int MaxDescriptionLength = 630;
+    public const int MaxDescriptionLength = 650;
 
     public int? Id { get; set; }
 

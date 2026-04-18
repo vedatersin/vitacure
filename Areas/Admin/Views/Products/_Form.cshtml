@@ -1,55 +1,39 @@
-﻿@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
+@model vitacure.Models.ViewModels.Admin.ProductFormViewModel
 
-<form method="post" class="auth-form">
+<form method="post" action="@Context.Request.Path" class="auth-form">
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-    <div class="admin-operator-card mb-4">
-        <span>Form Notu</span>
-        <strong>Bu kayit storefront urun kartini dogrudan besler</strong>
-        <small>Fiyat, stok, gorsel ve etiket alanlari storefront deneyimini aninda etkiler.</small>
-    </div>
 
-    <div class="admin-product-media-editor mb-4" data-product-gallery-editor="true">
+    <div class="admin-product-media-editor mb-4"
+         data-product-gallery-editor="true"
+         data-gallery-upload-url="/admin/products/upload-image"
+         data-gallery-max-items="4">
+        <input asp-for="ImageUrl" type="hidden" data-gallery-cover-input />
+        <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
+        <input type="file"
+               class="d-none"
+               accept="image/png,image/jpeg,image/webp,image/gif"
+               data-gallery-file-input />
+
         <div class="admin-product-media-preview">
-            <div class="admin-product-media-preview-stage">
-                <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview />
-            </div>
-            <div class="admin-product-media-preview-caption">
-                <strong>Aktif onizleme</strong>
-                <span>Kapak gorsel ve detay galeri akisi burada izlenir.</span>
-            </div>
-            <div class="admin-product-media-strip" data-gallery-strip>
-                <button type="button"
-                        class="admin-product-media-tile is-cover is-active"
-                        data-gallery-preview-src="@Model.ImageUrl"
-                        data-gallery-select="cover">
-                    <img src="@Model.ImageUrl" alt="@Model.Name" />
-                    <span>Kapak</span>
-                </button>
-            </div>
-        </div>
+            <button type="button" class="admin-product-media-preview-stage" data-gallery-main-trigger>
+                <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
+                <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
+                    <i class="fa-solid fa-image"></i>
+                    <strong>Ana urun gorseli</strong>
+                    <small>Soldaki ilk gorsel burada buyuk gorunur.</small>
+                </span>
+                <span class="admin-product-media-preview-overlay">Onizle</span>
+                <span class="admin-product-media-preview-remove" data-gallery-main-remove @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
+                    <i class="fa-solid fa-xmark"></i>
+                </span>
+            </button>
 
-        <div class="admin-product-media-panel">
-            <div class="admin-product-media-block">
-                <label asp-for="ImageUrl" class="form-label"></label>
-                <input asp-for="ImageUrl" class="form-control auth-input" data-gallery-cover-input />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
-            </div>
-
-            <div class="admin-product-media-block">
-                <div class="admin-product-media-panel-head">
-                    <div>
-                        <label asp-for="GalleryImageUrls" class="form-label mb-1"></label>
-                        <small class="text-muted d-block">Diger gorselleri kart olarak ekleyin, siralayin ve onizleyin.</small>
-                    </div>
-                    <button type="button" class="admin-filter-action" data-gallery-add>Gorsel Ekle</button>
-                </div>
-
-                <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
-                <div class="admin-product-gallery-list" data-gallery-list></div>
-            </div>
+            <div class="admin-product-media-strip" data-gallery-strip></div>
+            <div class="admin-product-media-help">Maksimum 4 gorsel ekleyebilirsin. Soldaki ilk kare ana urun gorseli olur.</div>
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
     </div>
 
@@ -108,6 +92,7 @@
             <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
             <span asp-validation-for="Stock" class="text-danger"></span>
         </div>
+
         <div class="col-12">
             <label class="form-label">Etiketler</label>
             <div class="auth-checkbox-grid">
@@ -136,19 +121,12 @@
     </div>
 </form>
 
-<template id="adminProductGalleryItemTemplate">
-    <div class="admin-product-gallery-item" data-gallery-item>
-        <div class="admin-product-gallery-thumb">
-            <img src="" alt="Galeri gorseli" data-gallery-item-preview />
-        </div>
-        <div class="admin-product-gallery-fields">
-            <input type="url" class="form-control auth-input" placeholder="https://ornek.com/gorsel.jpg" data-gallery-item-input />
-            <div class="admin-product-gallery-actions">
-                <button type="button" class="admin-filter-ghost" data-gallery-item-preview-button>Onizle</button>
-                <button type="button" class="admin-filter-ghost" data-gallery-item-up>Yukari</button>
-                <button type="button" class="admin-filter-ghost" data-gallery-item-down>Asagi</button>
-                <button type="button" class="admin-filter-ghost is-danger" data-gallery-item-remove>Sil</button>
-            </div>
-        </div>
+<div class="admin-product-media-modal" data-gallery-modal hidden>
+    <button type="button" class="admin-product-media-modal-backdrop" data-gallery-modal-close aria-label="Kapat"></button>
+    <div class="admin-product-media-modal-dialog">
+        <button type="button" class="admin-icon-button admin-product-media-modal-dismiss" data-gallery-modal-close aria-label="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <img src="" alt="Urun gorsel onizleme" data-gallery-modal-image />
     </div>
-</template>
+</div>

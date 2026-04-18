@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
@@ -8,13 +9,15 @@ namespace vitacure.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Admin,Editor")]
-public class CategoriesController : Controller
+public class CategoriesController : AdminControllerBase
 {
     private readonly IAdminCategoryService _adminCategoryService;
+    private readonly ILogger<CategoriesController> _logger;
 
-    public CategoriesController(IAdminCategoryService adminCategoryService)
+    public CategoriesController(IAdminCategoryService adminCategoryService, ILogger<CategoriesController> logger)
     {
         _adminCategoryService = adminCategoryService;
+        _logger = logger;
     }
 
     [HttpGet("/admin/categories")]
@@ -45,17 +48,27 @@ public class CategoriesController : Controller
         if (!ModelState.IsValid)
         {
             model.ParentOptions = (await _adminCategoryService.GetCreateModelAsync(cancellationToken)).ParentOptions;
+            SetValidationToast("Kategori kaydi guncellenemedi");
             return View(model);
         }
 
         try
         {
             await _adminCategoryService.CreateAsync(model, cancellationToken);
+            SetRedirectToast("success", "Kayit basariyla eklendi", "Kategori kaydi olusturuldu.");
         }
         catch (SlugConflictException ex)
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
             model.ParentOptions = (await _adminCategoryService.GetCreateModelAsync(cancellationToken)).ParentOptions;
+            SetValidationToast("Kategori kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Kategori olusturma sirasinda beklenmedik hata.");
+            model.ParentOptions = (await _adminCategoryService.GetCreateModelAsync(cancellationToken)).ParentOptions;
+            SetUnexpectedErrorToast("Kategori kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -87,6 +100,7 @@ public class CategoriesController : Controller
         {
             var editModel = await _adminCategoryService.GetEditModelAsync(id, cancellationToken);
             model.ParentOptions = editModel?.ParentOptions ?? Array.Empty<CategoryOptionViewModel>();
+            SetValidationToast("Kategori kaydi guncellenemedi");
             return View(model);
         }
 
@@ -100,6 +114,15 @@ public class CategoriesController : Controller
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
             var editModel = await _adminCategoryService.GetEditModelAsync(id, cancellationToken);
             model.ParentOptions = editModel?.ParentOptions ?? Array.Empty<CategoryOptionViewModel>();
+            SetValidationToast("Kategori kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Kategori guncelleme sirasinda beklenmedik hata. CategoryId: {CategoryId}", id);
+            var editModel = await _adminCategoryService.GetEditModelAsync(id, cancellationToken);
+            model.ParentOptions = editModel?.ParentOptions ?? Array.Empty<CategoryOptionViewModel>();
+            SetUnexpectedErrorToast("Kategori kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -108,6 +131,7 @@ public class CategoriesController : Controller
             return NotFound();
         }
 
+        SetRedirectToast("success", "Kayit basariyla guncellendi", "Kategori kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
     }
 

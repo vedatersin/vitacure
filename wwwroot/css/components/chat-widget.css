@@ -410,6 +410,7 @@
 .ag-chat-panel.fullscreen-mode .ag-chat-input.has-scrollbar {
     overflow-y: auto !important;
     scrollbar-width: auto;
+    scrollbar-color: rgba(96, 165, 250, 0.82) rgba(148, 163, 184, 0.22);
 }
 
 .ag-chat-panel.fullscreen-mode .ag-chat-input::-webkit-scrollbar {
@@ -508,16 +509,40 @@
 }
 
 .ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-track {
-    background: rgba(100, 116, 139, 0.22);
+    background: rgba(210, 218, 232, 0.9);
+    border-radius: 999px;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input.has-scrollbar {
+    scrollbar-color: rgba(163, 184, 219, 0.95) rgba(210, 218, 232, 0.9);
 }
 
 .ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-thumb {
-    background: rgba(71, 85, 105, 0.72);
-    border-color: rgba(255, 255, 255, 0.9);
+    background: rgba(163, 184, 219, 0.95);
+    border: 2px solid rgba(210, 218, 232, 0.9);
 }
 
 .ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-thumb:hover {
-    background: rgba(51, 65, 85, 0.9);
+    background: rgba(148, 175, 220, 1);
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-button {
+    display: block;
+    width: 12px;
+    height: 12px;
+    background-color: rgba(210, 218, 232, 0.9);
+    border-radius: 999px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 7px 7px;
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath d='M3.5 1.2 6 4.8H1z' fill='%2391b4f6'/%3E%3C/svg%3E");
+}
+
+.ag-chat-panel.fullscreen-mode.chat-theme-light .ag-chat-input::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath d='M1 2.2h5L3.5 5.8z' fill='%2391b4f6'/%3E%3C/svg%3E");
 }
 
 .ag-chat-input::-webkit-scrollbar {

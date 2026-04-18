@@ -1,0 +1,45 @@
+@using System.Text.Json
+@using vitacure.Models.ViewModels.Admin
+@{
+    AdminToastViewModel? toast = ViewData["AdminToast"] as AdminToastViewModel;
+
+    if (toast is null && TempData["AdminToast"] is string serializedToast && !string.IsNullOrWhiteSpace(serializedToast))
+    {
+        toast = JsonSerializer.Deserialize<AdminToastViewModel>(serializedToast);
+    }
+
+    string ResolveIcon(string type) => type switch
+    {
+        "success" => "fa-solid fa-circle-check",
+        "warning" => "fa-solid fa-triangle-exclamation",
+        "error" => "fa-solid fa-circle-xmark",
+        _ => "fa-solid fa-circle-info"
+    };
+}
+
+@if (toast is not null)
+{
+    <div class="admin-toast-stack" data-admin-toast-stack>
+        <section class="admin-toast is-@toast.Type" data-admin-toast data-sticky="@toast.IsSticky.ToString().ToLowerInvariant()" role="status" aria-live="polite">
+            <div class="admin-toast-icon">
+                <i class="@ResolveIcon(toast.Type)"></i>
+            </div>
+            <div class="admin-toast-body">
+                <strong>@toast.Title</strong>
+                <p>@toast.Message</p>
+                @if (toast.Details.Any())
+                {
+                    <ul class="admin-toast-details">
+                        @foreach (var detail in toast.Details)
+                        {
+                            <li>@detail</li>
+                        }
+                    </ul>
+                }
+            </div>
+            <button type="button" class="admin-toast-close" data-admin-toast-close aria-label="Bildirimi kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </section>
+    </div>
+}

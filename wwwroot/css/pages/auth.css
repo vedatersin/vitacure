@@ -60,15 +60,17 @@
 }
 
 .auth-input {
-    border: 1px solid rgba(80, 116, 136, 0.18);
+    border: 1px solid rgba(80, 116, 136, 0.28);
     border-radius: 16px;
     min-height: 54px;
     padding: 0.9rem 1rem;
+    box-shadow: 0 8px 18px rgba(18, 48, 64, 0.06);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 
 .auth-input:focus {
-    border-color: rgba(14, 116, 144, 0.5);
-    box-shadow: 0 0 0 0.2rem rgba(14, 116, 144, 0.15);
+    border-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.16), 0 12px 24px rgba(37, 99, 235, 0.12);
 }
 
 .auth-submit-btn {
@@ -186,32 +188,39 @@
 }
 
 .auth-textarea {
-    border: 1px solid rgba(80, 116, 136, 0.18);
+    border: 1px solid rgba(80, 116, 136, 0.28);
     border-radius: 16px;
     padding: 0.9rem 1rem;
+    box-shadow: 0 8px 18px rgba(18, 48, 64, 0.06);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 
 .auth-textarea:focus {
-    border-color: rgba(14, 116, 144, 0.5);
-    box-shadow: 0 0 0 0.2rem rgba(14, 116, 144, 0.15);
+    border-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.16), 0 12px 24px rgba(37, 99, 235, 0.12);
 }
 
 .auth-status-badge {
     border-radius: 999px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
     font-size: 0.8rem;
     font-weight: 700;
     padding: 0.38rem 0.7rem;
+    border: 1px solid transparent;
 }
 
 .auth-status-badge.is-active {
-    background: rgba(15, 118, 110, 0.12);
-    color: #0f766e;
+    background: rgba(16, 185, 129, 0.12);
+    color: #047857;
+    border-color: rgba(16, 185, 129, 0.18);
 }
 
 .auth-status-badge.is-passive {
-    background: rgba(148, 163, 184, 0.18);
-    color: #64748b;
+    background: rgba(148, 163, 184, 0.16);
+    color: #475569;
+    border-color: rgba(148, 163, 184, 0.22);
 }
 
 .auth-account-sections {
@@ -282,6 +291,13 @@
     min-height: 88px;
     padding: 0.9rem 1rem 0.9rem 2.4rem;
     position: relative;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-checkbox-card.is-selected {
+    background: #eef6ff;
+    border-color: rgba(120, 93, 217, 0.45);
+    box-shadow: 0 0 0 2px rgba(120, 93, 217, 0.12);
 }
 
 .auth-checkbox-card input {

@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vitrin Duzenle | VitaCure Admin</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/pages/auth.css?v=E5QrAa0vsS21w3nssZa6gI9L810uAmQpNfDZCPZb6-s" />
+    <link rel="stylesheet" href="/css/pages/admin.css?v=U2r_xflvC0PDeTeRjw1g63ygBmLXtCjKaX9VETmS-pU" />
+    
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <a href="/admin/dashboard" class="admin-brand">
+                <img src="/img/logo.png" alt="VitaCure Logo" class="admin-brand-logo" />
+                <div class="admin-brand-copy">
+                    <strong>YONETIM PANELI</strong>
+                </div>
+            </a>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Genel</div>
+                <a href="/admin/dashboard" class="admin-nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/orders" class="admin-nav-link">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Siparisler</span>
+                </a>
+                <a href="/admin/users" class="admin-nav-link">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Kullanicilar</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Katalog</div>
+                <a href="/admin/categories" class="admin-nav-link">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Kategoriler</span>
+                </a>
+                <a href="/admin/showcases" class="admin-nav-link">
+                    <i class="fa-solid fa-panorama"></i>
+                    <span>Vitrinler</span>
+                </a>
+                <a href="/admin/products" class="admin-nav-link">
+                    <i class="fa-solid fa-capsules"></i>
+                    <span>Urunler</span>
+                </a>
+                <a href="/admin/tags" class="admin-nav-link">
+                    <i class="fa-solid fa-tags"></i>
+                    <span>Etiketler</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Storefront</div>
+                <a href="/admin/home-content" class="admin-nav-link">
+                    <i class="fa-solid fa-house-circle-check"></i>
+                    <span>Home Icerigi</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-group">
+                <div class="admin-sidebar-title">Planlanan Moduller</div>
+                <a href="/admin/notifications" class="admin-nav-link">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Bildirimler</span>
+                </a>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Yetkilendirme</span>
+                    <small>yakinda</small>
+                </div>
+                <div class="admin-nav-link is-muted">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Raporlar</span>
+                    <small>yakinda</small>
+                </div>
+            </div>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-spacer"></div>
+                <div class="admin-topbar-actions">
+                    <details class="admin-topbar-dropdown admin-notification-dropdown">
+                        <summary class="admin-icon-button" aria-label="Bildirimler">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="admin-icon-badge">4</span>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-notification-panel">
+                            <div class="admin-dropdown-head">
+                                <strong>Bildirimler</strong>
+                                <i class="fa-regular fa-envelope-open"></i>
+                            </div>
+                            <div class="admin-notification-list">
+                                    <a href="/admin/notifications?category=orders&amp;notificationId=101" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-order">
+                                            <i class="fa-solid fa-bag-shopping"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Yeni siparis olusturuldu</strong>
+                                            <span>Musteri</span>
+                                            <small>Az once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=favorites&amp;notificationId=103" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-favorite">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Urun favorilere eklendi</strong>
+                                            <span>Storefront</span>
+                                            <small>2 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=members&amp;notificationId=104" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-member">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Yeni uye kaydi tamamlandi</strong>
+                                            <span>Auth</span>
+                                            <small>10 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                                    <a href="/admin/notifications?category=cart&amp;notificationId=102" class="admin-notification-item">
+                                        <div class="admin-notification-avatar is-cart">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </div>
+                                        <div class="admin-notification-copy">
+                                            <strong>Sepete urun eklendi</strong>
+                                            <span>Storefront</span>
+                                            <small>18 dk once</small>
+                                        </div>
+                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
+                                    </a>
+                            </div>
+                            <a href="/admin/notifications" class="admin-dropdown-footer">Tum Bildirimleri Gor</a>
+                        </div>
+                    </details>
+
+                    <details class="admin-topbar-dropdown admin-profile-dropdown">
+                        <summary class="admin-profile-trigger">
+                            <div class="admin-topbar-profile-icon">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div class="admin-topbar-profile-copy">
+                                <strong>Vitacure Admin</strong>
+                                <span>Admin</span>
+                            </div>
+                            <i class="fa-solid fa-angle-down admin-profile-caret"></i>
+                        </summary>
+                        <div class="admin-dropdown-panel admin-profile-panel">
+                            <div class="admin-profile-panel-head">
+                                <div class="admin-topbar-profile-icon">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div class="admin-topbar-profile-copy">
+                                    <strong>Vitacure Admin</strong>
+                                    <span>Admin</span>
+                                </div>
+                            </div>
+                            <a href="/admin/dashboard" class="admin-profile-link">
+                                <i class="fa-regular fa-user"></i>
+                                <span>Profil</span>
+                            </a>
+                            <form method="post" action="/admin/logout">
+                                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Ly3Yy59r7pBnA29VnYHAVdbLd9kZZAx_pomyPiZuvB1Q8fa-C463t78r4hUwJiVv44Sdfhkeieuw5oVnDS7sQgQI7dLcunpJTsnJ2yEMAjuauFvx36iO9kFw-44uVmUNLt3m-RZUJGAotGTW8MnUUDOP-MVlRg2JqYv0lYJ3FiPISTxYhOt1vjBxMjJnzEdDw" />
+                                <button type="submit" class="admin-profile-link admin-profile-link-button">
+                                    <i class="fa-solid fa-power-off"></i>
+                                    <span>Cikis</span>
+                                </button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                
+
+                
+
+<div class="admin-page-grid">
+    
+<section class="admin-hero-card">
+    
+    <nav class="admin-breadcrumb" aria-label="breadcrumb">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/showcases">Vitrinler</a>
+                <span class="is-active">Duzenle</span>
+    </nav>
+
+    <div class="admin-page-hero">
+        <div class="admin-page-hero-main">
+            <div class="admin-page-hero-icon">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <div>
+                <div class="admin-page-eyebrow">Storefront Kurgusu</div>
+                <h2 class="admin-page-title">Vitrin duzenle</h2>
+                <p class="admin-page-subtitle">Bu ekran vitrin landing sayfasi ve home vitrin yayini icin temel kaynaktir.</p>
+            </div>
+        </div>
+            <aside class="admin-page-hero-aside">
+                    <div class="admin-hero-stat-list">
+                            <div class="admin-hero-stat">
+                                <span>Kayit</span>
+                                <strong>1</strong>
+                            </div>
+                            <div class="admin-hero-stat">
+                                <span>Home</span>
+                                <strong>Acik</strong>
+                            </div>
+                    </div>
+                    <div class="admin-hero-manifest">
+                            <strong>Form akis notu</strong>
+                            <p>Secili kategoriler urun havuzunu belirler; one cikan urunler ise vitrin sahnesini besler.</p>
+                    </div>
+            </aside>
+    </div>
+</section>
+
+    <section class="admin-section-card">
+        
+
+<form method="post" action="/admin/showcases/edit/1" enctype="multipart/form-data" class="auth-form" data-showcase-form>
+    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Ly3Yy59r7pBnA29VnYHAVdbLd9kZZAx_pomyPiZuvB1Q8fa-C463t78r4hUwJiVv44Sdfhkeieuw5oVnDS7sQgQI7dLcunpJTsnJ2yEMAjuauFvx36iO9kFw-44uVmUNLt3m-RZUJGAotGTW8MnUUDOP-MVlRg2JqYv0lYJ3FiPISTxYhOt1vjBxMjJnzEdDw" />
+    <input type="hidden" id="Id" name="Id" value="1" />
+
+    
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label" for="Name">Vitrin Adi</label>
+            <input class="form-control auth-input" type="text" data-val="true" data-val-required="The Vitrin Adi field is required." id="Name" name="Name" value="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="Slug">Slug</label>
+            <input class="form-control auth-input" type="text" data-val="true" data-val-required="The Slug field is required." id="Slug" name="Slug" value="uyku-rutini" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="Slug" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label" for="IconClass">Ikon Sinifi</label>
+            <input class="form-control auth-input" type="text" data-val="true" data-val-required="The Ikon Sinifi field is required." id="IconClass" name="IconClass" value="fa-solid fa-moon" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="IconClass" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <div class="admin-showcase-icon-preview">
+                <i class="fa-solid fa-moon" data-showcase-icon-preview></i>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="Title">Vitrin Basligi</label>
+            <input class="form-control auth-input" type="text" data-val="true" data-val-required="The Vitrin Basligi field is required." id="Title" name="Title" value="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="Title" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label" for="SortOrder">Sira</label>
+            <input class="form-control auth-input" type="number" step="1" data-val="true" data-val-required="The Sira field is required." id="SortOrder" name="SortOrder" value="1" /><input name="__Invariant" type="hidden" value="SortOrder" />
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <div class="d-flex gap-4 flex-wrap mb-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked="checked" data-val="true" data-val-required="The Aktif field is required." id="IsActive" name="IsActive" value="true" />
+                    <label class="form-check-label" for="IsActive">Aktif</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked="checked" data-val="true" data-val-required="The Ana Sayfada Goster field is required." id="ShowOnHome" name="ShowOnHome" value="true" />
+                    <label class="form-check-label" for="ShowOnHome">Ana Sayfada Goster</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label" for="Description">Aciklama</label>
+            <textarea class="form-control auth-textarea" rows="5" data-showcase-description-input data-showcase-description-limit="630" data-val="true" data-val-required="The Aciklama field is required." id="Description" name="Description">
+Melatonin, magnezyum, bitkisel ekstreler, gece rutini destekleri ve &#xE7;ocuklara uygun uyku takviyeleri ile daha derin, kesintisiz ve dinlendirici uyku deneyimi i&#xE7;in &#xF6;zenle se&#xE7;ilmi&#x15F; &#xFC;r&#xFC;nleri ke&#x15F;fedin; rahatlama, gev&#x15F;eme, uykuya ge&#xE7;i&#x15F; ve sabah zindeli&#x11F;ini destekleyen g&#xFC;&#xE7;l&#xFC; form&#xFC;ller bu kategoride sizi bekliyor.&#xA;Ak&#x15F;am rutininizi sadele&#x15F;tiren, huzurlu bir ge&#xE7;i&#x15F; sa&#x11F;layan ve g&#xFC;nl&#xFC;k temponun ard&#x131;ndan denge kurman&#x131;za yard&#x131;mc&#x131; olan destekleri burada bir arada bulabilirsiniz.&#xA;Uyku kalitesini destekleyen kaps&#xFC;l, sprey ve damla formlar&#x131;ndaki &#xFC;r&#xFC;nlerle ihtiyac&#x131;n&#x131;za uygun &#xE7;&#xF6;z&#xFC;m&#xFC; kolayca se&#xE7;ebilir, gece bak&#x131;m&#x131;n&#x131;z&#x131; ki&#x15F;iselle&#x15F;tirebilirsiniz.</textarea>
+            <span class="text-danger field-validation-valid" data-valmsg-for="Description" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="TagsContent">Etiketler</label>
+            <textarea class="d-none" data-showcase-tags-hidden data-val="true" data-val-required="The Etiketler field is required." id="TagsContent" name="TagsContent">
+Melatonin&#xD;&#xA;Gece Rutini&#xD;&#xA;Rahatlama</textarea>
+            <div class="admin-showcase-tag-editor" data-showcase-tags-editor>
+                <div class="admin-showcase-tag-list" data-showcase-tags-list></div>
+                <input type="text"
+                       class="admin-showcase-tag-input"
+                       placeholder="Etiketleri virgulle ekleyin"
+                       data-showcase-tags-input />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="BackgroundImageUrl">Arkaplan Gorseli</label>
+            <input type="hidden" data-val="true" data-val-required="The Arkaplan Gorseli field is required." id="BackgroundImageUrl" name="BackgroundImageUrl" value="/img/showcases/uyku-rutini-20260416205239885.png" />
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="d-none" data-showcase-background-file-input id="BackgroundImageFile" name="BackgroundImageFile" />
+            <span class="text-danger field-validation-valid" data-valmsg-for="BackgroundImageUrl" data-valmsg-replace="true"></span>
+            <div class="admin-showcase-background-shell mt-3">
+                <button type="button"
+                        class="admin-showcase-background-preview"
+                        data-showcase-background-preview
+                        aria-label="Arkaplan gorselini onizle">
+                    <img src="/img/showcases/uyku-rutini-20260416205239885.png"
+                         alt="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                         data-showcase-background-preview-image
+                          />
+                    <span class="admin-showcase-background-empty" data-showcase-background-empty hidden>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong>Gorsel secebilirsiniz</strong>
+                        <small>Browse ile bir arkaplan gorseli secin</small>
+                    </span>
+                    <span class="admin-showcase-background-actions">
+                        <span class="admin-showcase-background-action" data-showcase-background-remove title="Gorseli kaldir" >
+                            <i class="fa-solid fa-xmark"></i>
+                        </span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="IsDark">Vitrin Modu</label>
+            <div class="auth-checkbox-grid">
+                <label class="auth-checkbox-card" for="showcase-theme-dark" data-showcase-theme-card>
+                    <input type="radio" id="showcase-theme-dark" data-showcase-theme-option value="true" data-val="true" data-val-required="The Vitrin Modu field is required." name="IsDark" />
+                    <span>Dark</span>
+                </label>
+                <label class="auth-checkbox-card" for="showcase-theme-light" data-showcase-theme-card>
+                    <input type="radio" id="showcase-theme-light" data-showcase-theme-option value="false" checked="checked" name="IsDark" />
+                    <span>Light</span>
+                </label>
+            </div>
+            <span class="text-danger field-validation-valid" data-valmsg-for="IsDark" data-valmsg-replace="true"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="SeoTitle">SEO Basligi</label>
+            <input class="form-control auth-input" type="text" id="SeoTitle" name="SeoTitle" value="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131; | VitaCure" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label" for="MetaDescription">Meta Aciklama</label>
+            <input class="form-control auth-input" type="text" id="MetaDescription" name="MetaDescription" value="Melatonin, magnezyum, bitkisel ekstreler, gece rutini destekleri ve &#xE7;ocuklara uygun uyku takviyeleri ile daha derin, kesintisiz ve dinlendirici uyku deneyimi i&#xE7;in &#xF6;zenle se&#xE7;ilmi&#x15F; &#xFC;r&#xFC;nleri ke&#x15F;fedin; rahatlama, gev&#x15F;eme, uykuya ge&#xE7;i&#x15F; ve sabah zindeli&#x11F;ini destekleyen g&#xFC;&#xE7;l&#xFC; form&#xFC;ller bu kategoride sizi bekliyor." />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Kategori Havuzu</label>
+            <div class="auth-checkbox-grid" data-showcase-category-grid>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="4"  data-showcase-category-option />
+                        <span>Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="5"  data-showcase-category-option />
+                        <span>Kas ve &#x130;skelet Sa&#x11F;l&#x131;&#x11F;&#x131;</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="2"  data-showcase-category-option />
+                        <span>Multivitamin &amp; Enerji</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="7"  data-showcase-category-option />
+                        <span>Uncategorized</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="1" checked data-showcase-category-option />
+                        <span>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="6"  data-showcase-category-option />
+                        <span>Zay&#x131;flama Deste&#x11F;i</span>
+                    </label>
+                    <label class="auth-checkbox-card">
+                        <input type="checkbox" name="SelectedCategoryIds" value="3"  data-showcase-category-option />
+                        <span>Zihin &amp; Haf&#x131;za G&#xFC;&#xE7;lendirme</span>
+                    </label>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="admin-showcase-products-head">
+                <div>
+                    <label class="form-label">Urun Vitrini</label>
+                </div>
+            </div>
+
+            <div class="admin-showcase-product-slots" data-showcase-product-slots>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="0"
+                            data-product-id="11">
+                        <span class="admin-showcase-product-slot-index">1</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/bottle_d3_nobg.png" alt="Kalsiyum Kompleks" />
+                                <strong>Kalsiyum Kompleks</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="1"
+                            data-product-id="12">
+                        <span class="admin-showcase-product-slot-index">2</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/bottle_omega_nobg.png" alt="B12 Vitamini Sprey" />
+                                <strong>B12 Vitamini Sprey</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="2"
+                            data-product-id="2">
+                        <span class="admin-showcase-product-slot-index">3</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/bottle_omega_nobg.png" alt="Omega 3" />
+                                <strong>Omega 3</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="3"
+                            data-product-id="4">
+                        <span class="admin-showcase-product-slot-index">4</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/bottle_mag_nobg.png" alt="Magnezyum" />
+                                <strong>Magnezyum</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="4"
+                            data-product-id="3">
+                        <span class="admin-showcase-product-slot-index">5</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/bottle_d3_nobg.png" alt="Vitamin D3" />
+                                <strong>Vitamin D3</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="5"
+                            data-product-id="22">
+                        <span class="admin-showcase-product-slot-index">6</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/melatonin-kompleks-v2.png" alt="Melatonin Kompleks" />
+                                <strong>Melatonin Kompleks</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+                    <button type="button"
+                            class="admin-showcase-product-slot has-product"
+                            draggable="true"
+                            data-showcase-slot
+                            data-slot-index="6"
+                            data-product-id="23">
+                        <span class="admin-showcase-product-slot-index">7</span>
+                        <div class="admin-showcase-product-slot-body">
+                                <img src="/img/products/gece-rutini-damlasi-v2.png" alt="Gece Rutini Damlas&#x131;" />
+                                <strong>Gece Rutini Damlas&#x131;</strong>
+                                <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                        </div>
+                    </button>
+            </div>
+
+            <div data-showcase-selected-inputs>
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="11" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="12" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="2" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="4" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="3" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="22" />
+                    <input type="hidden" name="SelectedFeaturedProductIds" value="23" />
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/showcases" class="btn auth-submit-btn auth-tertiary-btn">Listeye Don</a>
+    </div>
+<input name="IsActive" type="hidden" value="false" /><input name="ShowOnHome" type="hidden" value="false" /></form>
+
+<div class="admin-showcase-image-modal" data-showcase-image-modal hidden>
+    <button type="button" class="admin-showcase-image-modal-backdrop" data-showcase-image-modal-close aria-label="Kapat"></button>
+    <div class="admin-showcase-image-modal-dialog">
+        <button type="button" class="admin-icon-button admin-showcase-image-modal-dismiss" data-showcase-image-modal-close aria-label="Kapat">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <img src="" alt="Arkaplan onizleme" data-showcase-image-modal-image />
+    </div>
+</div>
+
+<div class="admin-showcase-picker-backdrop" data-showcase-picker hidden>
+    <div class="admin-showcase-picker">
+        <div class="admin-showcase-picker-head">
+            <div>
+                <strong>Urun Havuzu</strong>
+                <span>Secilen kategorilerdeki urunlerden vitrin slotunu doldur.</span>
+            </div>
+            <button type="button" class="admin-icon-button" data-showcase-picker-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-showcase-picker-toolbar">
+            <input type="search" class="form-control auth-input" placeholder="Urun adi ara..." data-showcase-product-search />
+            <select class="form-control auth-input" data-showcase-product-category-filter>
+                <option value="">Tum kategoriler</option>
+            </select>
+            <select class="form-control auth-input" data-showcase-product-tag-filter>
+                <option value="">Tum etiketler</option>
+            </select>
+        </div>
+
+        <div class="admin-showcase-picker-list" data-showcase-picker-list>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="7"
+                        data-category-id="2"
+                        data-category-slug="multivitamin-enerji"
+                        data-product-name="B12 Vitamini"
+                        data-product-category="Multivitamin &amp; Enerji"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="B12 Vitamini" />
+                    <div>
+                        <strong>B12 Vitamini</strong>
+                        <small>Multivitamin &amp; Enerji</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="12"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="B12 Vitamini Sprey"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="B12 Vitamini Sprey" />
+                    <div>
+                        <strong>B12 Vitamini Sprey</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="5"
+                        data-category-id="4"
+                        data-category-slug="hastaliklara-karsi-koruma"
+                        data-product-name="C Vitamini Complex"
+                        data-product-category="Hastal&#x131;klara Kar&#x15F;&#x131; Koruma"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_multi_nobg.png" alt="C Vitamini Complex" />
+                    <div>
+                        <strong>C Vitamini Complex</strong>
+                        <small>Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="15"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="C Vitamini Seti"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_multi_nobg.png" alt="C Vitamini Seti" />
+                    <div>
+                        <strong>C Vitamini Seti</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="19"
+                        data-category-id="4"
+                        data-category-slug="hastaliklara-karsi-koruma"
+                        data-product-name="&#xC7;inko Kompleks"
+                        data-product-category="Hastal&#x131;klara Kar&#x15F;&#x131; Koruma"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_mag_nobg.png" alt="&#xC7;inko Kompleks" />
+                    <div>
+                        <strong>&#xC7;inko Kompleks</strong>
+                        <small>Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="8"
+                        data-category-id="4"
+                        data-category-slug="hastaliklara-karsi-koruma"
+                        data-product-name="&#xC7;inko Pikolinat"
+                        data-product-category="Hastal&#x131;klara Kar&#x15F;&#x131; Koruma"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_mag_nobg.png" alt="&#xC7;inko Pikolinat" />
+                    <div>
+                        <strong>&#xC7;inko Pikolinat</strong>
+                        <small>Hastal&#x131;klara Kar&#x15F;&#x131; Koruma</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="1"
+                        data-category-id="2"
+                        data-category-slug="multivitamin-enerji"
+                        data-product-name="Daily Multivitamin"
+                        data-product-category="Multivitamin &amp; Enerji"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_multi_nobg.png" alt="Daily Multivitamin" />
+                    <div>
+                        <strong>Daily Multivitamin</strong>
+                        <small>Multivitamin &amp; Enerji</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="17"
+                        data-category-id="2"
+                        data-category-slug="multivitamin-enerji"
+                        data-product-name="Daily Multivitamin B&#xFC;y&#xFC;k Boy"
+                        data-product-category="Multivitamin &amp; Enerji"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_multi_nobg.png" alt="Daily Multivitamin B&#xFC;y&#xFC;k Boy" />
+                    <div>
+                        <strong>Daily Multivitamin B&#xFC;y&#xFC;k Boy</strong>
+                        <small>Multivitamin &amp; Enerji</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="10"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Demir &#x2B; C Vitamini"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="Demir &#x2B; C Vitamini" />
+                    <div>
+                        <strong>Demir &#x2B; C Vitamini</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="21"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Demir Takviyesi"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="Demir Takviyesi" />
+                    <div>
+                        <strong>Demir Takviyesi</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="23"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Gece Rutini Damlas&#x131;"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="Bitkisel Destek|Gece Rutini|Rahatlama">
+                    <img src="/img/products/gece-rutini-damlasi-v2.png" alt="Gece Rutini Damlas&#x131;" />
+                    <div>
+                        <strong>Gece Rutini Damlas&#x131;</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                            <span>Bitkisel Destek, Gece Rutini, Rahatlama</span>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="11"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Kalsiyum Kompleks"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="Kalsiyum Kompleks" />
+                    <div>
+                        <strong>Kalsiyum Kompleks</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="6"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Kolajen Peptit"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="Kolajen Peptit" />
+                    <div>
+                        <strong>Kolajen Peptit</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="18"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Kolajen ve C Vitamini"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="Kolajen ve C Vitamini" />
+                    <div>
+                        <strong>Kolajen ve C Vitamini</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="4"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Magnezyum"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_mag_nobg.png" alt="Magnezyum" />
+                    <div>
+                        <strong>Magnezyum</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="16"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Magnezyum Enerji Kofre"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_mag_nobg.png" alt="Magnezyum Enerji Kofre" />
+                    <div>
+                        <strong>Magnezyum Enerji Kofre</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="22"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Melatonin Kompleks"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="Gece Rutini|Melatonin|Uyku Deste&#x11F;i">
+                    <img src="/img/products/melatonin-kompleks-v2.png" alt="Melatonin Kompleks" />
+                    <div>
+                        <strong>Melatonin Kompleks</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                            <span>Gece Rutini, Melatonin, Uyku Deste&#x11F;i</span>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="2"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Omega 3"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="Omega 3" />
+                    <div>
+                        <strong>Omega 3</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="14"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Omega 3 Aile Paketi"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="Omega 3 Aile Paketi" />
+                    <div>
+                        <strong>Omega 3 Aile Paketi</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="9"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Probiyotik 10B"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_multi_nobg.png" alt="Probiyotik 10B" />
+                    <div>
+                        <strong>Probiyotik 10B</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="20"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Probiyotik Bakteri"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_omega_nobg.png" alt="Probiyotik Bakteri" />
+                    <div>
+                        <strong>Probiyotik Bakteri</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="3"
+                        data-category-id="1"
+                        data-category-slug="uyku-sagligi"
+                        data-product-name="Vitamin D3"
+                        data-product-category="Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="Vitamin D3" />
+                    <div>
+                        <strong>Vitamin D3</strong>
+                        <small>Uyku Sa&#x11F;l&#x131;&#x11F;&#x131;</small>
+                    </div>
+                </button>
+                <button type="button"
+                        class="admin-showcase-picker-item"
+                        data-showcase-picker-item
+                        data-product-id="13"
+                        data-category-id="7"
+                        data-category-slug="uncategorized"
+                        data-product-name="Vitamin D3 - 3 Al 2 &#xD6;de"
+                        data-product-category="Uncategorized"
+                        data-product-tags="">
+                    <img src="/img/products/bottle_d3_nobg.png" alt="Vitamin D3 - 3 Al 2 &#xD6;de" />
+                    <div>
+                        <strong>Vitamin D3 - 3 Al 2 &#xD6;de</strong>
+                        <small>Uncategorized</small>
+                    </div>
+                </button>
+        </div>
+        <div class="admin-showcase-picker-empty" data-showcase-picker-empty hidden>
+            Bu vitrinle eslesen bir urun bulunmadi.
+        </div>
+    </div>
+</div>
+
+    </section>
+</div>
+
+
+            </main>
+        </div>
+    </div>
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/pages/admin-feedback.js?v=DwuD4UsUvxYQ6bXYGixy-QRBDBeL7iEj-eRN9BmPufg"></script>
+    
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="/js/pages/admin-showcase-form.js?v=TpPSqArHf_eiKP_sbMPXi9z7gX-S1oRnEXWbpb2s3xw"></script>
+
+</body>
+</html>

@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
@@ -8,13 +11,26 @@ namespace vitacure.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Admin,Editor")]
-public class ProductsController : Controller
+public class ProductsController : AdminControllerBase
 {
-    private readonly IAdminProductService _adminProductService;
+    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".webp",
+        ".gif"
+    };
 
-    public ProductsController(IAdminProductService adminProductService)
+    private readonly IAdminProductService _adminProductService;
+    private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<ProductsController> _logger;
+
+    public ProductsController(IAdminProductService adminProductService, IWebHostEnvironment environment, ILogger<ProductsController> logger)
     {
         _adminProductService = adminProductService;
+        _environment = environment;
+        _logger = logger;
     }
 
     [HttpGet("/admin/products")]
@@ -47,12 +63,14 @@ public class ProductsController : Controller
             var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
             model.CategoryOptions = createModel.CategoryOptions;
             model.TagOptions = createModel.TagOptions;
+            SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
         }
 
         try
         {
             await _adminProductService.CreateAsync(model, cancellationToken);
+            SetRedirectToast("success", "Kayit basariyla eklendi", "Urun kaydi olusturuldu.");
         }
         catch (SlugConflictException ex)
         {
@@ -60,6 +78,16 @@ public class ProductsController : Controller
             var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
             model.CategoryOptions = createModel.CategoryOptions;
             model.TagOptions = createModel.TagOptions;
+            SetValidationToast("Urun kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Urun olusturma sirasinda beklenmedik hata.");
+            var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
+            model.CategoryOptions = createModel.CategoryOptions;
+            model.TagOptions = createModel.TagOptions;
+            SetUnexpectedErrorToast("Urun kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -92,6 +120,7 @@ public class ProductsController : Controller
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
+            SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
         }
 
@@ -106,6 +135,16 @@ public class ProductsController : Controller
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
+            SetValidationToast("Urun kaydi guncellenemedi");
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Urun guncelleme sirasinda beklenmedik hata. ProductId: {ProductId}", id);
+            var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
+            model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+            model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
+            SetUnexpectedErrorToast("Urun kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -114,7 +153,36 @@ public class ProductsController : Controller
             return NotFound();
         }
 
+        SetRedirectToast("success", "Kayit basariyla guncellendi", "Urun kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("/admin/products/upload-image")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] string? slug, CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest(new { error = "Gorsel secilmedi." });
+        }
+
+        var extension = Path.GetExtension(file.FileName);
+        if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension))
+        {
+            return BadRequest(new { error = "Desteklenmeyen gorsel formati." });
+        }
+
+        var uploadsDirectory = Path.Combine(_environment.WebRootPath, "img", "products");
+        Directory.CreateDirectory(uploadsDirectory);
+
+        var safeSlug = NormalizeFileSegment(slug);
+        var fileName = $"{safeSlug}-{DateTime.UtcNow:yyyyMMddHHmmssfff}{extension.ToLowerInvariant()}";
+        var fullPath = Path.Combine(uploadsDirectory, fileName);
+
+        await using var stream = new FileStream(fullPath, FileMode.Create);
+        await file.CopyToAsync(stream, cancellationToken);
+
+        return Json(new { url = $"/img/products/{fileName}" });
     }
 
     private static ProductListViewModel ApplyFilters(ProductListViewModel model, string? q, string? status, string? stock)
@@ -163,4 +231,16 @@ public class ProductsController : Controller
 
     private bool IsAjaxRequest()
         => string.Equals(Request.Headers["X-Requested-With"].ToString(), "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeFileSegment(string? value)
+    {
+        var raw = string.IsNullOrWhiteSpace(value) ? "product" : value.Trim().ToLowerInvariant();
+        var invalidChars = Path.GetInvalidFileNameChars();
+        var sanitized = new string(raw.Select(character => invalidChars.Contains(character) ? '-' : character).ToArray());
+
+        return sanitized
+            .Replace(" ", "-")
+            .Replace("--", "-")
+            .Trim('-');
+    }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.ComponentModel.DataAnnotations;
 using vitacure.Domain.Entities;
 using vitacure.Infrastructure.Persistence;
@@ -45,7 +46,7 @@ public class AdminShowcaseServiceTests
             });
         await dbContext.SaveChangesAsync();
 
-        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext));
+        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext), NullLogger<AdminShowcaseService>.Instance);
 
         var result = await service.GetShowcasesAsync();
 
@@ -63,7 +64,7 @@ public class AdminShowcaseServiceTests
         await using var dbContext = CreateDbContext();
         SeedCatalog(dbContext);
         var cacheInvalidation = new FakeCacheInvalidationService();
-        var service = new AdminShowcaseService(dbContext, cacheInvalidation, new FakeWebHostEnvironment(webRoot), new SlugService(dbContext));
+        var service = new AdminShowcaseService(dbContext, cacheInvalidation, new FakeWebHostEnvironment(webRoot), new SlugService(dbContext), NullLogger<AdminShowcaseService>.Instance);
 
         var id = await service.CreateAsync(new ShowcaseFormViewModel
         {
@@ -102,7 +103,7 @@ public class AdminShowcaseServiceTests
 
         await using var dbContext = CreateDbContext();
         SeedCatalog(dbContext);
-        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext));
+        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext), NullLogger<AdminShowcaseService>.Instance);
 
         var model = await service.GetCreateModelAsync();
 
@@ -117,7 +118,7 @@ public class AdminShowcaseServiceTests
 
         await using var dbContext = CreateDbContext();
         SeedCatalog(dbContext);
-        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext));
+        var service = new AdminShowcaseService(dbContext, new FakeCacheInvalidationService(), new FakeWebHostEnvironment(webRoot), new SlugService(dbContext), NullLogger<AdminShowcaseService>.Instance);
 
         var model = await service.GetCreateModelAsync();
 
@@ -210,7 +211,7 @@ public class AdminShowcaseServiceTests
         await dbContext.SaveChangesAsync();
 
         var cacheInvalidation = new FakeCacheInvalidationService();
-        var service = new AdminShowcaseService(dbContext, cacheInvalidation, new FakeWebHostEnvironment(webRoot), new SlugService(dbContext));
+        var service = new AdminShowcaseService(dbContext, cacheInvalidation, new FakeWebHostEnvironment(webRoot), new SlugService(dbContext), NullLogger<AdminShowcaseService>.Instance);
 
         using var stream = new MemoryStream(new byte[] { 1, 2, 3, 4 });
         var formFile = new FormFile(stream, 0, stream.Length, "BackgroundImageFile", "updated.png")

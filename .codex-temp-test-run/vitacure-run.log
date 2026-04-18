@@ -1,0 +1,278 @@
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [MigrationId], [ProductVersion]
+      FROM [__EFMigrationsHistory]
+      ORDER BY [MigrationId];
+info: Microsoft.EntityFrameworkCore.Migrations[20405]
+      No migrations were applied. The database is already up to date.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Categories] AS [c]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Products] AS [p]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Description], [c].[IsActive], [c].[MetaDescription], [c].[Name], [c].[ParentId], [c].[SeoTitle], [c].[Slug], [p].[Id], [p].[CategoryId], [p].[CreatedAt], [p].[Description], [p].[GalleryImageUrls], [p].[ImageUrl], [p].[IsActive], [p].[Name], [p].[OldPrice], [p].[Price], [p].[Rating], [p].[Slug], [p].[Stock]
+      FROM [Categories] AS [c]
+      LEFT JOIN [Products] AS [p] ON [c].[Id] = [p].[CategoryId]
+      WHERE [c].[IsActive] = CAST(1 AS bit) AND [c].[Slug] <> N'uncategorized'
+      ORDER BY [c].[Id]
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId], [s1].[ProductId], [s1].[SortOrder]
+      FROM [Showcases] AS [s]
+      LEFT JOIN [ShowcaseCategories] AS [s0] ON [s].[Id] = [s0].[ShowcaseId]
+      LEFT JOIN [ShowcaseFeaturedProducts] AS [s1] ON [s].[Id] = [s1].[ShowcaseId]
+      ORDER BY [s].[Id], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Int32), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Int32), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Int32), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Int32), @p8='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [Showcases] SET [UpdatedAt] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [Showcases] SET [UpdatedAt] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [Showcases] SET [UpdatedAt] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [Showcases] SET [UpdatedAt] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [Showcases] SET [UpdatedAt] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [r].[Id], [r].[ConcurrencyStamp], [r].[IsBackOfficeRole], [r].[Name], [r].[NormalizedName]
+      FROM [Roles] AS [r]
+      WHERE [r].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [r].[Id], [r].[ConcurrencyStamp], [r].[IsBackOfficeRole], [r].[Name], [r].[NormalizedName]
+      FROM [Roles] AS [r]
+      WHERE [r].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [r].[Id], [r].[ConcurrencyStamp], [r].[IsBackOfficeRole], [r].[Name], [r].[NormalizedName]
+      FROM [Roles] AS [r]
+      WHERE [r].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[AccountType], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[IsActive], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[TwoFactorEnabled], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\vedat\Documents\GitHub\vitacure
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[AccountType], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[IsActive], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[TwoFactorEnabled], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__user_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[ClaimType], [u].[ClaimValue], [u].[UserId]
+      FROM [UserClaims] AS [u]
+      WHERE [u].[UserId] = @__user_Id_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @__userId_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [r].[Id], [r].[ConcurrencyStamp], [r].[IsBackOfficeRole], [r].[Name], [r].[NormalizedName]
+      FROM [Roles] AS [r]
+      WHERE [r].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__role_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [r].[ClaimType], [r].[ClaimValue]
+      FROM [RoleClaims] AS [r]
+      WHERE [r].[RoleId] = @__role_Id_0
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[BackgroundImageUrl], [t].[CreatedAt], [t].[Description], [t].[IconClass], [t].[IsActive], [t].[IsDark], [t].[MetaDescription], [t].[Name], [t].[SeoTitle], [t].[ShowOnHome], [t].[Slug], [t].[SortOrder], [t].[TagsContent], [t].[Title], [t].[UpdatedAt], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId], [s1].[ProductId], [s1].[SortOrder]
+      FROM (
+          SELECT TOP(1) [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt]
+          FROM [Showcases] AS [s]
+          WHERE [s].[Id] = @__id_0
+      ) AS [t]
+      LEFT JOIN [ShowcaseCategories] AS [s0] ON [t].[Id] = [s0].[ShowcaseId]
+      LEFT JOIN [ShowcaseFeaturedProducts] AS [s1] ON [t].[Id] = [s1].[ShowcaseId]
+      ORDER BY [t].[Id], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Description], [c].[IsActive], [c].[MetaDescription], [c].[Name], [c].[ParentId], [c].[SeoTitle], [c].[Slug], [c0].[Id], [c0].[Description], [c0].[IsActive], [c0].[MetaDescription], [c0].[Name], [c0].[ParentId], [c0].[SeoTitle], [c0].[Slug]
+      FROM [Categories] AS [c]
+      LEFT JOIN [Categories] AS [c0] ON [c].[ParentId] = [c0].[Id]
+      ORDER BY CASE
+          WHEN [c].[ParentId] IS NOT NULL THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END, [c].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [p].[Id], [p].[Name], [c].[Name], [c].[Slug], [p].[CategoryId], [p].[ImageUrl], [c].[Id], [t0].[Name]
+      FROM [Products] AS [p]
+      INNER JOIN [Categories] AS [c] ON [p].[CategoryId] = [c].[Id]
+      OUTER APPLY (
+          SELECT DISTINCT [t].[Name]
+          FROM [ProductTags] AS [p0]
+          INNER JOIN [Tags] AS [t] ON [p0].[TagId] = [t].[Id]
+          WHERE [p].[Id] = [p0].[ProductId]
+      ) AS [t0]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[Name], [p].[Id], [c].[Id], [t0].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AccessFailedCount], [u].[AccountType], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[IsActive], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[TwoFactorEnabled], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__p_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @__userId_0
+info: vitacure.Areas.Admin.Controllers.ShowcasesController[0]
+      Showcase form post IsDark raw value: true, parsed: True, showcaseId: 1
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__model_Id_Value_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[BackgroundImageUrl], [t].[CreatedAt], [t].[Description], [t].[IconClass], [t].[IsActive], [t].[IsDark], [t].[MetaDescription], [t].[Name], [t].[SeoTitle], [t].[ShowOnHome], [t].[Slug], [t].[SortOrder], [t].[TagsContent], [t].[Title], [t].[UpdatedAt], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId], [s1].[ProductId], [s1].[SortOrder]
+      FROM (
+          SELECT TOP(1) [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt]
+          FROM [Showcases] AS [s]
+          WHERE [s].[Id] = @__model_Id_Value_0
+      ) AS [t]
+      LEFT JOIN [ShowcaseCategories] AS [s0] ON [t].[Id] = [s0].[ShowcaseId]
+      LEFT JOIN [ShowcaseFeaturedProducts] AS [s1] ON [t].[Id] = [s1].[ShowcaseId]
+      ORDER BY [t].[Id], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Description], [c].[IsActive], [c].[MetaDescription], [c].[Name], [c].[ParentId], [c].[SeoTitle], [c].[Slug]
+      FROM [Categories] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [p].[Id], [p].[CategoryId], [p].[CreatedAt], [p].[Description], [p].[GalleryImageUrls], [p].[ImageUrl], [p].[IsActive], [p].[Name], [p].[OldPrice], [p].[Price], [p].[Rating], [p].[Slug], [p].[Stock]
+      FROM [Products] AS [p]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[Name], [t].[Slug]
+      FROM [Tags] AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt]
+      FROM [Showcases] AS [s]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@p2='?' (DbType = Int32), @p0='?' (DbType = Boolean), @p1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Showcases] SET [IsDark] = @p0, [UpdatedAt] = @p1
+      OUTPUT 1
+      WHERE [Id] = @p2;
+info: vitacure.Infrastructure.Services.AdminShowcaseService[0]
+      Showcase updated. Id: 1, Slug: uyku-rutini, IsDark: True
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId], [s1].[ProductId], [s1].[SortOrder]
+      FROM [Showcases] AS [s]
+      LEFT JOIN [ShowcaseCategories] AS [s0] ON [s].[Id] = [s0].[ShowcaseId]
+      LEFT JOIN [ShowcaseFeaturedProducts] AS [s1] ON [s].[Id] = [s1].[ShowcaseId]
+      ORDER BY [s].[SortOrder], [s].[Name], [s].[Id], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AccessFailedCount], [u].[AccountType], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[IsActive], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[TwoFactorEnabled], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__p_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @__userId_0
+info: vitacure.Areas.Admin.Controllers.ShowcasesController[0]
+      Showcase form post IsDark raw value: false, parsed: False, showcaseId: 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[BackgroundImageUrl], [t].[CreatedAt], [t].[Description], [t].[IconClass], [t].[IsActive], [t].[IsDark], [t].[MetaDescription], [t].[Name], [t].[SeoTitle], [t].[ShowOnHome], [t].[Slug], [t].[SortOrder], [t].[TagsContent], [t].[Title], [t].[UpdatedAt], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId], [s1].[ProductId], [s1].[SortOrder]
+      FROM (
+          SELECT TOP(1) [s].[Id], [s].[BackgroundImageUrl], [s].[CreatedAt], [s].[Description], [s].[IconClass], [s].[IsActive], [s].[IsDark], [s].[MetaDescription], [s].[Name], [s].[SeoTitle], [s].[ShowOnHome], [s].[Slug], [s].[SortOrder], [s].[TagsContent], [s].[Title], [s].[UpdatedAt]
+          FROM [Showcases] AS [s]
+          WHERE [s].[Id] = @__id_0
+      ) AS [t]
+      LEFT JOIN [ShowcaseCategories] AS [s0] ON [t].[Id] = [s0].[ShowcaseId]
+      LEFT JOIN [ShowcaseFeaturedProducts] AS [s1] ON [t].[Id] = [s1].[ShowcaseId]
+      ORDER BY [t].[Id], [s0].[ShowcaseId], [s0].[CategoryId], [s1].[ShowcaseId]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Description], [c].[IsActive], [c].[MetaDescription], [c].[Name], [c].[ParentId], [c].[SeoTitle], [c].[Slug], [c0].[Id], [c0].[Description], [c0].[IsActive], [c0].[MetaDescription], [c0].[Name], [c0].[ParentId], [c0].[SeoTitle], [c0].[Slug]
+      FROM [Categories] AS [c]
+      LEFT JOIN [Categories] AS [c0] ON [c].[ParentId] = [c0].[Id]
+      ORDER BY CASE
+          WHEN [c].[ParentId] IS NOT NULL THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END, [c].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [p].[Id], [p].[Name], [c].[Name], [c].[Slug], [p].[CategoryId], [p].[ImageUrl], [c].[Id], [t0].[Name]
+      FROM [Products] AS [p]
+      INNER JOIN [Categories] AS [c] ON [p].[CategoryId] = [c].[Id]
+      OUTER APPLY (
+          SELECT DISTINCT [t].[Name]
+          FROM [ProductTags] AS [p0]
+          INNER JOIN [Tags] AS [t] ON [p0].[TagId] = [t].[Id]
+          WHERE [p].[Id] = [p0].[ProductId]
+      ) AS [t0]
+      WHERE [p].[IsActive] = CAST(1 AS bit)
+      ORDER BY [p].[Name], [p].[Id], [c].[Id], [t0].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AccessFailedCount], [u].[AccountType], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[IsActive], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[TwoFactorEnabled], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[Id] = @__p_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @__userId_0

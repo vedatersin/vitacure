@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using vitacure.Application.Abstractions;
 using vitacure.Domain.Entities;
 using vitacure.Infrastructure.Persistence;
@@ -13,6 +14,7 @@ public class AdminShowcaseService : IAdminShowcaseService
     private readonly ICacheInvalidationService _cacheInvalidationService;
     private readonly AppDbContext _dbContext;
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<AdminShowcaseService> _logger;
     private readonly ISlugService _slugService;
     private static readonly HashSet<string> AllowedBackgroundExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -23,12 +25,13 @@ public class AdminShowcaseService : IAdminShowcaseService
         ".gif"
     };
 
-    public AdminShowcaseService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService, IWebHostEnvironment environment, ISlugService slugService)
+    public AdminShowcaseService(AppDbContext dbContext, ICacheInvalidationService cacheInvalidationService, IWebHostEnvironment environment, ISlugService slugService, ILogger<AdminShowcaseService> logger)
     {
         _dbContext = dbContext;
         _cacheInvalidationService = cacheInvalidationService;
         _environment = environment;
         _slugService = slugService;
+        _logger = logger;
     }
 
     public async Task<ShowcaseListViewModel> GetShowcasesAsync(CancellationToken cancellationToken = default)
@@ -160,6 +163,7 @@ public class AdminShowcaseService : IAdminShowcaseService
 
         _dbContext.Showcases.Add(entity);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Showcase created. Id: {ShowcaseId}, Slug: {Slug}, IsDark: {IsDark}", entity.Id, entity.Slug, entity.IsDark);
         await _cacheInvalidationService.InvalidateStorefrontAsync(cancellationToken);
         return entity.Id;
     }
@@ -244,6 +248,7 @@ public class AdminShowcaseService : IAdminShowcaseService
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Showcase updated. Id: {ShowcaseId}, Slug: {Slug}, IsDark: {IsDark}", entity.Id, entity.Slug, entity.IsDark);
         await _cacheInvalidationService.InvalidateStorefrontAsync(cancellationToken);
         return true;
     }
