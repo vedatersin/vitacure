@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using vitacure.Infrastructure.Persistence;
 
 #nullable disable
 
 namespace vitacure.Migrations
 {
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20260415123000_FixShowcaseBackgroundImages")]
     public partial class FixShowcaseBackgroundImages : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
