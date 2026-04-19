@@ -71,10 +71,13 @@
                     <th>Gorsel</th>
                     <th>ID</th>
                     <th>Ad</th>
+                    <th>Marka</th>
                     <th>Kategori</th>
                     <th>Slug</th>
                     <th>Fiyat</th>
                     <th>Stok</th>
+                    <th>Variant</th>
+                    <th>Ozellik</th>
                     <th>Etiket</th>
                     <th>Durum</th>
                     <th></th>
@@ -89,10 +92,22 @@
                         </td>
                         <td>@product.Id</td>
                         <td>@product.Name</td>
+                        <td>@product.BrandName</td>
                         <td>@product.CategoryName</td>
                         <td>@product.Slug</td>
                         <td>@product.Price.ToString("0.00") TL</td>
-                        <td>@product.Stock</td>
+                        <td>
+                            <strong>@product.Stock</strong>
+                            <div class="text-muted small">@product.StockSummary</div>
+                        </td>
+                        <td>
+                            <strong>@(product.VariantCount > 0 ? product.VariantCount.ToString() : "-")</strong>
+                            @if (!string.IsNullOrWhiteSpace(product.VariantSummary) && product.VariantSummary != "-")
+                            {
+                                <div class="text-muted small">@product.VariantSummary</div>
+                            }
+                        </td>
+                        <td>@product.FeatureCount</td>
                         <td>@product.TagCount</td>
                         <td>
                             <span class="auth-status-badge @(product.IsActive ? "is-active" : "is-passive")">

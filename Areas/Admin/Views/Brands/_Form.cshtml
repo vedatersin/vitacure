@@ -1,0 +1,46 @@
+@model vitacure.Models.ViewModels.Admin.BrandFormViewModel
+
+<form method="post" action="@Context.Request.Path" class="auth-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div class="admin-operator-card mb-4">
+        <span>Katalog Notu</span>
+        <strong>Markalar urun formunda baglayici bir katalog katmani olarak kullanilir</strong>
+        <small>Marka ismi, slug ve durum bilgisi urunlerin secim deneyimini dogrudan etkiler.</small>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control auth-input" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Slug" class="form-label"></label>
+            <input asp-for="Slug" class="form-control auth-input" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Marka ile ilgili kisa bir not ekleyin..."></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label class="auth-checkbox-card">
+                <input asp-for="IsActive" />
+                <span>Marka aktif</span>
+                <small>Aktif markalar urun formunda secilebilir olur.</small>
+            </label>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/brands" class="btn auth-submit-btn auth-tertiary-btn">Listeye Don</a>
+    </div>
+</form>

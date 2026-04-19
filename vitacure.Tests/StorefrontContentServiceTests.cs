@@ -66,6 +66,47 @@ public class StorefrontContentServiceTests
     }
 
     [Fact]
+    public async Task GetProductDetailPageContentAsync_Prefers_Normalized_Product_Media_For_Gallery()
+    {
+        var contentRoot = TestContentRootFactory.Create();
+
+        try
+        {
+            await using var dbContext = CreateDbContext();
+            SeedProductDetailData(dbContext);
+            dbContext.ProductMedias.AddRange(
+                new ProductMedia
+                {
+                    Id = 50,
+                    ProductId = 1,
+                    Url = "/img/products/gallery-cover.png",
+                    SortOrder = 0,
+                    IsPrimary = true
+                },
+                new ProductMedia
+                {
+                    Id = 51,
+                    ProductId = 1,
+                    Url = "/img/products/gallery-second.png",
+                    SortOrder = 1,
+                    IsPrimary = false
+                });
+            await dbContext.SaveChangesAsync();
+
+            var service = CreateStorefrontContentService(dbContext, contentRoot);
+
+            var result = await service.GetProductDetailPageContentAsync("daily-multivitamin");
+
+            Assert.NotNull(result);
+            Assert.Equal(new[] { "/img/products/gallery-cover.png", "/img/products/gallery-second.png" }, result!.GalleryImages);
+        }
+        finally
+        {
+            Directory.Delete(contentRoot, recursive: true);
+        }
+    }
+
+    [Fact]
     public async Task GetCategoryPageContentAsync_Filters_By_Tag_Query()
     {
         var contentRoot = TestContentRootFactory.Create();
@@ -87,6 +128,50 @@ public class StorefrontContentServiceTests
             Assert.Single(result.CoverflowProducts.Select(x => x.Id).Distinct());
             Assert.Single(result.CoverflowProducts);
             Assert.All(result.CoverflowProducts, product => Assert.Equal("Night Support", product.Name));
+        }
+        finally
+        {
+            Directory.Delete(contentRoot, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task GetCategoryPageContentAsync_Includes_Secondary_ProductCategory_Relations()
+    {
+        var contentRoot = TestContentRootFactory.Create();
+
+        try
+        {
+            await using var dbContext = CreateDbContext();
+            dbContext.Categories.AddRange(
+                new Category { Id = 1, Name = "Ana Kategori", Slug = "ana-kategori", Description = "A", IsActive = true },
+                new Category { Id = 2, Name = "Ek Kategori", Slug = "ek-kategori", Description = "B", IsActive = true });
+            dbContext.Products.Add(new Product
+            {
+                Id = 1,
+                Name = "Coklu Kategori Urunu",
+                Slug = "coklu-kategori-urunu",
+                Description = "Test",
+                Price = 120m,
+                Rating = 4.5m,
+                ImageUrl = "/img/coklu.png",
+                Stock = 10,
+                CategoryId = 1,
+                IsActive = true
+            });
+            dbContext.ProductCategories.Add(new ProductCategory
+            {
+                ProductId = 1,
+                CategoryId = 2
+            });
+            await dbContext.SaveChangesAsync();
+
+            var service = CreateStorefrontContentService(dbContext, contentRoot);
+
+            var result = await service.GetCategoryPageContentAsync("ek-kategori");
+
+            Assert.NotNull(result);
+            Assert.Contains(result!.ProductGrid, x => x.Id == "coklu-kategori-urunu");
         }
         finally
         {

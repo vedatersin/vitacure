@@ -54,12 +54,48 @@
                         </div>
 
                         <div class="product-detail-prices">
-                            <span class="product-detail-price-new">&#8378; @Model.Price</span>
+                            <span class="product-detail-price-new" data-product-detail-price>&#8378; @Model.Price</span>
                             @if (!string.IsNullOrWhiteSpace(Model.OldPrice))
                             {
-                                <span class="product-detail-price-old">&#8378; @Model.OldPrice</span>
+                                <span class="product-detail-price-old" data-product-detail-old-price>&#8378; @Model.OldPrice</span>
+                            }
+                            else
+                            {
+                                <span class="product-detail-price-old" data-product-detail-old-price hidden></span>
                             }
                         </div>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.StockLabel))
+                        {
+                            <div class="product-detail-size" data-product-detail-stock>@Model.StockLabel</div>
+                        }
+
+                        @if (Model.HasVariants && Model.Variants.Count > 0)
+                        {
+                            <div class="product-detail-variants">
+                                <div class="product-detail-size">
+                                    @Model.VariantGroupName:
+                                    <strong data-product-detail-selected-variant>@Model.SelectedVariantLabel</strong>
+                                </div>
+
+                                <div class="product-detail-tags" data-product-variant-options>
+                                    @foreach (var variant in Model.Variants)
+                                    {
+                                        <button type="button"
+                                                class="product-detail-tag @(variant.IsSelected ? "is-active" : null)"
+                                                data-product-variant-option="true"
+                                                data-variant-id="@variant.Id"
+                                                data-variant-label="@variant.Label"
+                                                data-variant-price="@variant.Price"
+                                                data-variant-old-price="@variant.OldPrice"
+                                                data-variant-stock="@variant.StockLabel"
+                                                aria-pressed="@(variant.IsSelected ? "true" : "false")">
+                                            @variant.Label
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
 
                         @if (Model.Tags.Count > 0)
                         {
@@ -71,7 +107,7 @@
                             </div>
                         }
 
-                        <p class="product-detail-description">@Model.Description</p>
+                        <div class="product-detail-description">@Html.Raw(Model.Description)</div>
 
                         <div class="product-detail-actions">
                             <button class="pc-add-btn product-detail-cart-btn"
@@ -79,6 +115,7 @@
                                     aria-pressed="false"
                                     data-cart-button
                                     data-cart-product-id="@Model.CartProductSlug"
+                                    data-cart-variant-id="@Model.SelectedVariantId"
                                     data-default-label="@Model.AddToCartLabel"
                                     data-added-label="Eklendi">
                                 <i class="fa-solid fa-cart-shopping pc-add-btn-icon pc-add-btn-icon-cart"></i>

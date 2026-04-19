@@ -10,8 +10,8 @@ public interface IGuestSessionService
     FavoriteToggleResultViewModel ToggleFavorite(string productSlug);
     Task<CartViewModel> GetCartAsync(CancellationToken cancellationToken = default);
     int GetCartItemCount();
-    Task<CartMutationResultViewModel> AddCartItemAsync(string productSlug, int quantity = 1, CancellationToken cancellationToken = default);
-    Task<CartMutationResultViewModel> UpdateCartQuantityAsync(string productSlug, int quantity, CancellationToken cancellationToken = default);
-    Task<CartMutationResultViewModel> RemoveCartItemAsync(string productSlug, CancellationToken cancellationToken = default);
+    Task<CartMutationResultViewModel> AddCartItemAsync(string productSlug, int quantity = 1, int? variantId = null, CancellationToken cancellationToken = default);
+    Task<CartMutationResultViewModel> UpdateCartQuantityAsync(string productSlug, int quantity, int? variantId = null, CancellationToken cancellationToken = default);
+    Task<CartMutationResultViewModel> RemoveCartItemAsync(string productSlug, int? variantId = null, CancellationToken cancellationToken = default);
     Task<bool> MergeIntoCustomerAccountAsync(int userId, CancellationToken cancellationToken = default);
 }

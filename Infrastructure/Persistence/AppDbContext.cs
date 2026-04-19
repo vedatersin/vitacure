@@ -14,7 +14,17 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
     }
 
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Brand> Brands => Set<Brand>();
+    public DbSet<Collection> Collections => Set<Collection>();
+    public DbSet<Feature> Features => Set<Feature>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<StorageSettings> StorageSettings => Set<StorageSettings>();
+    public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+    public DbSet<ProductMedia> ProductMedias => Set<ProductMedia>();
+    public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+    public DbSet<ProductCollection> ProductCollections => Set<ProductCollection>();
+    public DbSet<ProductFeature> ProductFeatures => Set<ProductFeature>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<ProductTag> ProductTags => Set<ProductTag>();
     public DbSet<CustomerFavorite> CustomerFavorites => Set<CustomerFavorite>();
@@ -22,6 +32,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
     public DbSet<CustomerCartItem> CustomerCartItems => Set<CustomerCartItem>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<AdminNotification> AdminNotifications => Set<AdminNotification>();
     public DbSet<HomeContentSettings> HomeContentSettings => Set<HomeContentSettings>();
     public DbSet<Showcase> Showcases => Set<Showcase>();
     public DbSet<ShowcaseCategory> ShowcaseCategories => Set<ShowcaseCategory>();
@@ -74,6 +85,82 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<Brand>(entity =>
+        {
+            entity.ToTable("Brands");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Slug).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Description).HasMaxLength(500);
+            entity.Property(x => x.IsActive).IsRequired();
+            entity.HasIndex(x => x.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<Collection>(entity =>
+        {
+            entity.ToTable("Collections");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Slug).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Description).HasMaxLength(500);
+            entity.Property(x => x.ShowOnHome).IsRequired();
+            entity.Property(x => x.SortOrder).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+            entity.Property(x => x.IsActive).IsRequired();
+            entity.HasIndex(x => x.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<Feature>(entity =>
+        {
+            entity.ToTable("Features");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Name).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.Slug).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.GroupName).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.OptionsContent).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.IsActive).IsRequired();
+            entity.HasIndex(x => x.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<MediaAsset>(entity =>
+        {
+            entity.ToTable("MediaAssets");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(x => x.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(x => x.Title).HasMaxLength(200);
+            entity.Property(x => x.AltText).HasMaxLength(250);
+            entity.Property(x => x.StorageProvider).HasMaxLength(50).IsRequired();
+            entity.Property(x => x.StorageKey).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.Url).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.ContentType).HasMaxLength(150).IsRequired();
+            entity.Property(x => x.SizeBytes).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.HasIndex(x => x.Url).IsUnique();
+            entity.HasIndex(x => x.CreatedAt);
+        });
+
+        modelBuilder.Entity<StorageSettings>(entity =>
+        {
+            entity.ToTable("StorageSettings");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Provider)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+            entity.Property(x => x.IsCdnEnabled).IsRequired();
+            entity.Property(x => x.ServiceUrl).HasMaxLength(500);
+            entity.Property(x => x.PublicBaseUrl).HasMaxLength(500);
+            entity.Property(x => x.BucketName).HasMaxLength(200);
+            entity.Property(x => x.Region).HasMaxLength(100);
+            entity.Property(x => x.AccessKey).HasMaxLength(200);
+            entity.Property(x => x.SecretKey).HasMaxLength(300);
+            entity.Property(x => x.KeyPrefix).HasMaxLength(200);
+            entity.Property(x => x.UsePathStyle).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+        });
+
         modelBuilder.Entity<Product>(entity =>
         {
             entity.ToTable("Products");
@@ -92,6 +179,99 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
                 .WithMany(x => x.Products)
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Brand)
+                .WithMany(x => x.Products)
+                .HasForeignKey(x => x.BrandId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ProductMedia>(entity =>
+        {
+            entity.ToTable("ProductMedias");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Url).HasMaxLength(500).IsRequired();
+            entity.Property(x => x.AltText).HasMaxLength(250);
+            entity.Property(x => x.SortOrder).IsRequired();
+            entity.Property(x => x.IsPrimary).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+            entity.HasIndex(x => new { x.ProductId, x.SortOrder });
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ProductMedias)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.MediaAsset)
+                .WithMany()
+                .HasForeignKey(x => x.MediaAssetId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ProductVariant>(entity =>
+        {
+            entity.ToTable("ProductVariants");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.GroupName).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.OptionName).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.Sku).HasMaxLength(100);
+            entity.Property(x => x.Price).HasColumnType("decimal(18,2)");
+            entity.Property(x => x.OldPrice).HasColumnType("decimal(18,2)");
+            entity.Property(x => x.Stock).IsRequired();
+            entity.Property(x => x.SortOrder).IsRequired();
+            entity.Property(x => x.IsActive).IsRequired();
+            entity.Property(x => x.CreatedAt).IsRequired();
+            entity.Property(x => x.UpdatedAt).IsRequired();
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ProductVariants)
+                .HasForeignKey(x => x.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ProductCategory>(entity =>
+        {
+            entity.ToTable("ProductCategories");
+            entity.HasKey(x => new { x.ProductId, x.CategoryId });
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ProductCategories)
+                .HasForeignKey(x => x.ProductId);
+
+            entity.HasOne(x => x.Category)
+                .WithMany(x => x.ProductCategories)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ProductFeature>(entity =>
+        {
+            entity.ToTable("ProductFeatures");
+            entity.HasKey(x => new { x.ProductId, x.FeatureId });
+            entity.Property(x => x.Value).HasMaxLength(150);
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ProductFeatures)
+                .HasForeignKey(x => x.ProductId);
+
+            entity.HasOne(x => x.Feature)
+                .WithMany(x => x.ProductFeatures)
+                .HasForeignKey(x => x.FeatureId);
+        });
+
+        modelBuilder.Entity<ProductCollection>(entity =>
+        {
+            entity.ToTable("ProductCollections");
+            entity.HasKey(x => new { x.ProductId, x.CollectionId });
+
+            entity.HasOne(x => x.Product)
+                .WithMany(x => x.ProductCollections)
+                .HasForeignKey(x => x.ProductId);
+
+            entity.HasOne(x => x.Collection)
+                .WithMany(x => x.ProductCollections)
+                .HasForeignKey(x => x.CollectionId);
         });
 
         modelBuilder.Entity<Tag>(entity =>
@@ -160,7 +340,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
             entity.Property(x => x.Quantity).IsRequired();
             entity.Property(x => x.CreatedAt).IsRequired();
             entity.Property(x => x.UpdatedAt).IsRequired();
-            entity.HasIndex(x => new { x.AppUserId, x.ProductId }).IsUnique();
+            entity.HasIndex(x => new { x.AppUserId, x.ProductId, x.ProductVariantId });
 
             entity.HasOne(x => x.AppUser)
                 .WithMany(x => x.CartItems)
@@ -171,6 +351,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
                 .WithMany()
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.ProductVariant)
+                .WithMany()
+                .HasForeignKey(x => x.ProductVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -204,6 +389,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
             entity.HasKey(x => x.Id);
             entity.Property(x => x.ProductName).HasMaxLength(200).IsRequired();
             entity.Property(x => x.ProductSlug).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.VariantLabel).HasMaxLength(160);
             entity.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)");
             entity.Property(x => x.LineTotal).HasColumnType("decimal(18,2)");
 
@@ -216,6 +402,28 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, int>
                 .WithMany()
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(x => x.ProductVariant)
+                .WithMany()
+                .HasForeignKey(x => x.ProductVariantId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<AdminNotification>(entity =>
+        {
+            entity.ToTable("AdminNotifications");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Title).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Summary).HasMaxLength(300).IsRequired();
+            entity.Property(x => x.Body).HasColumnType("nvarchar(max)");
+            entity.Property(x => x.Actor).HasMaxLength(200).IsRequired();
+            entity.Property(x => x.Source).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.CategoryKey).HasMaxLength(50).IsRequired();
+            entity.Property(x => x.TargetLabel).HasMaxLength(100);
+            entity.Property(x => x.TargetUrl).HasMaxLength(500);
+            entity.Property(x => x.OccurredAt).IsRequired();
+            entity.HasIndex(x => x.OccurredAt);
+            entity.HasIndex(x => new { x.CategoryKey, x.IsRead });
         });
 
         modelBuilder.Entity<HomeContentSettings>(entity =>

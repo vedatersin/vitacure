@@ -9,13 +9,18 @@ namespace vitacure.Infrastructure.Services;
 
 public class CustomerAccountService : ICustomerAccountService
 {
+    private readonly IAdminNotificationService _adminNotificationService;
     private readonly AppDbContext _dbContext;
     private readonly IOrderService _orderService;
 
-    public CustomerAccountService(AppDbContext dbContext, IOrderService orderService)
+    public CustomerAccountService(
+        AppDbContext dbContext,
+        IOrderService orderService,
+        IAdminNotificationService adminNotificationService)
     {
         _dbContext = dbContext;
         _orderService = orderService;
+        _adminNotificationService = adminNotificationService;
     }
 
     public async Task<AccountDashboardViewModel?> GetDashboardAsync(int userId, CancellationToken cancellationToken = default)
@@ -26,6 +31,9 @@ public class CustomerAccountService : ICustomerAccountService
             .Include(x => x.Favorites)
             .ThenInclude(x => x.Product)
             .ThenInclude(x => x!.Category)
+            .Include(x => x.Favorites)
+            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x!.ProductVariants)
             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
 
         if (user is null)
@@ -109,6 +117,27 @@ public class CustomerAccountService : ICustomerAccountService
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        if (isFavorite)
+        {
+            var actor = await _dbContext.Users
+                .AsNoTracking()
+                .Where(x => x.Id == userId)
+                .Select(x => x.FullName)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            await _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
+            {
+                Title = "Urun favorilere eklendi",
+                Summary = $"{product.Name} favori listesine eklendi.",
+                Body = $"{actor ?? "Musteri"} kullanicisi {product.Name} urununu favorilerine ekledi. Bu aksiyon segmentasyon ve retargeting senaryolari icin kullanilabilir.",
+                Actor = actor ?? "Musteri",
+                Source = "Storefront",
+                CategoryKey = "favorites",
+                TargetLabel = "Urunlere git",
+                TargetUrl = "/admin/products"
+            }, cancellationToken);
+        }
 
         var favoriteCount = await _dbContext.CustomerFavorites.CountAsync(x => x.AppUserId == userId, cancellationToken);
         return new FavoriteToggleResultViewModel
@@ -258,18 +287,26 @@ public class CustomerAccountService : ICustomerAccountService
 
     private static ProductCardViewModel BuildProductCard(Product product)
     {
+        var primaryVariant = product.ProductVariants
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.OptionName)
+            .FirstOrDefault();
+
         return new ProductCardViewModel
         {
             Id = product.Slug,
             Name = product.Name,
             SizeLabel = BuildProductSizeLabel(product.Name),
             ImageUrl = product.ImageUrl,
-            Price = product.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ","),
-            OldPrice = product.OldPrice?.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ",") ?? string.Empty,
+            Price = (primaryVariant?.Price ?? product.Price).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ","),
+            OldPrice = (primaryVariant?.OldPrice ?? product.OldPrice)?.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ",") ?? string.Empty,
             Rating = product.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
             RatingWidth = $"{Math.Round(product.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = product.Description ?? string.Empty,
             Href = $"/{product.Slug}",
+            AddToCartLabel = primaryVariant is not null ? "Urunu Incele" : "Sepete Ekle",
+            HasVariants = primaryVariant is not null,
             CartProductSlug = product.Slug
         };
     }

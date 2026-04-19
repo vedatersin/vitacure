@@ -98,14 +98,14 @@ document.addEventListener("DOMContentLoaded", function () {
         cartLoadingTimers.set(button, loadingTimerId);
     }
 
-    async function syncCart(productSlug, quantity) {
+    async function syncCart(productSlug, variantId, quantity) {
         const response = await fetch("/cart/items", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "RequestVerificationToken": antiForgeryToken
             },
-            body: JSON.stringify({ productSlug, quantity })
+            body: JSON.stringify({ productSlug, variantId, quantity })
         });
 
         if (response.status === 401) {
@@ -150,8 +150,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     window.VitacureCart = {
-        addItem: async function (productSlug, button, quantity = 1) {
-            const result = await syncCart(productSlug, quantity);
+        addItem: async function (productSlug, button, quantity = 1, variantId = null) {
+            const result = await syncCart(productSlug, variantId, quantity);
             if (!result) {
                 return false;
             }
@@ -231,11 +231,25 @@ document.addEventListener("DOMContentLoaded", function () {
             event.stopPropagation();
 
             const productSlug = button.getAttribute("data-cart-product-id") || "";
+            const variantIdValue = button.getAttribute("data-cart-variant-id");
+            const variantId = variantIdValue ? Number.parseInt(variantIdValue, 10) : null;
             if (!productSlug) {
                 return;
             }
 
-            await window.VitacureCart.addItem(productSlug, button, 1);
+            await window.VitacureCart.addItem(productSlug, button, 1, Number.isFinite(variantId) ? variantId : null);
+        });
+    });
+
+    document.querySelectorAll("[data-product-inspect-button]").forEach((button) => {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const href = button.getAttribute("data-product-href");
+            if (href) {
+                window.location.href = href;
+            }
         });
     });
 });

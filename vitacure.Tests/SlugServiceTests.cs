@@ -32,6 +32,49 @@ public class SlugServiceTests
     }
 
     [Fact]
+    public async Task EnsureAvailableAsync_Throws_When_Slug_Is_Used_By_Brand()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Brands.Add(new Brand
+        {
+            Id = 1,
+            Name = "Solgar",
+            Slug = "solgar",
+            IsActive = true
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new SlugService(dbContext);
+
+        var exception = await Assert.ThrowsAsync<SlugConflictException>(() =>
+            service.EnsureAvailableAsync("solgar", SlugEntityType.Product));
+
+        Assert.Contains("marka", exception.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task EnsureAvailableAsync_Throws_When_Slug_Is_Used_By_Feature()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Features.Add(new Feature
+        {
+            Id = 1,
+            Name = "Urun Formu",
+            Slug = "urun-formu",
+            GroupName = "Form",
+            IsActive = true
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new SlugService(dbContext);
+
+        var exception = await Assert.ThrowsAsync<SlugConflictException>(() =>
+            service.EnsureAvailableAsync("urun-formu", SlugEntityType.Product));
+
+        Assert.Contains("ozellik", exception.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task EnsureAvailableAsync_Throws_When_Slug_Is_Reserved()
     {
         await using var dbContext = CreateDbContext();

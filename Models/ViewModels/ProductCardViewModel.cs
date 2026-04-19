@@ -14,5 +14,6 @@ public class ProductCardViewModel
     public string Href { get; set; } = "#";
     public string FavoriteTitle { get; set; } = "Favorilere Ekle";
     public string AddToCartLabel { get; set; } = "Sepete Ekle";
+    public bool HasVariants { get; set; }
     public string CartProductSlug { get; set; } = string.Empty;
 }

@@ -6,6 +6,7 @@
         const form = editor.closest("form");
         const coverInput = editor.querySelector("[data-gallery-cover-input]");
         const hiddenInput = editor.querySelector("[data-gallery-hidden]");
+        const itemsJsonInput = editor.querySelector("[data-gallery-items-json]");
         const strip = editor.querySelector("[data-gallery-strip]");
         const mainPreview = editor.querySelector("[data-gallery-main-preview]");
         const mainTrigger = editor.querySelector("[data-gallery-main-trigger]");
@@ -13,37 +14,69 @@
         const mainRemove = editor.querySelector("[data-gallery-main-remove]");
         const fileInput = editor.querySelector("[data-gallery-file-input]");
         const uploadUrl = editor.getAttribute("data-gallery-upload-url") || "";
+        const libraryUrl = editor.getAttribute("data-gallery-library-url") || "";
         const maxItems = Number.parseInt(editor.getAttribute("data-gallery-max-items") || "4", 10);
         const antiforgeryToken = form?.querySelector('input[name="__RequestVerificationToken"]')?.value || "";
         const slugInput = form?.querySelector('input[name="Slug"]');
         const modal = document.querySelector("[data-gallery-modal]");
         const modalImage = document.querySelector("[data-gallery-modal-image]");
         const modalCloseButtons = Array.from(document.querySelectorAll("[data-gallery-modal-close]"));
+        const libraryModal = document.querySelector("[data-gallery-library-modal]");
+        const libraryGrid = document.querySelector("[data-gallery-library-grid]");
+        const libraryOpenButton = editor.querySelector("[data-gallery-open-library]");
+        const libraryCloseButtons = Array.from(document.querySelectorAll("[data-gallery-library-close]"));
 
         if (!coverInput || !hiddenInput || !strip || !mainPreview || !mainTrigger || !fileInput) {
             return;
         }
 
-        const initialItems = [coverInput.value.trim()]
-            .concat(
-                hiddenInput.value
-                    .split(/\r?\n|,|;/)
-                    .map((value) => value.trim())
-                    .filter(Boolean)
-            )
-            .filter(Boolean)
-            .slice(0, Math.max(maxItems, 1));
+        const parseJsonItems = () => {
+            if (!itemsJsonInput?.value) {
+                return [];
+            }
+
+            try {
+                const parsed = JSON.parse(itemsJsonInput.value);
+                return Array.isArray(parsed)
+                    ? parsed
+                        .filter((item) => item && item.url)
+                        .map((item) => ({
+                            url: String(item.url).trim(),
+                            assetId: Number.isInteger(item.assetId) ? item.assetId : null
+                        }))
+                    : [];
+            } catch {
+                return [];
+            }
+        };
+
+        const initialItemsFromJson = parseJsonItems();
+        const initialItems = initialItemsFromJson.length > 0
+            ? initialItemsFromJson
+            : [coverInput.value.trim()]
+                .concat(
+                    hiddenInput.value
+                        .split(/\r?\n|,|;/)
+                        .map((value) => value.trim())
+                        .filter(Boolean)
+                )
+                .filter(Boolean)
+                .slice(0, Math.max(maxItems, 1))
+                .map((url) => ({ url, assetId: null }));
 
         let items = initialItems;
         let dragIndex = -1;
 
         const syncHiddenInputs = () => {
-            coverInput.value = items[0] || "";
-            hiddenInput.value = items.slice(1).join("\n");
+            coverInput.value = items[0]?.url || "";
+            hiddenInput.value = items.slice(1).map((item) => item.url).join("\n");
+            if (itemsJsonInput) {
+                itemsJsonInput.value = JSON.stringify(items);
+            }
         };
 
         const renderMainPreview = () => {
-            const activeImage = items[0] || "";
+            const activeImage = items[0]?.url || "";
             if (activeImage) {
                 mainPreview.src = activeImage;
                 mainPreview.hidden = false;
@@ -77,10 +110,78 @@
             document.body.classList.remove("is-modal-open");
         };
 
+        const closeLibraryModal = () => {
+            if (!libraryModal) {
+                return;
+            }
+
+            libraryModal.hidden = true;
+            document.body.classList.remove("is-modal-open");
+        };
+
+        const openLibraryModal = async () => {
+            if (!libraryModal || !libraryGrid || !libraryUrl) {
+                return;
+            }
+
+            libraryGrid.innerHTML = "<div class='admin-media-library-empty'>Yukleniyor...</div>";
+            libraryModal.hidden = false;
+            document.body.classList.add("is-modal-open");
+
+            try {
+                const response = await fetch(libraryUrl, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Kutuphane yuklenemedi.");
+                }
+
+                const payload = await response.json();
+                const assets = Array.isArray(payload) ? payload : [];
+
+                if (assets.length === 0) {
+                    libraryGrid.innerHTML = "<div class='admin-media-library-empty'>Kutuphane henuz bos.</div>";
+                    return;
+                }
+
+                libraryGrid.innerHTML = "";
+                assets.forEach((asset) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "admin-media-library-picker-card";
+                    button.innerHTML = `
+                        <img src="${asset.url}" alt="${asset.originalFileName || "Medya"}" />
+                        <span>${asset.originalFileName || "Medya"}</span>
+                        <small>${asset.sizeLabel || ""}</small>
+                    `;
+                    button.addEventListener("click", () => {
+                        if (items.length >= maxItems) {
+                            window.alert(\`En fazla ${maxItems} gorsel ekleyebilirsiniz.\`);
+                            return;
+                        }
+
+                        if (!items.some((item) => item.url === asset.url)) {
+                            items.push({ url: asset.url, assetId: asset.id || null });
+                            render();
+                        }
+
+                        closeLibraryModal();
+                    });
+                    libraryGrid.appendChild(button);
+                });
+            } catch (error) {
+                libraryGrid.innerHTML = `<div class='admin-media-library-empty'>${error instanceof Error ? error.message : "Kutuphane yuklenemedi."}</div>`;
+            }
+        };
+
         const renderStrip = () => {
             strip.innerHTML = "";
 
-            items.forEach((src, index) => {
+            items.forEach((item, index) => {
+                const src = item.url;
                 const tile = document.createElement("button");
                 tile.type = "button";
                 tile.className = `admin-product-media-tile${index === 0 ? " is-active" : ""}`;
@@ -189,8 +290,7 @@
                 throw new Error(payload.error || "Gorsel yuklenemedi.");
             }
 
-            const payload = await response.json();
-            return payload.url || "";
+            return await response.json();
         };
 
         fileInput.addEventListener("change", async () => {
@@ -206,9 +306,9 @@
             }
 
             try {
-                const uploadedUrl = await uploadImage(file);
-                if (uploadedUrl) {
-                    items.push(uploadedUrl);
+                const uploadedItem = await uploadImage(file);
+                if (uploadedItem?.url) {
+                    items.push({ url: uploadedItem.url, assetId: uploadedItem.id || null });
                     render();
                 }
             } catch (error) {
@@ -219,8 +319,8 @@
         });
 
         mainTrigger.addEventListener("click", () => {
-            if (items[0]) {
-                openModal(items[0]);
+            if (items[0]?.url) {
+                openModal(items[0].url);
             }
         });
 
@@ -228,12 +328,17 @@
             event.preventDefault();
             event.stopPropagation();
 
-            if (!items[0] || !window.confirm("Bu gorseli silmek istiyor musunuz?")) {
+            if (!items[0]?.url || !window.confirm("Bu gorseli silmek istiyor musunuz?")) {
                 return;
             }
 
             items.shift();
             render();
+        });
+
+        libraryOpenButton?.addEventListener("click", openLibraryModal);
+        libraryCloseButtons.forEach((button) => {
+            button.addEventListener("click", closeLibraryModal);
         });
 
         modalCloseButtons.forEach((button) => {
@@ -243,6 +348,7 @@
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 closeModal();
+                closeLibraryModal();
             }
         });
 

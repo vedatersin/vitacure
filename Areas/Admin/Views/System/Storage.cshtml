@@ -1,0 +1,147 @@
+@model vitacure.Models.ViewModels.Admin.StorageSettingsFormViewModel
+@using vitacure.Domain.Enums
+
+@{
+    ViewData["Title"] = "Dosya ve CDN";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Sistem Ayarlari",
+        Title = "Dosya ve CDN ayarlari",
+        Description = "Medya upload akisinda local disk ya da S3-uyumlu storage arasinda gecis yapabilirsin.",
+        IconClass = "fa-solid fa-gears",
+        AsideTitle = "Calisma modu",
+        AsideText = "Varsayilan olarak local depolama kullanilir. CDN aktif edilene kadar admin ve storefront davranisi degismez.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveProviderLabel },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "CDN", Value = Model.IsCdnEnabled ? "Acik" : "Kapali" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Sistem", IsActive = true },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dosya ve CDN", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+    <section class="admin-section-card">
+        <form method="post" action="/admin/system/storage" class="auth-form">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="admin-editor-layout">
+                <div class="admin-editor-main">
+                    <div class="admin-editor-card">
+                        <div class="admin-editor-section-head">
+                            <div>
+                                <span class="admin-editor-kicker">Storage</span>
+                                <h2>Aktif depolama davranisi</h2>
+                                <p class="admin-editor-note">CDN kapaliysa tum upload islemleri local disk uzerinden devam eder.</p>
+                            </div>
+                        </div>
+
+                        <div class="admin-product-field-grid">
+                            <div>
+                                <label class="form-check">
+                                    <input asp-for="IsCdnEnabled" class="form-check-input" type="checkbox" />
+                                    <span class="form-check-label">CDN / object storage kullan</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label asp-for="Provider" class="form-label"></label>
+                                <select asp-for="Provider" class="form-select auth-input">
+                                    <option value="@AssetStorageProvider.Local">Local</option>
+                                    <option value="@AssetStorageProvider.S3Compatible">S3 Uyumlu CDN</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-editor-card">
+                        <div class="admin-editor-section-head">
+                            <div>
+                                <span class="admin-editor-kicker">S3 Uyumlu Ayarlar</span>
+                                <h2>Provider bilgileri</h2>
+                                <p class="admin-editor-note">Cloudflare R2, DigitalOcean Spaces, MinIO veya AWS S3 benzeri servisler icin kullanilir.</p>
+                            </div>
+                        </div>
+
+                        <div class="admin-product-field-grid">
+                            <div>
+                                <label asp-for="ServiceUrl" class="form-label"></label>
+                                <input asp-for="ServiceUrl" class="form-control auth-input" placeholder="https://<account>.r2.cloudflarestorage.com" />
+                                <span asp-validation-for="ServiceUrl" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <label asp-for="PublicBaseUrl" class="form-label"></label>
+                                <input asp-for="PublicBaseUrl" class="form-control auth-input" placeholder="https://cdn.senin-domainin.com" />
+                            </div>
+                            <div>
+                                <label asp-for="BucketName" class="form-label"></label>
+                                <input asp-for="BucketName" class="form-control auth-input" placeholder="vitacure-media" />
+                                <span asp-validation-for="BucketName" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <label asp-for="Region" class="form-label"></label>
+                                <input asp-for="Region" class="form-control auth-input" placeholder="auto" />
+                            </div>
+                            <div>
+                                <label asp-for="AccessKey" class="form-label"></label>
+                                <input asp-for="AccessKey" class="form-control auth-input" />
+                                <span asp-validation-for="AccessKey" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <label asp-for="SecretKey" class="form-label"></label>
+                                <input asp-for="SecretKey" class="form-control auth-input" type="password" />
+                                <span asp-validation-for="SecretKey" class="text-danger"></span>
+                            </div>
+                            <div>
+                                <label asp-for="KeyPrefix" class="form-label"></label>
+                                <input asp-for="KeyPrefix" class="form-control auth-input" placeholder="library" />
+                            </div>
+                            <div>
+                                <label class="form-check mt-4">
+                                    <input asp-for="UsePathStyle" class="form-check-input" type="checkbox" />
+                                    <span class="form-check-label">Path style URL kullan</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="admin-editor-aside">
+                    <div class="admin-editor-card">
+                        <div class="admin-editor-section-head">
+                            <div>
+                                <span class="admin-editor-kicker">Yayin</span>
+                                <h2>Kaydet</h2>
+                            </div>
+                        </div>
+
+                        <div class="admin-editor-actions">
+                            <button type="submit" class="btn admin-editor-primary">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Ayarlari Kaydet</span>
+                            </button>
+                        </div>
+
+                        <div class="admin-editor-note">
+                            CDN kapaliysa yeni yuklemeler local `wwwroot` altina yazilmaya devam eder.
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

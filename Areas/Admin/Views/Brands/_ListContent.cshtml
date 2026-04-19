@@ -1,0 +1,90 @@
+@model vitacure.Models.ViewModels.Admin.BrandListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Genisleme",
+        Title = "Marka listesi",
+        Description = "Urunleri marka bazli duzenlemek ve gelecekteki filtre bloklarini beslemek icin bu alan kullanilir.",
+        IconClass = "fa-solid fa-award",
+        AsideTitle = "Marka ozeti",
+        AsideText = "Aktiflik ve kullanim dagilimi, katalogta hangi markalarin urune baglandigini hizli gormeni saglar.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kullanimda", Value = Model.UsedCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Markalar", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/brands",
+        SearchPlaceholder = "Marka ara, slug incele, urun baglantisini kontrol et...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Marka",
+        PrimaryActionUrl = "/admin/brands/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum markalar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marka</th>
+                    <th>Slug</th>
+                    <th>Aciklama</th>
+                    <th>Urun Sayisi</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var brand in Model.Brands)
+                {
+                    <tr>
+                        <td>@brand.Id</td>
+                        <td>@brand.Name</td>
+                        <td>@brand.Slug</td>
+                        <td>@(string.IsNullOrWhiteSpace(brand.Description) ? "-" : brand.Description)</td>
+                        <td>@brand.ProductCount</td>
+                        <td>
+                            <span class="auth-status-badge @(brand.IsActive ? "is-active" : "is-passive")">
+                                @(brand.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/brands/edit/@brand.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

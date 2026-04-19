@@ -16,13 +16,18 @@ public class GuestSessionService : IGuestSessionService
 
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
+    private readonly IAdminNotificationService _adminNotificationService;
     private readonly AppDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public GuestSessionService(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor)
+    public GuestSessionService(
+        AppDbContext dbContext,
+        IHttpContextAccessor httpContextAccessor,
+        IAdminNotificationService adminNotificationService)
     {
         _dbContext = dbContext;
         _httpContextAccessor = httpContextAccessor;
+        _adminNotificationService = adminNotificationService;
     }
 
     public IReadOnlyList<string> GetFavoriteProductSlugs()
@@ -74,10 +79,11 @@ public class GuestSessionService : IGuestSessionService
 
         var normalizedCart = cartItems
             .Where(x => !string.IsNullOrWhiteSpace(x.ProductSlug) && x.Quantity > 0)
-            .GroupBy(x => x.ProductSlug.Trim(), StringComparer.OrdinalIgnoreCase)
+            .GroupBy(x => $"{x.ProductSlug.Trim()}::{x.VariantId?.ToString() ?? "base"}", StringComparer.OrdinalIgnoreCase)
             .Select(group => new GuestCartCookieItem
             {
-                ProductSlug = group.Key,
+                ProductSlug = group.First().ProductSlug.Trim(),
+                VariantId = group.First().VariantId,
                 Quantity = group.Sum(x => x.Quantity)
             })
             .ToList();
@@ -85,6 +91,7 @@ public class GuestSessionService : IGuestSessionService
         var slugs = normalizedCart.Select(x => x.ProductSlug).ToList();
         var products = await _dbContext.Products
             .AsNoTracking()
+            .Include(x => x.ProductVariants)
             .Where(x => slugs.Contains(x.Slug) && x.IsActive)
             .ToDictionaryAsync(x => x.Slug, x => x, cancellationToken);
 
@@ -93,17 +100,21 @@ public class GuestSessionService : IGuestSessionService
             .Select(x =>
             {
                 var product = products[x.ProductSlug];
-                var lineTotal = product.Price * x.Quantity;
+                var variant = ResolveVariant(product, x.VariantId);
+                var unitPrice = variant?.Price ?? product.Price;
+                var lineTotal = unitPrice * x.Quantity;
 
                 return new CartItemViewModel
                 {
                     ProductSlug = product.Slug,
                     ProductName = product.Name,
+                    VariantId = variant?.Id,
+                    VariantLabel = variant != null ? $"{variant.GroupName}: {variant.OptionName}" : null,
                     ProductImageUrl = product.ImageUrl,
                     ProductHref = $"/{product.Slug}",
                     Quantity = x.Quantity,
-                    UnitPriceValue = product.Price,
-                    UnitPrice = FormatPrice(product.Price),
+                    UnitPriceValue = unitPrice,
+                    UnitPrice = FormatPrice(unitPrice),
                     LineTotalValue = lineTotal,
                     LineTotal = FormatPrice(lineTotal)
                 };
@@ -131,12 +142,13 @@ public class GuestSessionService : IGuestSessionService
             .Sum(x => x.Quantity);
     }
 
-    public async Task<CartMutationResultViewModel> AddCartItemAsync(string productSlug, int quantity = 1, CancellationToken cancellationToken = default)
+    public async Task<CartMutationResultViewModel> AddCartItemAsync(string productSlug, int quantity = 1, int? variantId = null, CancellationToken cancellationToken = default)
     {
         var normalizedSlug = productSlug?.Trim() ?? string.Empty;
         var normalizedQuantity = Math.Max(1, quantity);
         var product = await _dbContext.Products
             .AsNoTracking()
+            .Include(x => x.ProductVariants)
             .FirstOrDefaultAsync(x => x.Slug == normalizedSlug && x.IsActive, cancellationToken);
 
         if (product is null)
@@ -147,13 +159,16 @@ public class GuestSessionService : IGuestSessionService
             };
         }
 
+        var variant = ResolveVariant(product, variantId);
+
         var items = ReadCartItems();
-        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, normalizedSlug, StringComparison.OrdinalIgnoreCase));
+        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, normalizedSlug, StringComparison.OrdinalIgnoreCase) && x.VariantId == variant?.Id);
         if (existingItem is null)
         {
             items.Add(new GuestCartCookieItem
             {
                 ProductSlug = normalizedSlug,
+                VariantId = variant?.Id,
                 Quantity = normalizedQuantity
             });
             existingItem = items[^1];
@@ -164,13 +179,18 @@ public class GuestSessionService : IGuestSessionService
         }
 
         WriteCartItems(items);
+        await CreateGuestCartNotificationAsync(
+            "Sepete urun eklendi",
+            $"{BuildProductDisplayName(product.Name, variant)} urunu misafir sepetine eklendi.",
+            $"{BuildProductDisplayName(product.Name, variant)} urunu misafir oturumdaki sepete {normalizedQuantity} adet eklendi.",
+            cancellationToken);
         return await BuildCartMutationResultAsync(items, existingItem.Quantity, "Urun sepete eklendi.", cancellationToken);
     }
 
-    public async Task<CartMutationResultViewModel> UpdateCartQuantityAsync(string productSlug, int quantity, CancellationToken cancellationToken = default)
+    public async Task<CartMutationResultViewModel> UpdateCartQuantityAsync(string productSlug, int quantity, int? variantId = null, CancellationToken cancellationToken = default)
     {
         var items = ReadCartItems();
-        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, productSlug, StringComparison.OrdinalIgnoreCase));
+        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, productSlug, StringComparison.OrdinalIgnoreCase) && x.VariantId == variantId);
         if (existingItem is null)
         {
             return new CartMutationResultViewModel
@@ -186,15 +206,27 @@ public class GuestSessionService : IGuestSessionService
             return await BuildCartMutationResultAsync(items, 0, "Urun sepetten cikarildi.", cancellationToken);
         }
 
+        var product = await _dbContext.Products
+            .AsNoTracking()
+            .Include(x => x.ProductVariants)
+            .FirstOrDefaultAsync(x => x.Slug == productSlug, cancellationToken);
+        var variant = product is null ? null : ResolveVariant(product, variantId);
+        var productName = product?.Name ?? productSlug;
+
         existingItem.Quantity = quantity;
         WriteCartItems(items);
+        await CreateGuestCartNotificationAsync(
+            "Sepet guncellendi",
+            $"{BuildProductDisplayName(productName, variant)} icin sepet adedi guncellendi.",
+            $"Misafir oturumdaki sepette {BuildProductDisplayName(productName, variant)} urununun adedi {quantity} olarak degisti.",
+            cancellationToken);
         return await BuildCartMutationResultAsync(items, existingItem.Quantity, "Sepet guncellendi.", cancellationToken);
     }
 
-    public async Task<CartMutationResultViewModel> RemoveCartItemAsync(string productSlug, CancellationToken cancellationToken = default)
+    public async Task<CartMutationResultViewModel> RemoveCartItemAsync(string productSlug, int? variantId, CancellationToken cancellationToken = default)
     {
         var items = ReadCartItems();
-        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, productSlug, StringComparison.OrdinalIgnoreCase));
+        var existingItem = items.FirstOrDefault(x => string.Equals(x.ProductSlug, productSlug, StringComparison.OrdinalIgnoreCase) && x.VariantId == variantId);
         if (existingItem is null)
         {
             return new CartMutationResultViewModel
@@ -232,6 +264,7 @@ public class GuestSessionService : IGuestSessionService
             .ToList();
 
         var products = await _dbContext.Products
+            .Include(x => x.ProductVariants)
             .Where(x => productSlugs.Contains(x.Slug) && x.IsActive)
             .ToListAsync(cancellationToken);
 
@@ -267,7 +300,7 @@ public class GuestSessionService : IGuestSessionService
             }
 
             var existingCartItem = await _dbContext.CustomerCartItems.FirstOrDefaultAsync(
-                x => x.AppUserId == userId && x.ProductId == product.Id,
+                x => x.AppUserId == userId && x.ProductId == product.Id && x.ProductVariantId == cartItem.VariantId,
                 cancellationToken);
 
             if (existingCartItem is null)
@@ -276,6 +309,7 @@ public class GuestSessionService : IGuestSessionService
                 {
                     AppUserId = userId,
                     ProductId = product.Id,
+                    ProductVariantId = ResolveVariant(product, cartItem.VariantId)?.Id,
                     Quantity = cartItem.Quantity,
                     UpdatedAt = DateTime.UtcNow
                 });
@@ -300,22 +334,33 @@ public class GuestSessionService : IGuestSessionService
     {
         var normalizedCart = items
             .Where(x => !string.IsNullOrWhiteSpace(x.ProductSlug) && x.Quantity > 0)
-            .GroupBy(x => x.ProductSlug.Trim(), StringComparer.OrdinalIgnoreCase)
+            .GroupBy(x => $"{x.ProductSlug.Trim()}::{x.VariantId?.ToString() ?? "base"}", StringComparer.OrdinalIgnoreCase)
             .Select(group => new GuestCartCookieItem
             {
-                ProductSlug = group.Key,
+                ProductSlug = group.First().ProductSlug.Trim(),
+                VariantId = group.First().VariantId,
                 Quantity = group.Sum(x => x.Quantity)
             })
             .ToList();
 
         var slugs = normalizedCart.Select(x => x.ProductSlug).ToList();
-        var prices = await _dbContext.Products
+        var products = await _dbContext.Products
             .AsNoTracking()
+            .Include(x => x.ProductVariants)
             .Where(x => slugs.Contains(x.Slug) && x.IsActive)
-            .ToDictionaryAsync(x => x.Slug, x => x.Price, cancellationToken);
+            .ToDictionaryAsync(x => x.Slug, x => x, cancellationToken);
 
         var cartCount = normalizedCart.Sum(x => x.Quantity);
-        var totalAmount = normalizedCart.Sum(x => prices.TryGetValue(x.ProductSlug, out var price) ? price * x.Quantity : 0m);
+        var totalAmount = normalizedCart.Sum(x =>
+        {
+            if (!products.TryGetValue(x.ProductSlug, out var product))
+            {
+                return 0m;
+            }
+
+            var variant = ResolveVariant(product, x.VariantId);
+            return (variant?.Price ?? product.Price) * x.Quantity;
+        });
 
         return new CartMutationResultViewModel
         {
@@ -376,6 +421,7 @@ public class GuestSessionService : IGuestSessionService
                 .Select(x => new GuestCartCookieItem
                 {
                     ProductSlug = x.ProductSlug.Trim(),
+                    VariantId = x.VariantId,
                     Quantity = x.Quantity
                 })
                 .ToList() ?? new List<GuestCartCookieItem>();
@@ -390,10 +436,11 @@ public class GuestSessionService : IGuestSessionService
     {
         var normalizedItems = items
             .Where(x => !string.IsNullOrWhiteSpace(x.ProductSlug) && x.Quantity > 0)
-            .GroupBy(x => x.ProductSlug.Trim(), StringComparer.OrdinalIgnoreCase)
+            .GroupBy(x => $"{x.ProductSlug.Trim()}::{x.VariantId?.ToString() ?? "base"}", StringComparer.OrdinalIgnoreCase)
             .Select(group => new GuestCartCookieItem
             {
-                ProductSlug = group.Key,
+                ProductSlug = group.First().ProductSlug.Trim(),
+                VariantId = group.First().VariantId,
                 Quantity = group.Sum(x => x.Quantity)
             })
             .ToList();
@@ -454,9 +501,44 @@ public class GuestSessionService : IGuestSessionService
         return price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ",");
     }
 
+    private Task CreateGuestCartNotificationAsync(
+        string title,
+        string summary,
+        string body,
+        CancellationToken cancellationToken)
+    {
+        return _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
+        {
+            Title = title,
+            Summary = summary,
+            Body = body,
+            Actor = "Misafir Oturum",
+            Source = "Storefront",
+            CategoryKey = "cart",
+            TargetLabel = "Siparis akislarina git",
+            TargetUrl = "/admin/orders"
+        }, cancellationToken);
+    }
+
     private sealed class GuestCartCookieItem
     {
         public string ProductSlug { get; set; } = string.Empty;
+        public int? VariantId { get; set; }
         public int Quantity { get; set; }
+    }
+
+    private static ProductVariant? ResolveVariant(Product product, int? variantId)
+    {
+        if (!variantId.HasValue)
+        {
+            return null;
+        }
+
+        return product.ProductVariants.FirstOrDefault(x => x.Id == variantId.Value && x.IsActive);
+    }
+
+    private static string BuildProductDisplayName(string productName, ProductVariant? variant)
+    {
+        return variant is null ? productName : $"{productName} ({variant.GroupName}: {variant.OptionName})";
     }
 }

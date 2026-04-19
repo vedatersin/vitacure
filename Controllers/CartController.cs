@@ -73,8 +73,8 @@ public class CartController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var result = CanAccessCart(user)
-            ? await _cartService.AddItemAsync(user!.Id, request.ProductSlug, request.Quantity, cancellationToken)
-            : await _guestSessionService.AddCartItemAsync(request.ProductSlug, request.Quantity, cancellationToken);
+            ? await _cartService.AddItemAsync(user!.Id, request.ProductSlug, request.Quantity, request.VariantId, cancellationToken)
+            : await _guestSessionService.AddCartItemAsync(request.ProductSlug, request.Quantity, request.VariantId, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -86,16 +86,16 @@ public class CartController : Controller
 
     [HttpPost("/cart/items/{productSlug}/quantity")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UpdateQuantity(string productSlug, [FromForm] int quantity, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateQuantity(string productSlug, [FromForm] int? variantId, [FromForm] int quantity, CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
         if (CanAccessCart(user))
         {
-            await _cartService.UpdateQuantityAsync(user!.Id, productSlug, quantity, cancellationToken);
+            await _cartService.UpdateQuantityAsync(user!.Id, productSlug, quantity, variantId, cancellationToken);
         }
         else
         {
-            await _guestSessionService.UpdateCartQuantityAsync(productSlug, quantity, cancellationToken);
+            await _guestSessionService.UpdateCartQuantityAsync(productSlug, quantity, variantId, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index));
@@ -103,16 +103,16 @@ public class CartController : Controller
 
     [HttpPost("/cart/items/{productSlug}/remove")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RemoveItem(string productSlug, CancellationToken cancellationToken)
+    public async Task<IActionResult> RemoveItem(string productSlug, [FromForm] int? variantId, CancellationToken cancellationToken)
     {
         var user = await _userManager.GetUserAsync(User);
         if (CanAccessCart(user))
         {
-            await _cartService.RemoveItemAsync(user!.Id, productSlug, cancellationToken);
+            await _cartService.RemoveItemAsync(user!.Id, productSlug, variantId, cancellationToken);
         }
         else
         {
-            await _guestSessionService.RemoveCartItemAsync(productSlug, cancellationToken);
+            await _guestSessionService.RemoveCartItemAsync(productSlug, variantId, cancellationToken);
         }
 
         return RedirectToAction(nameof(Index));

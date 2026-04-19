@@ -1,0 +1,106 @@
+@model vitacure.Models.ViewModels.Admin.CollectionListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Genisleme",
+        Title = "Koleksiyon listesi",
+        Description = "Tema, kampanya ve editor secimi tabanli urun gruplarini bu panelde yonet.",
+        IconClass = "fa-solid fa-box-archive",
+        AsideTitle = "Koleksiyon Ozeti",
+        AsideText = "Koleksiyonlar vitrinden ayridir; daha uzun omurlu merchandising ve filtreleme bloklari icin kullanilir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Anasayfa", Value = Model.HomeVisibleCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Koleksiyonlar", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/collections",
+        SearchPlaceholder = "Koleksiyon ara, slug veya aciklamayi kontrol et...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Koleksiyon",
+        PrimaryActionUrl = "/admin/collections/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum kayitlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            },
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "home",
+                Label = "Anasayfa",
+                Value = Model.HomeFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum gorunumler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "home", Label = "Anasayfada" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "hidden", Label = "Sadece panelde" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ad</th>
+                    <th>Slug</th>
+                    <th>Urun</th>
+                    <th>Durum</th>
+                    <th>Anasayfa</th>
+                    <th>Sira</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var collection in Model.Collections)
+                {
+                    <tr>
+                        <td>@collection.Id</td>
+                        <td>
+                            <strong>@collection.Name</strong>
+                            @if (!string.IsNullOrWhiteSpace(collection.Description))
+                            {
+                                <div class="text-muted small">@collection.Description</div>
+                            }
+                        </td>
+                        <td>@collection.Slug</td>
+                        <td>@collection.ProductCount</td>
+                        <td>@(collection.IsActive ? "Aktif" : "Pasif")</td>
+                        <td>@(collection.ShowOnHome ? "Acik" : "Kapali")</td>
+                        <td>@collection.SortOrder</td>
+                        <td class="text-end">
+                            <a href="/admin/collections/edit/@collection.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

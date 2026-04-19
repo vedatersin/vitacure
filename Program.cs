@@ -110,9 +110,15 @@ builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>(
 builder.Services.AddScoped<ICacheInvalidationService, CacheInvalidationService>();
 builder.Services.AddScoped<IRedisConnectionStatusService, RedisConnectionStatusService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
 builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
 builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+builder.Services.AddScoped<IAdminBrandService, AdminBrandService>();
+builder.Services.AddScoped<IAdminCollectionService, AdminCollectionService>();
+builder.Services.AddScoped<IAdminFeatureService, AdminFeatureService>();
+builder.Services.AddScoped<IAdminMediaLibraryService, AdminMediaLibraryService>();
+builder.Services.AddScoped<IAdminStorageSettingsService, AdminStorageSettingsService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IAdminTagService, AdminTagService>();
 builder.Services.AddScoped<IAdminShowcaseService, AdminShowcaseService>();
@@ -122,6 +128,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ISlugService, SlugService>();
 builder.Services.AddScoped<IHomeContentConfigurationService, HomeContentConfigurationService>();
 builder.Services.AddScoped<IStorefrontContentService, StorefrontContentService>();
+builder.Services.AddScoped<LocalAssetStorageService>();
+builder.Services.AddScoped<S3CompatibleAssetStorageService>();
+builder.Services.AddScoped<IAssetStorageService, AssetStorageService>();
 builder.Services.AddSingleton<IMockContentService, MockContentService>();
 
 var app = builder.Build();

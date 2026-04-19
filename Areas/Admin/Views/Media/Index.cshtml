@@ -1,0 +1,62 @@
+@model vitacure.Models.ViewModels.Admin.MediaLibraryViewModel
+
+@{
+    ViewData["Title"] = "Medya Kutuphanesi";
+}
+
+<section class="admin-page-grid">
+    <div class="admin-editor-card">
+        <div class="admin-editor-section-head">
+            <div>
+                <span class="admin-editor-kicker">Katalog Medya</span>
+                <h2>Medya kutuphanesi</h2>
+                <p class="admin-editor-note">Urun formlarinda tekrar kullanabilecegin gorseller burada tutulur.</p>
+            </div>
+            <div class="admin-product-summary-grid">
+                <div class="admin-product-summary-item">
+                    <span>Toplam</span>
+                    <strong>@Model.TotalCount kayit</strong>
+                </div>
+                <div class="admin-product-summary-item">
+                    <span>Boyut</span>
+                    <strong>@($"{Model.TotalSizeBytes / 1024d / 1024d:0.#} MB")</strong>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Items.Count == 0)
+        {
+            <div class="admin-media-library-empty">Kutuphane henuz bos.</div>
+        }
+        else
+        {
+            <div class="admin-media-library-grid">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="admin-media-library-card">
+                        <img src="@item.Url" alt="@(item.AltText ?? item.OriginalFileName)" />
+                        <div class="admin-media-library-copy">
+                            <strong>@(string.IsNullOrWhiteSpace(item.Title) ? item.OriginalFileName : item.Title)</strong>
+                            <span>@item.SizeLabel</span>
+                            <small>@item.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+                            <small>@item.UsageCount kullanim</small>
+                        </div>
+                        <form method="post" action="/admin/media/update" class="admin-media-library-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="Id" value="@item.Id" />
+                            <input type="text" name="Title" class="form-control auth-input" value="@item.Title" placeholder="Gorunen ad" />
+                            <input type="text" name="AltText" class="form-control auth-input" value="@item.AltText" placeholder="Alt text" />
+                            <div class="admin-media-library-actions">
+                                <button type="submit" class="admin-editor-secondary">Kaydet</button>
+                            </div>
+                        </form>
+                        <form method="post" action="/admin/media/delete/@item.Id" class="admin-media-library-delete-form" onsubmit="return confirm('Bu medya kaydini silmek istiyor musunuz?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="admin-editor-secondary">Sil</button>
+                        </form>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

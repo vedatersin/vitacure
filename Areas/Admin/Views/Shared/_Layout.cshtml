@@ -1,5 +1,7 @@
 @using Microsoft.AspNetCore.Identity
+@using vitacure.Application.Abstractions
 @using vitacure.Domain.Entities
+@inject IAdminNotificationService AdminNotificationService
 @inject UserManager<AppUser> UserManager
 @{
     var currentUser = User.Identity?.IsAuthenticated == true ? await UserManager.GetUserAsync(User) : null;
@@ -7,14 +9,161 @@
     var currentUserRoleLabel = currentUserRoles.FirstOrDefault() ?? "Admin";
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
-
-    var notificationItems = new[]
+    var activeModule = currentController switch
     {
-        new { Title = "Yeni siparis olusturuldu", Source = "Musteri", Time = "Az once", Icon = "fa-solid fa-bag-shopping", Accent = "is-order", Url = "/admin/notifications?category=orders&notificationId=101" },
-        new { Title = "Urun favorilere eklendi", Source = "Storefront", Time = "2 dk once", Icon = "fa-solid fa-heart", Accent = "is-favorite", Url = "/admin/notifications?category=favorites&notificationId=103" },
-        new { Title = "Yeni uye kaydi tamamlandi", Source = "Auth", Time = "10 dk once", Icon = "fa-solid fa-user-plus", Accent = "is-member", Url = "/admin/notifications?category=members&notificationId=104" },
-        new { Title = "Sepete urun eklendi", Source = "Storefront", Time = "18 dk once", Icon = "fa-solid fa-cart-plus", Accent = "is-cart", Url = "/admin/notifications?category=cart&notificationId=102" }
+        "Orders" => "sales",
+        "Users" => "customers",
+        "Products" or "Categories" or "Tags" or "Brands" or "Features" or "Collections" or "Media" => "catalog",
+        "Showcases" or "HomeContent" => "merchandising",
+        "System" => "system",
+        "Agents" => "agents",
+        "Automations" => "automations",
+        "Ai" => "ai",
+        "Notifications" => "inbox",
+        _ => "dashboard"
     };
+    var moduleLabel = activeModule switch
+    {
+        "sales" => "Satis ve Siparisler",
+        "customers" => "Musteri Yuzeyi",
+        "catalog" => "Katalog",
+        "merchandising" => "Vitrin ve Merchandising",
+        "agents" => "Agentlar",
+        "system" => "Sistem",
+        "automations" => "Otomasyonlar",
+        "ai" => "AI",
+        "inbox" => "Bildirimler",
+        _ => "Gosterge Paneli"
+    };
+    var moduleDescription = activeModule switch
+    {
+        "sales" => "Order, payment ve refund akislarini ayni shell icinde yonet.",
+        "customers" => "Kullanici, erisim ve musteri akislarina odaklan.",
+        "catalog" => "Urun, kategori, marka, etiket ve ozellikleri merkezi katalog omurgasinda duzenle.",
+        "merchandising" => "Anasayfa ve curated commerce yuzeylerini yonet.",
+        "agents" => "Uzman ajanlar ve gorev dagitimi icin ayrilan kontrol yuzeyi.",
+        "system" => "Dosya depolama, CDN ve cekirdek teknik ayarlar.",
+        "automations" => "Planli calismalar ve tekrarli is akislari icin ayrilan kontrol yuzeyi.",
+        "ai" => "Model, prompt ve akilli yardimci panelleri icin ayrilan kontrol yuzeyi.",
+        "inbox" => "Event ve notification projection akislarini izle.",
+        _ => "Backoffice omurgasini tek bakista takip et."
+    };
+    var currentPageLabel = (ViewData["Title"]?.ToString() ?? currentController).Trim();
+
+    var globalModules = new List<(string Key, string Label, string Icon, string Url)>
+    {
+        ("dashboard", "Panel", "fa-solid fa-house", "/admin/dashboard"),
+        ("sales", "Satis", "fa-solid fa-bag-shopping", "/admin/orders"),
+        ("catalog", "Katalog", "fa-solid fa-capsules", "/admin/products"),
+        ("merchandising", "Vitrin", "fa-solid fa-panorama", "/admin/showcases"),
+        ("system", "Sistem", "fa-solid fa-gears", "/admin/system/storage"),
+        ("agents", "Agentlar", "fa-solid fa-robot", "/admin/agents"),
+        ("automations", "Otomasyonlar", "fa-solid fa-bolt", "/admin/automations"),
+        ("ai", "AI", "fa-solid fa-sparkles", "/admin/ai"),
+        ("customers", "Musteri", "fa-solid fa-users", "/admin/users"),
+        ("inbox", "Inbox", "fa-solid fa-bell", "/admin/notifications")
+    };
+
+    var contextSections = activeModule switch
+    {
+        "sales" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Satis", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/orders", "Siparisler", "fa-solid fa-bag-shopping", IsActive("Orders"), false, null),
+                ("#", "Odeme Akislari", "fa-solid fa-credit-card", false, true, "yakinda"),
+                ("#", "Iadeler", "fa-solid fa-rotate-left", false, true, "yakinda")
+            })
+        },
+        "customers" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Musteriler", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/users", "Kullanicilar", "fa-solid fa-users", IsActive("Users"), false, null),
+                ("#", "Adresler", "fa-solid fa-location-dot", false, true, "yakinda"),
+                ("#", "Destek Talepleri", "fa-solid fa-life-ring", false, true, "yakinda")
+            })
+        },
+        "catalog" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Katalog", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/products", "Urunler", "fa-solid fa-capsules", IsActive("Products"), false, null),
+                ("/admin/categories", "Kategoriler", "fa-solid fa-layer-group", IsActive("Categories"), false, null),
+                ("/admin/tags", "Etiketler", "fa-solid fa-tags", IsActive("Tags"), false, null),
+                ("/admin/brands", "Markalar", "fa-solid fa-award", IsActive("Brands"), false, "yeni"),
+                ("/admin/features", "Ozellikler", "fa-solid fa-sliders", IsActive("Features"), false, "yeni")
+            }),
+            ("Genisleme Katmanlari", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/collections", "Koleksiyonlar", "fa-solid fa-box-archive", IsActive("Collections"), false, "hazir"),
+                ("/admin/media", "Medya Kutuphanesi", "fa-solid fa-images", IsActive("Media"), false, "yeni")
+            })
+        },
+        "merchandising" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Merchandising", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/showcases", "Vitrinler", "fa-solid fa-panorama", IsActive("Showcases"), false, null),
+                ("/admin/home-content", "Anasayfa", "fa-solid fa-house-circle-check", IsActive("HomeContent"), false, null),
+                ("#", "Collection Slots", "fa-solid fa-grid-2", false, true, "yakinda")
+            })
+        },
+        "system" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Sistem Ayarlari", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/system/storage", "Dosya ve CDN", "fa-solid fa-cloud-arrow-up", IsActive("System", "Storage"), false, null)
+            })
+        },
+        "agents" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Agent Merkezi", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/agents", "Agentlar", "fa-solid fa-robot", IsActive("Agents"), false, null),
+                ("#", "Roller", "fa-solid fa-user-gear", false, true, "yakinda"),
+                ("#", "Calisma Gecmisi", "fa-solid fa-timeline", false, true, "yakinda")
+            })
+        },
+        "automations" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Otomasyon Merkezi", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/automations", "Otomasyonlar", "fa-solid fa-bolt", IsActive("Automations"), false, null),
+                ("#", "Zamanlanmis Gorevler", "fa-solid fa-clock", false, true, "yakinda"),
+                ("#", "Heartbeat Akislari", "fa-solid fa-wave-square", false, true, "yakinda")
+            })
+        },
+        "ai" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("AI Merkezi", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/ai", "AI Paneli", "fa-solid fa-sparkles", IsActive("Ai"), false, null),
+                ("#", "Prompt Kutuphanesi", "fa-solid fa-comment-dots", false, true, "yakinda"),
+                ("#", "Model Ayarlari", "fa-solid fa-sliders", false, true, "yakinda")
+            })
+        },
+        "inbox" => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Inbox", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/notifications", "Bildirim Merkezi", "fa-solid fa-bell", IsActive("Notifications"), false, null),
+                ("#", "Audit Feed", "fa-solid fa-shield-halved", false, true, "yakinda"),
+                ("#", "Quality Queue", "fa-solid fa-circle-exclamation", false, true, "yakinda")
+            })
+        },
+        _ => new List<(string Title, IReadOnlyList<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)> Links)>
+        {
+            ("Genel", new List<(string Url, string Label, string Icon, bool Active, bool Muted, string? Badge)>
+            {
+                ("/admin/dashboard", "Gosterge Paneli", "fa-solid fa-chart-line", IsActive("Dashboard"), false, null),
+                ("/admin/orders", "Siparis Ozetleri", "fa-solid fa-bag-shopping", false, false, null),
+                ("/admin/products", "Katalog Ozeti", "fa-solid fa-capsules", false, false, null)
+            })
+        }
+    };
+
+    var notificationSummary = await AdminNotificationService.GetSummaryAsync();
 
     bool IsActive(string controller, string action = "Index")
         => string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)
@@ -33,107 +182,158 @@
     <link rel="stylesheet" href="~/css/pages/admin.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="admin-body">
-    <div class="admin-shell">
-        <aside class="admin-sidebar">
-            <a href="/admin/dashboard" class="admin-brand">
-                <img src="~/img/logo.png" alt="VitaCure Logo" class="admin-brand-logo" />
-                <div class="admin-brand-copy">
-                    <strong>YONETIM PANELI</strong>
+<body class="admin-body admin-module-@activeModule">
+    <div class="admin-shell" data-admin-shell>
+        <button type="button" class="admin-shell-backdrop" data-admin-shell-close aria-label="Navigasyonu kapat"></button>
+
+        <div class="admin-sidebars">
+            <aside class="admin-global-rail">
+                <div class="admin-global-rail-top">
+                    <a href="/admin/dashboard" class="admin-rail-brand" aria-label="VitaCure Admin">
+                        <span class="admin-rail-brand-mark">
+                            <i class="fa-solid fa-cross"></i>
+                        </span>
+                        <span class="admin-rail-brand-copy">VC</span>
+                    </a>
+
+                    <nav class="admin-rail-nav" aria-label="Ana moduller">
+                        @foreach (var module in globalModules)
+                        {
+                            <a href="@module.Url"
+                               class="admin-rail-link @(string.Equals(activeModule, module.Key, StringComparison.OrdinalIgnoreCase) ? "is-active" : null)"
+                               title="@module.Label"
+                               aria-label="@module.Label">
+                                <i class="@module.Icon"></i>
+                                <span class="admin-rail-tooltip">@module.Label</span>
+                            </a>
+                        }
+                    </nav>
                 </div>
-            </a>
 
-            <div class="admin-sidebar-group">
-                <div class="admin-sidebar-title">Genel</div>
-                <a href="/admin/dashboard" class="admin-nav-link @(IsActive("Dashboard") ? "is-active" : null)">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="/admin/orders" class="admin-nav-link @(IsActive("Orders") ? "is-active" : null)">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span>Siparisler</span>
-                </a>
-                <a href="/admin/users" class="admin-nav-link @(IsActive("Users") ? "is-active" : null)">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Kullanicilar</span>
-                </a>
-            </div>
-
-            <div class="admin-sidebar-group">
-                <div class="admin-sidebar-title">Katalog</div>
-                <a href="/admin/categories" class="admin-nav-link @(IsActive("Categories") ? "is-active" : null)">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <span>Kategoriler</span>
-                </a>
-                <a href="/admin/showcases" class="admin-nav-link @(IsActive("Showcases") ? "is-active" : null)">
-                    <i class="fa-solid fa-panorama"></i>
-                    <span>Vitrinler</span>
-                </a>
-                <a href="/admin/products" class="admin-nav-link @(IsActive("Products") ? "is-active" : null)">
-                    <i class="fa-solid fa-capsules"></i>
-                    <span>Urunler</span>
-                </a>
-                <a href="/admin/tags" class="admin-nav-link @(IsActive("Tags") ? "is-active" : null)">
-                    <i class="fa-solid fa-tags"></i>
-                    <span>Etiketler</span>
-                </a>
-            </div>
-
-            <div class="admin-sidebar-group">
-                <div class="admin-sidebar-title">Storefront</div>
-                <a href="/admin/home-content" class="admin-nav-link @(IsActive("HomeContent") ? "is-active" : null)">
-                    <i class="fa-solid fa-house-circle-check"></i>
-                    <span>Home Icerigi</span>
-                </a>
-            </div>
-
-            <div class="admin-sidebar-group">
-                <div class="admin-sidebar-title">Planlanan Moduller</div>
-                <a href="/admin/notifications" class="admin-nav-link @(IsActive("Notifications") ? "is-active" : null)">
-                    <i class="fa-solid fa-bell"></i>
-                    <span>Bildirimler</span>
-                </a>
-                <div class="admin-nav-link is-muted">
-                    <i class="fa-solid fa-user-shield"></i>
-                    <span>Yetkilendirme</span>
-                    <small>yakinda</small>
+                <div class="admin-global-rail-bottom">
+                    <a href="/admin/notifications"
+                       class="admin-rail-link @(string.Equals(activeModule, "inbox", StringComparison.OrdinalIgnoreCase) ? "is-active" : null)"
+                       title="Bildirimler"
+                       aria-label="Bildirimler">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="admin-rail-tooltip">Bildirimler</span>
+                    </a>
+                    <form method="post" action="/admin/logout">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="admin-rail-link admin-rail-link-button" title="Cikis" aria-label="Cikis">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span class="admin-rail-tooltip">Cikis</span>
+                        </button>
+                    </form>
                 </div>
-                <div class="admin-nav-link is-muted">
-                    <i class="fa-solid fa-gauge-high"></i>
-                    <span>Raporlar</span>
-                    <small>yakinda</small>
+            </aside>
+
+            <aside class="admin-context-sidebar">
+                <div class="admin-context-sidebar-head">
+                    <span class="admin-context-sidebar-eyebrow">VitaCure Backoffice</span>
+                    <strong>@moduleLabel</strong>
+                    <p>@moduleDescription</p>
                 </div>
-            </div>
-        </aside>
+
+                <div class="admin-context-sidebar-group">
+                    <span class="admin-context-sidebar-title">Calisma Yuzeyi</span>
+                    @foreach (var navSection in contextSections)
+                    {
+                        <div class="admin-context-nav-section">
+                            <span class="admin-context-nav-section-title">@navSection.Title</span>
+                            <nav class="admin-context-nav" aria-label="@navSection.Title">
+                                @foreach (var link in navSection.Links)
+                                {
+                                    if (link.Muted)
+                                    {
+                                        <div class="admin-context-link is-muted">
+                                            <i class="@link.Icon"></i>
+                                            <span>@link.Label</span>
+                                            @if (!string.IsNullOrWhiteSpace(link.Badge))
+                                            {
+                                                <small>@link.Badge</small>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a href="@link.Url" class="admin-context-link @(link.Active ? "is-active" : null)">
+                                            <i class="@link.Icon"></i>
+                                            <span>@link.Label</span>
+                                            @if (!string.IsNullOrWhiteSpace(link.Badge))
+                                            {
+                                                <small>@link.Badge</small>
+                                            }
+                                        </a>
+                                    }
+                                }
+                            </nav>
+                        </div>
+                    }
+                </div>
+
+                <div class="admin-context-sidebar-card">
+                    <span class="admin-context-sidebar-title">Navigation Notu</span>
+                    <strong>Referanstaki hiyerarsiye yaklastik</strong>
+                    <p>Ikon rail ana katmani, bu panel ise alt katmanlari tasir. Katalog icinde urunler ve kategoriler artik daha belirgin bir grup yapisinda ilerliyor.</p>
+                </div>
+            </aside>
+        </div>
 
         <div class="admin-main">
             <header class="admin-topbar">
-                <div class="admin-topbar-spacer"></div>
+                <div class="admin-topbar-leading">
+                    <button type="button" class="admin-topbar-menu" data-admin-shell-open aria-label="Menuyu ac">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="admin-topbar-context">
+                        <span>@moduleLabel</span>
+                        <strong>@currentPageLabel</strong>
+                    </div>
+                </div>
                 <div class="admin-topbar-actions">
+                    <button type="button" class="admin-icon-button" aria-label="Ara">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+
                     <details class="admin-topbar-dropdown admin-notification-dropdown">
                         <summary class="admin-icon-button" aria-label="Bildirimler">
                             <i class="fa-regular fa-bell"></i>
-                            <span class="admin-icon-badge">4</span>
+                            @if (notificationSummary.UnreadCount > 0)
+                            {
+                                <span class="admin-icon-badge">@notificationSummary.UnreadCount</span>
+                            }
                         </summary>
                         <div class="admin-dropdown-panel admin-notification-panel">
                             <div class="admin-dropdown-head">
                                 <strong>Bildirimler</strong>
-                                <i class="fa-regular fa-envelope-open"></i>
+                                <span class="admin-dropdown-meta">@notificationSummary.UnreadCount okunmamis</span>
                             </div>
                             <div class="admin-notification-list">
-                                @foreach (var notification in notificationItems)
+                                @if (notificationSummary.Items.Count == 0)
                                 {
-                                    <a href="@notification.Url" class="admin-notification-item">
-                                        <div class="admin-notification-avatar @notification.Accent">
-                                            <i class="@notification.Icon"></i>
-                                        </div>
-                                        <div class="admin-notification-copy">
-                                            <strong>@notification.Title</strong>
-                                            <span>@notification.Source</span>
-                                            <small>@notification.Time</small>
-                                        </div>
-                                        <i class="fa-solid fa-xmark admin-notification-dismiss"></i>
-                                    </a>
+                                    <div class="admin-dropdown-empty">
+                                        <i class="fa-regular fa-bell-slash"></i>
+                                        <strong>Henuz bildirim yok.</strong>
+                                        <p>Storefront ve auth akislarindan gelen olaylar burada gorunecek.</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @foreach (var notification in notificationSummary.Items)
+                                    {
+                                        <a href="@notification.Url" class="admin-notification-item">
+                                            <div class="admin-notification-avatar @notification.AccentClass">
+                                                <i class="@notification.IconClass"></i>
+                                            </div>
+                                            <div class="admin-notification-copy">
+                                                <strong>@notification.Title</strong>
+                                                <span>@notification.Source</span>
+                                                <small>@notification.OccurredAt.ToLocalTime().ToString("dd MMM HH:mm")</small>
+                                            </div>
+                                            <i class="fa-solid @(notification.IsUnread ? "fa-circle" : "fa-check") admin-notification-dismiss @(notification.IsUnread ? "is-unread" : "is-read")"></i>
+                                        </a>
+                                    }
                                 }
                             </div>
                             <a href="/admin/notifications" class="admin-dropdown-footer">Tum Bildirimleri Gor</a>
@@ -186,6 +386,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/pages/admin-shell.js" asp-append-version="true"></script>
     <script src="~/js/pages/admin-feedback.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

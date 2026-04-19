@@ -1,0 +1,13 @@
+@model vitacure.Models.ViewModels.Admin.FeatureListViewModel
+
+@{
+    ViewData["Title"] = "Ozellikler";
+}
+
+<div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/features">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Features/_ListContent.cshtml", Model)
+</div>
+
+@section Scripts {
+    <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+}

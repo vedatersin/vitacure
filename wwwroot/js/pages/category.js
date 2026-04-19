@@ -49,6 +49,7 @@
         const heartButton = shell.querySelector("[data-coverflow-heart]");
         const cartButton = shell.querySelector("[data-coverflow-cart]");
         const inspectButton = shell.querySelector("[data-coverflow-inspect]");
+        const cartButtonLabel = cartButton?.querySelector(".coverflow-action-btn-text");
         const tagButtons = Array.from(pageRoot?.querySelectorAll(".uyku-tag-btn") ?? []);
         const productGridAnchor = pageRoot?.querySelector("[data-product-grid-anchor]");
         const activeSlots = getSlotsForCount(products.length);
@@ -138,6 +139,13 @@
 
             if (cartButton) {
                 cartButton.dataset.cartProductId = activeProduct.cartProductSlug || activeProduct.CartProductSlug || activeProduct.id || activeProduct.Id || "";
+                cartButton.dataset.productHref = activeProduct.href || activeProduct.Href || "#";
+                const hasVariants = activeProduct.hasVariants === true || activeProduct.HasVariants === true;
+                cartButton.dataset.hasVariants = hasVariants ? "true" : "false";
+
+                if (cartButtonLabel) {
+                    cartButtonLabel.textContent = activeProduct.addToCartLabel || activeProduct.AddToCartLabel || (hasVariants ? "Urunu Incele" : "Sepete Ekle");
+                }
             }
 
             syncHeart(activeProduct);
@@ -220,6 +228,15 @@
 
         if (cartButton) {
             cartButton.addEventListener("click", async function () {
+                const hasVariants = cartButton.dataset.hasVariants === "true";
+                if (hasVariants) {
+                    const href = cartButton.dataset.productHref;
+                    if (href) {
+                        window.location.href = href;
+                    }
+                    return;
+                }
+
                 const productSlug = cartButton.dataset.cartProductId || "";
                 if (!productSlug || !window.VitacureCart) {
                     return;

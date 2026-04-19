@@ -80,6 +80,39 @@ public class GuestSessionServiceTests
         Assert.Contains("vitacure_guest_cart=", context.Response.Headers["Set-Cookie"].ToString());
     }
 
+    [Fact]
+    public async Task AddCartItemAsync_Persists_Variant_In_Guest_Cookie_And_Cart()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.ProductVariants.Add(new ProductVariant
+        {
+            Id = 21,
+            ProductId = 1,
+            GroupName = "Boyut",
+            OptionName = "60 Tablet",
+            Price = 299m,
+            Stock = 10,
+            SortOrder = 0,
+            IsActive = true
+        });
+        await dbContext.SaveChangesAsync();
+
+        var context = new DefaultHttpContext();
+        var service = CreateGuestSessionService(dbContext, context);
+
+        var result = await service.AddCartItemAsync("daily-multivitamin", 2, 21);
+        var roundtripContext = CreateContextFromResponseCookies(context);
+        var roundtripService = CreateGuestSessionService(dbContext, roundtripContext);
+        var cart = await roundtripService.GetCartAsync();
+
+        Assert.True(result.IsSuccess);
+        Assert.Single(cart.Items);
+        Assert.Equal(21, cart.Items[0].VariantId);
+        Assert.Equal("Boyut: 60 Tablet", cart.Items[0].VariantLabel);
+        Assert.Equal("598,00", cart.TotalAmount);
+    }
+
     private static GuestSessionService CreateGuestSessionService(AppDbContext dbContext, HttpContext httpContext)
     {
         return new GuestSessionService(
@@ -87,7 +120,8 @@ public class GuestSessionServiceTests
             new HttpContextAccessor
             {
                 HttpContext = httpContext
-            });
+            },
+            new AdminNotificationService(dbContext));
     }
 
     private static DefaultHttpContext CreateContextFromResponseCookies(DefaultHttpContext source)

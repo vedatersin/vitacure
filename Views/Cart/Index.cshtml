@@ -33,6 +33,7 @@
                     <div class="cart-items-panel">
                         @foreach (var item in Model.Items)
                         {
+                            var quantityFieldId = $"qty-{item.ProductSlug}-{item.VariantId?.ToString() ?? "base"}";
                             <article class="cart-item-card">
                                 <a href="@item.ProductHref" class="cart-item-media">
                                     <img src="@item.ProductImageUrl" alt="@item.ProductName" loading="lazy" />
@@ -40,13 +41,18 @@
                                 <div class="cart-item-content">
                                     <div class="cart-item-copy">
                                         <a href="@item.ProductHref" class="cart-item-title">@item.ProductName</a>
+                                        @if (!string.IsNullOrWhiteSpace(item.VariantLabel))
+                                        {
+                                            <div class="cart-item-unit-price">@item.VariantLabel</div>
+                                        }
                                         <div class="cart-item-unit-price">Birim fiyat: &#8378; @item.UnitPrice</div>
                                     </div>
                                     <div class="cart-item-actions">
                                         <form method="post" action="/cart/items/@item.ProductSlug/quantity" class="cart-quantity-form">
                                             @Html.AntiForgeryToken()
-                                            <label class="cart-quantity-label" for="qty-@item.ProductSlug">Adet</label>
-                                            <input id="qty-@item.ProductSlug"
+                                            <input type="hidden" name="variantId" value="@item.VariantId" />
+                                            <label class="cart-quantity-label" for="@quantityFieldId">Adet</label>
+                                            <input id="@quantityFieldId"
                                                    name="quantity"
                                                    type="number"
                                                    min="1"
@@ -57,6 +63,7 @@
                                         <div class="cart-item-total">&#8378; @item.LineTotal</div>
                                         <form method="post" action="/cart/items/@item.ProductSlug/remove">
                                             @Html.AntiForgeryToken()
+                                            <input type="hidden" name="variantId" value="@item.VariantId" />
                                             <button type="submit" class="btn btn-link cart-remove-btn">Kaldir</button>
                                         </form>
                                     </div>

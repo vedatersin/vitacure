@@ -1,123 +1,550 @@
 @model vitacure.Models.ViewModels.Admin.ProductFormViewModel
+@{
+    var allCategories = Model.CategoryOptions.ToList();
+    var parentCategories = allCategories.Where(option => option.ParentId is null).OrderBy(option => option.Name).ToList();
+    var selectedCategory = allCategories.FirstOrDefault(option => option.Id == Model.CategoryId);
+    var selectedCategoryIds = Model.SelectedCategoryIds
+        .Append(Model.CategoryId)
+        .Where(id => id > 0)
+        .Distinct()
+        .ToHashSet();
+    var selectedParentId = selectedCategory?.ParentId ?? (parentCategories.Any(option => option.Id == Model.CategoryId) ? Model.CategoryId : 0);
+    var selectedChildId = selectedCategory?.ParentId is not null ? Model.CategoryId : 0;
+    var selectedCategoryLabel = selectedCategory is null
+        ? "Kategori secilmedi"
+        : selectedCategory.ParentId is null
+            ? selectedCategory.Name
+            : $"{parentCategories.FirstOrDefault(option => option.Id == selectedCategory.ParentId)?.Name ?? "Kategori"} / {selectedCategory.Name}";
+    var selectedBrand = Model.BrandOptions.FirstOrDefault(option => option.Id == Model.BrandId)?.Name ?? "Marka secilmedi";
+    var selectedFeatures = Model.FeatureOptions.Where(feature => Model.SelectedFeatureIds.Contains(feature.Id)).ToList();
+    var selectedTags = Model.TagOptions.Where(tag => Model.SelectedTagIds.Contains(tag.Id)).ToList();
+    var variants = Model.Variants.ToList();
+    var featureGroups = Model.FeatureOptions
+        .GroupBy(feature => feature.GroupName)
+        .OrderBy(group => group.Key)
+        .ToList();
+    bool IsMerchandisingTag(vitacure.Models.ViewModels.Admin.ProductTagOptionViewModel tag)
+    {
+        var normalized = $"{tag.Name} {tag.Slug}".ToLowerInvariant();
+        return normalized.Contains("one cikan") ||
+               normalized.Contains("onecikan") ||
+               normalized.Contains("featured") ||
+               normalized.Contains("kamp") ||
+               normalized.Contains("campaign") ||
+               normalized.Contains("firsat") ||
+               normalized.Contains("yeni") ||
+               normalized.Contains("new") ||
+               normalized.Contains("hediye") ||
+               normalized.Contains("editor");
+    }
+    var merchandisingTags = Model.TagOptions.Where(IsMerchandisingTag).Take(4).ToList();
+    var hasDiscount = Model.OldPrice.HasValue && Model.OldPrice.Value > Model.Price;
+    var statusText = Model.IsActive ? "Yayinda" : "Taslak";
+}
 
-<form method="post" action="@Context.Request.Path" class="auth-form">
+<form method="post" action="@Context.Request.Path" class="auth-form admin-product-form-shell" data-admin-product-form="true">
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
+    <input asp-for="CategoryId" type="hidden" data-product-category-input />
+    <input asp-for="IsActive" type="hidden" data-product-status-input />
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="admin-product-media-editor mb-4"
-         data-product-gallery-editor="true"
-         data-gallery-upload-url="/admin/products/upload-image"
-         data-gallery-max-items="4">
-        <input asp-for="ImageUrl" type="hidden" data-gallery-cover-input />
-        <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
-        <input type="file"
-               class="d-none"
-               accept="image/png,image/jpeg,image/webp,image/gif"
-               data-gallery-file-input />
+    <div class="admin-editor-layout admin-product-editor-layout admin-product-editor-layout-v2">
+        <div class="admin-editor-main">
+            <section class="admin-editor-card admin-product-hero-card">
+                <div class="admin-product-hero-head">
+                    <div>
+                        <span class="admin-editor-kicker">Urun Formu</span>
+                        <h2>Urun bilgilerini tamamlayin</h2>
+                        <p class="admin-editor-note">Fotograf, kategori, etiket ve ozellik secimleri storefront karti ile detay sayfasini birlikte besler.</p>
+                    </div>
+                    <div class="admin-product-hero-meta">
+                        <span class="admin-product-status-badge @(Model.IsActive ? "is-active" : null)" data-product-status-badge>@statusText</span>
+                        <span class="admin-product-inline-meta">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span data-product-category-path>@selectedCategoryLabel</span>
+                        </span>
+                    </div>
+                </div>
+            </section>
 
-        <div class="admin-product-media-preview">
-            <button type="button" class="admin-product-media-preview-stage" data-gallery-main-trigger>
-                <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
-                <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
-                    <i class="fa-solid fa-image"></i>
-                    <strong>Ana urun gorseli</strong>
-                    <small>Soldaki ilk gorsel burada buyuk gorunur.</small>
-                </span>
-                <span class="admin-product-media-preview-overlay">Onizle</span>
-                <span class="admin-product-media-preview-remove" data-gallery-main-remove @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
-                    <i class="fa-solid fa-xmark"></i>
-                </span>
-            </button>
+            <section class="admin-editor-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Medya</span>
+                        <h2>Urun fotograflarini yukleyin</h2>
+                        <p class="admin-editor-note">Kapak gorseli ilk kutuda buyuk gorunur. Diger kareler galeri ve detay slayti olarak kullanilir.</p>
+                    </div>
+                </div>
 
-            <div class="admin-product-media-strip" data-gallery-strip></div>
-            <div class="admin-product-media-help">Maksimum 4 gorsel ekleyebilirsin. Soldaki ilk kare ana urun gorseli olur.</div>
-            <span asp-validation-for="ImageUrl" class="text-danger"></span>
-        </div>
-    </div>
+                <div class="admin-product-media-editor admin-product-media-editor-v2"
+                     data-product-gallery-editor="true"
+                     data-gallery-upload-url="/admin/products/upload-image"
+                     data-gallery-library-url="/admin/media/library-items"
+                     data-gallery-max-items="4">
+                    <input asp-for="ImageUrl" type="hidden" data-gallery-cover-input />
+                    <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
+                    <input asp-for="MediaItemsJson" type="hidden" data-gallery-items-json />
+                    <input type="file"
+                           class="d-none"
+                           accept="image/png,image/jpeg,image/webp,image/gif"
+                           data-gallery-file-input />
 
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control auth-input" />
-            <span asp-validation-for="Name" class="text-danger"></span>
-        </div>
+                    <div class="admin-product-media-preview">
+                        <button type="button" class="admin-product-media-preview-stage" data-gallery-main-trigger>
+                            <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
+                            <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <strong>Urun fotografini yukleyin</strong>
+                                <small>Maksimum 10 MB. PNG, JPG, WEBP veya GIF dosyalari kullanabilirsiniz.</small>
+                            </span>
+                            <span class="admin-product-media-preview-overlay">Onizle</span>
+                            <span class="admin-product-media-preview-remove" data-gallery-main-remove @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
+                                <i class="fa-solid fa-xmark"></i>
+                            </span>
+                        </button>
 
-        <div class="col-md-6">
-            <label asp-for="Slug" class="form-label"></label>
-            <input asp-for="Slug" class="form-control auth-input" />
-            <span asp-validation-for="Slug" class="text-danger"></span>
-        </div>
+                        <div class="admin-product-media-strip" data-gallery-strip></div>
+                        <div class="admin-product-media-toolbar">
+                            <button type="button" class="admin-editor-secondary" data-gallery-open-library>
+                                <i class="fa-solid fa-images"></i>
+                                <span>Kutuphaneden Sec</span>
+                            </button>
+                        </div>
+                        <div class="admin-product-media-help">Kapak gorseli ilk kare olur. Maksimum 4 gorsel ekleyebilirsin.</div>
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
 
-        <div class="col-md-6">
-            <label asp-for="CategoryId" class="form-label"></label>
-            <select asp-for="CategoryId" class="form-select auth-input">
-                <option value="0">Seçiniz</option>
-                @foreach (var option in Model.CategoryOptions)
+            <section class="admin-editor-card admin-product-form-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Temel Bilgiler</span>
+                        <h2>Urun detaylari</h2>
+                        <p class="admin-editor-note">Baslik, marka, fiyat ve aciklama alanlarini katalog diliyle tamamlayin.</p>
+                    </div>
+                </div>
+
+                <div class="admin-product-field-grid">
+                    <div class="admin-product-field-span">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control auth-input" placeholder="Orn. Clinique Nemlendirici 50 ml" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="BrandId" class="form-label"></label>
+                        <select asp-for="BrandId" class="form-select auth-input">
+                            <option value="">Seciniz</option>
+                            @foreach (var option in Model.BrandOptions)
+                            {
+                                <option value="@option.Id">@option.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="BrandId" class="text-danger"></span>
+                    </div>
+
+                    <div class="admin-product-field-span">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description"
+                                  class="form-control auth-textarea admin-product-description"
+                                  rows="7"
+                                  placeholder="Bu urune ait detayli aciklamayi yazin..."
+                                  data-admin-richtext="true"
+                                  data-richtext-placeholder="Bu urune ait detayli aciklamayi yazin..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Price" class="form-label"></label>
+                        <div class="admin-product-input-wrap">
+                            <input asp-for="Price" class="form-control auth-input" type="number" min="0.01" step="0.01" />
+                            <span>TL</span>
+                        </div>
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="OldPrice" class="form-label">Indirimli Fiyat</label>
+                        <div class="admin-product-input-wrap">
+                            <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
+                            <span>TL</span>
+                        </div>
+                        <span asp-validation-for="OldPrice" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Stock" class="form-label"></label>
+                        <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
+                        <div class="admin-editor-note">Variant tanimlanmazsa ana stok bu alan uzerinden kullanilir.</div>
+                        <span asp-validation-for="Stock" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Rating" class="form-label"></label>
+                        <input asp-for="Rating" class="form-control auth-input" type="number" min="0" max="5" step="0.1" />
+                        <span asp-validation-for="Rating" class="text-danger"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Slug" class="form-label"></label>
+                        <input asp-for="Slug" class="form-control auth-input" placeholder="clinique-nemlendirici-50-ml" />
+                        <span asp-validation-for="Slug" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-editor-card admin-product-variant-card" data-variant-editor>
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Variantlar</span>
+                        <h2>Secenek bazli fiyat ve stok yonet</h2>
+                        <p class="admin-editor-note">Boyut, aroma veya form gibi secenekler icin ayri fiyat, stok ve SKU tanimlayabilirsin. Aktif variant varsa kart fiyatini ilk aktif variant belirler.</p>
+                    </div>
+                    <button type="button" class="admin-editor-secondary admin-variant-add-button" data-variant-add>
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Variant Ekle</span>
+                    </button>
+                </div>
+
+                <div class="admin-variant-list" data-variant-list>
+                    @if (variants.Count == 0)
+                    {
+                        <div class="admin-variant-empty" data-variant-empty>
+                            <i class="fa-solid fa-layer-group"></i>
+                            <div>
+                                <strong>Henuz variant tanimlanmadi</strong>
+                                <p>Tek urun mantigiyla devam etmek istersen fiyat ve stok yukaridaki alanlardan calisir.</p>
+                            </div>
+                        </div>
+                    }
+
+                    @for (var index = 0; index < variants.Count; index++)
+                    {
+                        var variant = variants[index];
+                        <div class="admin-variant-row" data-variant-row>
+                            <input type="hidden" name="Variants[@index].Id" value="@variant.Id" />
+
+                            <div class="admin-variant-grid">
+                                <div>
+                                    <label class="form-label">Varyasyon Ekseni</label>
+                                    <input class="form-control auth-input" name="Variants[@index].GroupName" value="@variant.GroupName" placeholder="Orn. Boyut" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Secenek</label>
+                                    <input class="form-control auth-input" name="Variants[@index].OptionName" value="@variant.OptionName" placeholder="Orn. 60 Tablet" />
+                                </div>
+                                <div>
+                                    <label class="form-label">SKU</label>
+                                    <input class="form-control auth-input" name="Variants[@index].Sku" value="@variant.Sku" placeholder="VT-60TB" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Fiyat</label>
+                                    <input class="form-control auth-input" type="number" min="0.01" step="0.01" name="Variants[@index].Price" value="@variant.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Eski Fiyat</label>
+                                    <input class="form-control auth-input" type="number" min="0" step="0.01" name="Variants[@index].OldPrice" value="@(variant.OldPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty)" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Stok</label>
+                                    <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[@index].Stock" value="@variant.Stock" />
+                                </div>
+                                <div>
+                                    <label class="form-label">Sira</label>
+                                    <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[@index].SortOrder" value="@variant.SortOrder" />
+                                </div>
+                                <div class="admin-variant-toggle-wrap">
+                                    <label class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="Variants[@index].IsActive" value="true" @(variant.IsActive ? "checked" : null) />
+                                        <input type="hidden" name="Variants[@index].IsActive" value="false" />
+                                        <span class="form-check-label">Aktif</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="button" class="admin-variant-remove" data-variant-remove>
+                                <i class="fa-solid fa-trash"></i>
+                                <span>Kaldir</span>
+                            </button>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="Variants" class="text-danger"></span>
+            </section>
+
+            <section class="admin-editor-card admin-product-merchandising-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Vitrin Kurgusu</span>
+                        <h2>Magaza icin hizli secimler</h2>
+                        <p class="admin-editor-note">One cikan, kampanyali veya yeni urun gibi isaretleri hizli secmek icin bu alan kullanilabilir.</p>
+                    </div>
+                </div>
+
+                @if (merchandisingTags.Count > 0)
                 {
-                    <option value="@option.Id">@option.Name</option>
+                    <div class="admin-product-merchandising-grid">
+                        @foreach (var tag in merchandisingTags)
+                        {
+                            var isChecked = Model.SelectedTagIds.Contains(tag.Id);
+                            <label class="admin-product-merchandising-toggle @(isChecked ? "is-checked" : null)">
+                                <input type="checkbox"
+                                       name="SelectedTagIds"
+                                       value="@tag.Id"
+                                       data-product-merchandising-tag="true"
+                                       @(isChecked ? "checked" : null) />
+                                <span class="admin-product-merchandising-copy">
+                                    <strong>@tag.Name</strong>
+                                    <small>@(tag.Slug.Replace("-", " "))</small>
+                                </span>
+                                <span class="admin-product-merchandising-switch"></span>
+                            </label>
+                        }
+                    </div>
                 }
-            </select>
-            <span asp-validation-for="CategoryId" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-6 d-flex align-items-end">
-            <div class="form-check mb-2">
-                <input asp-for="IsActive" class="form-check-input" />
-                <label asp-for="IsActive" class="form-check-label"></label>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Price" class="form-label"></label>
-            <input asp-for="Price" class="form-control auth-input" type="number" min="0.01" step="0.01" />
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="OldPrice" class="form-label"></label>
-            <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
-            <span asp-validation-for="OldPrice" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-4">
-            <label asp-for="Rating" class="form-label"></label>
-            <input asp-for="Rating" class="form-control auth-input" type="number" min="0" max="5" step="0.1" />
-            <span asp-validation-for="Rating" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-6">
-            <label asp-for="Stock" class="form-label"></label>
-            <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
-            <span asp-validation-for="Stock" class="text-danger"></span>
-        </div>
-
-        <div class="col-12">
-            <label class="form-label">Etiketler</label>
-            <div class="auth-checkbox-grid">
-                @foreach (var tag in Model.TagOptions)
+                else
                 {
-                    var isChecked = Model.SelectedTagIds.Contains(tag.Id);
-                    <label class="auth-checkbox-card">
-                        <input type="checkbox" name="SelectedTagIds" value="@tag.Id" @(isChecked ? "checked" : null) />
-                        <span>@tag.Name</span>
-                        <small>@tag.Slug</small>
-                    </label>
+                    <div class="admin-product-merchandising-empty">
+                        <i class="fa-regular fa-star"></i>
+                        <div>
+                            <strong>Hizli vitrin etiketi bulunamadi</strong>
+                            <p>Tag tarafinda `one-cikan`, `kampanyali`, `yeni` gibi kayitlar olusturuldugunda burada hizli secim olarak gorunecek.</p>
+                        </div>
+                    </div>
                 }
-            </div>
+            </section>
         </div>
 
-        <div class="col-12">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control auth-textarea" rows="6"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-    </div>
+        <aside class="admin-editor-aside admin-product-editor-aside-v2">
+            <section class="admin-editor-card admin-product-publish-card">
+                <div class="admin-editor-actions">
+                    <button type="submit" class="btn admin-editor-primary">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Yayinla</span>
+                    </button>
+                </div>
 
-    <div class="auth-admin-actions mt-4">
-        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
-        <a href="/admin/products" class="btn auth-submit-btn auth-tertiary-btn">Listeye Dön</a>
+                <div class="admin-product-publish-fields">
+                    <div class="admin-editor-field">
+                        <span class="admin-editor-field-label">Durum</span>
+                        <select class="form-select auth-input" data-product-status-select>
+                            @if (Model.IsActive)
+                            {
+                                <option value="true" selected>Yayinda</option>
+                                <option value="false">Taslak</option>
+                            }
+                            else
+                            {
+                                <option value="true">Yayinda</option>
+                                <option value="false" selected>Taslak</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="admin-product-summary-grid">
+                        <div class="admin-product-summary-item">
+                            <span>Marka</span>
+                            <strong data-product-brand-summary>@selectedBrand</strong>
+                        </div>
+                        <div class="admin-product-summary-item">
+                            <span>Etiket</span>
+                            <strong data-product-tag-summary>@selectedTags.Count secili</strong>
+                        </div>
+                        <div class="admin-product-summary-item">
+                            <span>Ozellik</span>
+                            <strong data-product-feature-summary>@selectedFeatures.Count secili</strong>
+                        </div>
+                        <div class="admin-product-summary-item">
+                            <span>Indirim</span>
+                            <strong>@(hasDiscount ? "Var" : "Yok")</strong>
+                        </div>
+                    </div>
+
+                    <a href="/admin/products" class="admin-editor-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Listeye Don</span>
+                    </a>
+                </div>
+            </section>
+
+            <section class="admin-editor-card admin-product-selection-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Kategoriler</span>
+                        <h2>Kategori ve alt kategori sec</h2>
+                    </div>
+                </div>
+
+                <div class="admin-product-selection-stack">
+                    <div class="admin-editor-field">
+                        <span class="admin-editor-field-label">Ana Kategori</span>
+                        <select class="form-select auth-input" data-product-parent-category>
+                            <option value="">Seciniz</option>
+                            @foreach (var option in parentCategories)
+                            {
+                                if (option.Id == selectedParentId)
+                                {
+                                    <option value="@option.Id" selected>@option.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@option.Id">@option.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="admin-editor-field">
+                        <span class="admin-editor-field-label">Alt Kategori</span>
+                        <select class="form-select auth-input" data-product-child-category>
+                            <option value="">Alt kategori secin</option>
+                            @foreach (var option in allCategories.Where(option => option.ParentId is not null).OrderBy(option => option.Name))
+                            {
+                                if (option.Id == selectedChildId)
+                                {
+                                    <option value="@option.Id" data-parent-id="@option.ParentId" selected>@option.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@option.Id" data-parent-id="@option.ParentId">@option.Name</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="admin-product-category-tree">
+                    @foreach (var parent in parentCategories)
+                    {
+                        var children = allCategories.Where(option => option.ParentId == parent.Id).OrderBy(option => option.Name).ToList();
+                        var isParentSelected = Model.CategoryId == parent.Id || selectedParentId == parent.Id;
+                        <div class="admin-product-category-node @(isParentSelected ? "is-selected" : null)">
+                            <button type="button" class="admin-product-category-parent" data-category-parent-choice="@parent.Id">
+                                <i class="fa-regular fa-folder-open"></i>
+                                <span>@parent.Name</span>
+                            </button>
+
+                            @if (children.Count > 0)
+                            {
+                                <div class="admin-product-category-children">
+                                    @foreach (var child in children)
+                                    {
+                                        <button type="button"
+                                                class="admin-product-category-child @(Model.CategoryId == child.Id ? "is-selected" : null)"
+                                                data-category-child-choice="@child.Id"
+                                                data-category-parent-link="@parent.Id">
+                                            @child.Name
+                                        </button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="admin-editor-field">
+                    <span class="admin-editor-field-label">Ek Kategoriler</span>
+                    <div class="admin-product-tag-cloud">
+                        @foreach (var option in allCategories.OrderBy(option => option.ParentId.HasValue ? 1 : 0).ThenBy(option => option.Name))
+                        {
+                            var isChecked = selectedCategoryIds.Contains(option.Id);
+                            var label = option.ParentId is null
+                                ? option.Name
+                                : $"{parentCategories.FirstOrDefault(parent => parent.Id == option.ParentId)?.Name ?? "Kategori"} / {option.Name}";
+                            <label class="admin-product-choice-pill @(isChecked ? "is-checked" : null)">
+                                <input type="checkbox" name="SelectedCategoryIds" value="@option.Id" @(isChecked ? "checked" : null) />
+                                <span>@label</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-editor-card admin-product-selection-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Etiketler</span>
+                        <h2>Etiket sec</h2>
+                    </div>
+                </div>
+
+                <div class="admin-product-tag-cloud">
+                    @foreach (var tag in Model.TagOptions)
+                    {
+                        var isChecked = Model.SelectedTagIds.Contains(tag.Id);
+                        <label class="admin-product-choice-pill @(isChecked ? "is-checked" : null)">
+                            <input type="checkbox" name="SelectedTagIds" value="@tag.Id" @(isChecked ? "checked" : null) />
+                            <span>@tag.Name</span>
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <section class="admin-editor-card admin-product-selection-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Urun Ozellikleri</span>
+                        <h2>Ozellik sec</h2>
+                    </div>
+                </div>
+
+                <div class="admin-product-feature-groups">
+                    @foreach (var group in featureGroups)
+                    {
+                        <section class="admin-product-feature-group-card">
+                            <header>
+                                <strong>@group.Key</strong>
+                                <span>@group.Count() alan</span>
+                            </header>
+
+                            <div class="admin-product-feature-list">
+                                @foreach (var feature in group)
+                                {
+                                    var isChecked = Model.SelectedFeatureIds.Contains(feature.Id);
+                                    var selectedValue = Model.SelectedFeatureValues.TryGetValue(feature.Id, out var featureValue) ? featureValue : string.Empty;
+                                    <div class="admin-product-feature-choice @(isChecked ? "is-selected" : null)" data-feature-option-group>
+                                        <label class="admin-product-feature-toggle">
+                                            <input type="checkbox" name="SelectedFeatureIds" value="@feature.Id" data-feature-checkbox @(isChecked ? "checked" : null) />
+                                            <span class="admin-product-feature-copy">
+                                                <strong>@feature.Name</strong>
+                                                @if (!string.IsNullOrWhiteSpace(feature.OptionsPreview))
+                                                {
+                                                    <small>@feature.OptionsPreview</small>
+                                                }
+                                            </span>
+                                        </label>
+
+                                        @if (feature.Options.Count > 0)
+                                        {
+                                            <div class="admin-product-feature-options" data-feature-select>
+                                                @foreach (var option in feature.Options)
+                                                {
+                                                    var radioId = $"feature-{feature.Id}-{option.ToLowerInvariant().Replace(" ", "-")}";
+                                                    <label class="admin-product-feature-pill">
+                                                        <input type="radio"
+                                                               id="@radioId"
+                                                               name="SelectedFeatureValues[@feature.Id]"
+                                                               value="@option"
+                                                               data-feature-value-option
+                                                               @(string.Equals(selectedValue, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                                                        <span>@option</span>
+                                                    </label>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </section>
+                    }
+                </div>
+                <span asp-validation-for="SelectedFeatureIds" class="text-danger"></span>
+            </section>
+        </aside>
     </div>
 </form>
 
@@ -130,3 +557,68 @@
         <img src="" alt="Urun gorsel onizleme" data-gallery-modal-image />
     </div>
 </div>
+
+<div class="admin-product-media-modal admin-media-library-modal" data-gallery-library-modal hidden>
+    <button type="button" class="admin-product-media-modal-backdrop" data-gallery-library-close aria-label="Kapat"></button>
+    <div class="admin-product-media-modal-dialog admin-media-library-dialog">
+        <div class="admin-media-library-head">
+            <div>
+                <span class="admin-editor-kicker">Medya Kutuphanesi</span>
+                <strong>Katalog gorselleri</strong>
+            </div>
+            <button type="button" class="admin-icon-button admin-product-media-modal-dismiss" data-gallery-library-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="admin-media-library-picker-grid" data-gallery-library-grid></div>
+    </div>
+</div>
+
+<template data-variant-template>
+    <div class="admin-variant-row" data-variant-row>
+        <input type="hidden" name="Variants[__index__].Id" value="" />
+
+        <div class="admin-variant-grid">
+            <div>
+                <label class="form-label">Varyasyon Ekseni</label>
+                <input class="form-control auth-input" name="Variants[__index__].GroupName" value="" placeholder="Orn. Boyut" />
+            </div>
+            <div>
+                <label class="form-label">Secenek</label>
+                <input class="form-control auth-input" name="Variants[__index__].OptionName" value="" placeholder="Orn. 60 Tablet" />
+            </div>
+            <div>
+                <label class="form-label">SKU</label>
+                <input class="form-control auth-input" name="Variants[__index__].Sku" value="" placeholder="VT-60TB" />
+            </div>
+            <div>
+                <label class="form-label">Fiyat</label>
+                <input class="form-control auth-input" type="number" min="0.01" step="0.01" name="Variants[__index__].Price" value="" />
+            </div>
+            <div>
+                <label class="form-label">Eski Fiyat</label>
+                <input class="form-control auth-input" type="number" min="0" step="0.01" name="Variants[__index__].OldPrice" value="" />
+            </div>
+            <div>
+                <label class="form-label">Stok</label>
+                <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[__index__].Stock" value="0" />
+            </div>
+            <div>
+                <label class="form-label">Sira</label>
+                <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[__index__].SortOrder" value="0" />
+            </div>
+            <div class="admin-variant-toggle-wrap">
+                <label class="form-check">
+                    <input class="form-check-input" type="checkbox" name="Variants[__index__].IsActive" value="true" checked />
+                    <input type="hidden" name="Variants[__index__].IsActive" value="false" />
+                    <span class="form-check-label">Aktif</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="button" class="admin-variant-remove" data-variant-remove>
+            <i class="fa-solid fa-trash"></i>
+            <span>Kaldir</span>
+        </button>
+    </div>
+</template>

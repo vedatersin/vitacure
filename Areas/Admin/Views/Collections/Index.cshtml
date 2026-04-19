@@ -1,0 +1,13 @@
+@model vitacure.Models.ViewModels.Admin.CollectionListViewModel
+
+@{
+    ViewData["Title"] = "Koleksiyonlar";
+}
+
+<div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/collections">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Collections/_ListContent.cshtml", Model)
+</div>
+
+@section Scripts {
+    <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+}

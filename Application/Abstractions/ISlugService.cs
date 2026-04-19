@@ -16,7 +16,10 @@ public enum SlugEntityType
     Category = 1,
     Product = 2,
     Tag = 3,
-    Showcase = 4
+    Showcase = 4,
+    Brand = 5,
+    Feature = 6,
+    Collection = 7
 }
 
 public enum StorefrontSlugTargetType

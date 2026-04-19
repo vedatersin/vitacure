@@ -20,11 +20,13 @@ public class CustomerAccountServiceTests
 
         var added = await service.ToggleFavoriteAsync(1, "daily-multivitamin");
         var removed = await service.ToggleFavoriteAsync(1, "daily-multivitamin");
+        var notificationCount = await dbContext.AdminNotifications.CountAsync();
 
         Assert.True(added.IsFavorite);
         Assert.Equal(1, added.FavoriteCount);
         Assert.False(removed.IsFavorite);
         Assert.Equal(0, removed.FavoriteCount);
+        Assert.Equal(1, notificationCount);
     }
 
     [Fact]
@@ -282,11 +284,12 @@ public class CustomerAccountServiceTests
         SeedUserAndProduct(dbContext);
         await dbContext.SaveChangesAsync();
 
-        var service = new CartService(dbContext);
+        var service = new CartService(dbContext, CreateAdminNotificationService(dbContext));
 
         var firstAdd = await service.AddItemAsync(1, "daily-multivitamin");
         var secondAdd = await service.AddItemAsync(1, "daily-multivitamin", 2);
         var cart = await service.GetCartAsync(1);
+        var notificationCount = await dbContext.AdminNotifications.CountAsync();
 
         Assert.True(firstAdd.IsSuccess);
         Assert.True(secondAdd.IsSuccess);
@@ -295,6 +298,7 @@ public class CustomerAccountServiceTests
         Assert.Equal(3, cart.TotalQuantity);
         Assert.Equal(3, cart.Items[0].Quantity);
         Assert.Equal("597,00", cart.TotalAmount);
+        Assert.Equal(2, notificationCount);
     }
 
     [Fact]
@@ -310,7 +314,7 @@ public class CustomerAccountServiceTests
         });
         await dbContext.SaveChangesAsync();
 
-        var service = new CartService(dbContext);
+        var service = new CartService(dbContext, CreateAdminNotificationService(dbContext));
 
         var result = await service.UpdateQuantityAsync(1, "daily-multivitamin", 0);
         var cart = await service.GetCartAsync(1);
@@ -346,11 +350,12 @@ public class CustomerAccountServiceTests
         });
         await dbContext.SaveChangesAsync();
 
-        var service = new OrderService(dbContext);
+        var service = new OrderService(dbContext, CreateAdminNotificationService(dbContext));
 
         var result = await service.PlaceOrderFromCartAsync(1);
         var order = await dbContext.Orders.Include(x => x.Items).FirstOrDefaultAsync();
         var cartCount = await dbContext.CustomerCartItems.CountAsync();
+        var notificationCount = await dbContext.AdminNotifications.CountAsync();
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(order);
@@ -358,6 +363,230 @@ public class CustomerAccountServiceTests
         Assert.Equal(398m, order.TotalAmount);
         Assert.Single(order.Items);
         Assert.Equal(0, cartCount);
+        Assert.Equal(1, notificationCount);
+    }
+
+    [Fact]
+    public async Task CartService_AddItemAsync_Keeps_Product_Variants_As_Separate_Lines()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.ProductVariants.AddRange(
+            new ProductVariant
+            {
+                Id = 11,
+                ProductId = 1,
+                GroupName = "Boyut",
+                OptionName = "30 Tablet",
+                Price = 199m,
+                Stock = 10,
+                SortOrder = 0,
+                IsActive = true
+            },
+            new ProductVariant
+            {
+                Id = 12,
+                ProductId = 1,
+                GroupName = "Boyut",
+                OptionName = "60 Tablet",
+                Price = 299m,
+                Stock = 10,
+                SortOrder = 1,
+                IsActive = true
+            });
+        await dbContext.SaveChangesAsync();
+
+        var service = new CartService(dbContext, CreateAdminNotificationService(dbContext));
+
+        await service.AddItemAsync(1, "daily-multivitamin", 1, 11);
+        await service.AddItemAsync(1, "daily-multivitamin", 2, 12);
+        var cart = await service.GetCartAsync(1);
+
+        Assert.NotNull(cart);
+        Assert.Equal(2, cart!.Items.Count);
+        Assert.Contains(cart.Items, x => x.VariantId == 11 && x.Quantity == 1 && x.LineTotal == "199,00");
+        Assert.Contains(cart.Items, x => x.VariantId == 12 && x.Quantity == 2 && x.LineTotal == "598,00");
+        Assert.Equal("797,00", cart.TotalAmount);
+    }
+
+    [Fact]
+    public async Task OrderService_PlaceOrderFromCartAsync_Persists_Variant_Label()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.ProductVariants.Add(new ProductVariant
+        {
+            Id = 11,
+            ProductId = 1,
+            GroupName = "Boyut",
+            OptionName = "60 Tablet",
+            Price = 299m,
+            Stock = 10,
+            SortOrder = 0,
+            IsActive = true
+        });
+        dbContext.CustomerAddresses.Add(new CustomerAddress
+        {
+            Id = 10,
+            AppUserId = 1,
+            Title = "Ev",
+            RecipientName = "Test User",
+            PhoneNumber = "5551112233",
+            City = "İstanbul",
+            District = "Kadıköy",
+            AddressLine = "Adres 1",
+            IsDefault = true
+        });
+        dbContext.CustomerCartItems.Add(new CustomerCartItem
+        {
+            AppUserId = 1,
+            ProductId = 1,
+            ProductVariantId = 11,
+            Quantity = 2
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new OrderService(dbContext, CreateAdminNotificationService(dbContext));
+
+        var result = await service.PlaceOrderFromCartAsync(1);
+        var order = await dbContext.Orders.Include(x => x.Items).FirstAsync();
+        var orderItem = order.Items.First();
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(598m, order.TotalAmount);
+        Assert.Equal("Boyut: 60 Tablet", orderItem.VariantLabel);
+        Assert.Equal(11, orderItem.ProductVariantId);
+    }
+
+    [Fact]
+    public async Task OrderService_PlaceOrderFromCartAsync_Decrements_Stocks_For_Base_Product()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.CustomerAddresses.Add(new CustomerAddress
+        {
+            Id = 10,
+            AppUserId = 1,
+            Title = "Ev",
+            RecipientName = "Test User",
+            PhoneNumber = "5551112233",
+            City = "İstanbul",
+            District = "Kadıköy",
+            AddressLine = "Adres 1",
+            IsDefault = true
+        });
+        dbContext.CustomerCartItems.Add(new CustomerCartItem
+        {
+            AppUserId = 1,
+            ProductId = 1,
+            Quantity = 4
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new OrderService(dbContext, CreateAdminNotificationService(dbContext));
+
+        var result = await service.PlaceOrderFromCartAsync(1);
+        var product = await dbContext.Products.FirstAsync(x => x.Id == 1);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(11, product.Stock);
+    }
+
+    [Fact]
+    public async Task OrderService_PlaceOrderFromCartAsync_Decrements_Stocks_For_Variant_Product()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.ProductVariants.Add(new ProductVariant
+        {
+            Id = 11,
+            ProductId = 1,
+            GroupName = "Boyut",
+            OptionName = "60 Tablet",
+            Price = 299m,
+            Stock = 10,
+            SortOrder = 0,
+            IsActive = true
+        });
+        dbContext.CustomerAddresses.Add(new CustomerAddress
+        {
+            Id = 10,
+            AppUserId = 1,
+            Title = "Ev",
+            RecipientName = "Test User",
+            PhoneNumber = "5551112233",
+            City = "İstanbul",
+            District = "Kadıköy",
+            AddressLine = "Adres 1",
+            IsDefault = true
+        });
+        dbContext.CustomerCartItems.Add(new CustomerCartItem
+        {
+            AppUserId = 1,
+            ProductId = 1,
+            ProductVariantId = 11,
+            Quantity = 3
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new OrderService(dbContext, CreateAdminNotificationService(dbContext));
+
+        var result = await service.PlaceOrderFromCartAsync(1);
+        var product = await dbContext.Products.FirstAsync(x => x.Id == 1);
+        var variant = await dbContext.ProductVariants.FirstAsync(x => x.Id == 11);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(12, product.Stock);
+        Assert.Equal(7, variant.Stock);
+    }
+
+    [Fact]
+    public async Task OrderService_PlaceOrderFromCartAsync_Returns_Error_When_Variant_Stock_Is_Not_Enough()
+    {
+        await using var dbContext = CreateDbContext();
+        SeedUserAndProduct(dbContext);
+        dbContext.ProductVariants.Add(new ProductVariant
+        {
+            Id = 11,
+            ProductId = 1,
+            GroupName = "Boyut",
+            OptionName = "60 Tablet",
+            Price = 299m,
+            Stock = 1,
+            SortOrder = 0,
+            IsActive = true
+        });
+        dbContext.CustomerAddresses.Add(new CustomerAddress
+        {
+            Id = 10,
+            AppUserId = 1,
+            Title = "Ev",
+            RecipientName = "Test User",
+            PhoneNumber = "5551112233",
+            City = "İstanbul",
+            District = "Kadıköy",
+            AddressLine = "Adres 1",
+            IsDefault = true
+        });
+        dbContext.CustomerCartItems.Add(new CustomerCartItem
+        {
+            AppUserId = 1,
+            ProductId = 1,
+            ProductVariantId = 11,
+            Quantity = 2
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new OrderService(dbContext, CreateAdminNotificationService(dbContext));
+
+        var result = await service.PlaceOrderFromCartAsync(1);
+        var orderCount = await dbContext.Orders.CountAsync();
+        var variant = await dbContext.ProductVariants.FirstAsync(x => x.Id == 11);
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("yeterli stok yok", result.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(0, orderCount);
+        Assert.Equal(1, variant.Stock);
     }
 
     private static void SeedUserAndProduct(AppDbContext dbContext)
@@ -408,6 +637,14 @@ public class CustomerAccountServiceTests
 
     private static CustomerAccountService CreateCustomerAccountService(AppDbContext dbContext)
     {
-        return new CustomerAccountService(dbContext, new OrderService(dbContext));
+        return new CustomerAccountService(
+            dbContext,
+            new OrderService(dbContext, CreateAdminNotificationService(dbContext)),
+            CreateAdminNotificationService(dbContext));
+    }
+
+    private static AdminNotificationService CreateAdminNotificationService(AppDbContext dbContext)
+    {
+        return new AdminNotificationService(dbContext);
     }
 }

@@ -14,6 +14,7 @@ namespace vitacure.Controllers;
 public class AccountController : Controller
 {
     private readonly IAccountAccessService _accountAccessService;
+    private readonly IAdminNotificationService _adminNotificationService;
     private readonly ICustomerAccountService _customerAccountService;
     private readonly IEmailConfirmationService _emailConfirmationService;
     private readonly IGuestSessionService _guestSessionService;
@@ -25,6 +26,7 @@ public class AccountController : Controller
         SignInManager<AppUser> signInManager,
         UserManager<AppUser> userManager,
         IAccountAccessService accountAccessService,
+        IAdminNotificationService adminNotificationService,
         ICustomerAccountService customerAccountService,
         IEmailConfirmationService emailConfirmationService,
         IGuestSessionService guestSessionService,
@@ -33,6 +35,7 @@ public class AccountController : Controller
         _signInManager = signInManager;
         _userManager = userManager;
         _accountAccessService = accountAccessService;
+        _adminNotificationService = adminNotificationService;
         _customerAccountService = customerAccountService;
         _emailConfirmationService = emailConfirmationService;
         _guestSessionService = guestSessionService;
@@ -137,6 +140,19 @@ public class AccountController : Controller
                 values: new { email, token },
                 protocol: Request.Scheme) ?? string.Empty);
 
+        await _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
+        {
+            Title = "Yeni uye kaydi olustu",
+            Summary = $"{user.FullName} hesabi olusturuldu ve e-posta dogrulamasi bekleniyor.",
+            Body = $"{user.FullName} kullanicisi storefront hesabi acti. Dogrulama baglantisi hazirlandi ve auth akislarindan takip ediliyor.",
+            Actor = user.FullName,
+            Source = "Auth",
+            CategoryKey = "members",
+            TargetLabel = "Kullanicilara git",
+            TargetUrl = "/admin/users",
+            OccurredAt = user.CreatedAt
+        });
+
         return View("RegisterConfirmation", new RegisterConfirmationViewModel
         {
             Email = user.Email ?? string.Empty,
@@ -159,6 +175,22 @@ public class AccountController : Controller
         {
             TempData["AuthMessage"] = "E-posta doğrulama bağlantısı geçersiz veya süresi dolmuş olabilir.";
             return RedirectToAction(nameof(Login));
+        }
+
+        var user = await _userManager.FindByEmailAsync(email.Trim());
+        if (user is not null)
+        {
+            await _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
+            {
+                Title = "E-posta dogrulamasi tamamlandi",
+                Summary = $"{user.FullName} hesabinin e-posta dogrulamasi tamamlandi.",
+                Body = $"{user.FullName} kullanicisi hesabini dogrulayarak storefront girisi icin hazir hale geldi.",
+                Actor = user.FullName,
+                Source = "Auth",
+                CategoryKey = "auth",
+                TargetLabel = "Kullanicilara git",
+                TargetUrl = "/admin/users"
+            });
         }
 
         return View("ConfirmEmailSuccess");
@@ -192,6 +224,26 @@ public class AccountController : Controller
 
         model.Message = result.Message;
         model.ResetUrl = result.ResetUrl;
+
+        if (!string.IsNullOrWhiteSpace(result.ResetUrl))
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email.Trim());
+            if (user is not null)
+            {
+                await _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
+                {
+                    Title = "Parola sifirlama talebi olustu",
+                    Summary = $"{user.FullName} icin sifre sifirlama baglantisi uretildi.",
+                    Body = $"{user.FullName} kullanicisi parola sifirlama talebi baslatti. Baglanti e-posta servisi aktif olana kadar manuel olarak sunuluyor.",
+                    Actor = user.FullName,
+                    Source = "Auth",
+                    CategoryKey = "auth",
+                    TargetLabel = "Kullanicilara git",
+                    TargetUrl = "/admin/users"
+                }, cancellationToken);
+            }
+        }
+
         return View(model);
     }
 

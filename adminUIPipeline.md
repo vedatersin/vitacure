@@ -38,6 +38,7 @@ Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina 
 - [x] Create/edit form ekranlarinda hero sag paneliyle ortak ust kurgu olusturuldu
 - [x] Bildirimler modulu icin iki kolonlu liste + detay UI omurgasi kuruldu
 - [x] Bildirimler modulu kategori bazli filtre yapisiyla UI seviyesinde hazirlandi
+- [x] Bildirim dropdown ve bildirim merkezi gercek backend feed'i ile baglandi
 - [x] Vitrinler modulu icin liste ve form UI omurgasi eklendi
 - [x] Vitrin formunda ikon preview, popup urun secimi ve surukle-birak slot yapisi eklendi
 
@@ -86,11 +87,11 @@ Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina 
 
 ### Oncelik 1
 
-- [ ] Bildirim dropdown icindeki oge tiplerini ve aksiyon ikonlarini gercek senaryolara gore zenginlestirmek
+- [x] Bildirim dropdown icindeki oge tiplerini ve aksiyon ikonlarini gercek senaryolara gore zenginlestirmek
 - [ ] Vitrin formundaki arkaplan secimini gorsellestirmek
 - [ ] Profil dropdown'ina hesap ayarlari veya profil sayfasi girisi eklemek
 - [ ] Form ekranlarindaki operator kartlarini yeni ust kurguya gore daha da sadeleştirmek
-- [ ] Bildirim detay paneline aksiyon gecmisi ve okunma durumu bloklari eklemek
+- [x] Bildirim detay paneline aksiyon gecmisi ve okunma durumu bloklari eklemek
 
 ### Oncelik 2
 
@@ -110,12 +111,12 @@ Backend isleri ve sistemsel altyapi notlari `adminBackendPipeline.md` dosyasina 
 
 Admin bildirim paneline dusmesi beklenen aksiyonlar:
 
-- [ ] Yeni siparis olusturuldu
-- [ ] Sepete urun eklendi
-- [ ] Urun favorilendi
-- [ ] Sisteme yeni uye kaydi oldu
-- [ ] E-posta dogrulama tamamlandi
-- [ ] Parola sifirlama talebi olustu
+- [x] Yeni siparis olusturuldu
+- [x] Sepete urun eklendi
+- [x] Urun favorilendi
+- [x] Sisteme yeni uye kaydi oldu
+- [x] E-posta dogrulama tamamlandi
+- [x] Parola sifirlama talebi olustu
 - [ ] Admin CRUD sonrasi kritik katalog degisikligi yapildi
 
 Her biri icin planlanan UI alanlari:
@@ -140,10 +141,10 @@ Bu UI islerinin backend bagimliliklari `adminBackendPipeline.md` dosyasina da no
 
 ## Bir Sonraki UI Sira
 
-1. Bildirim detay panelini zenginlestirme
-2. Bildirim backend omurgasi baglandiginda UI veri baglantisini tamamlama
-3. Sidebar alt moduller icin acilir grup mantigi
-4. Profil ayarlari ekranini tasarlama
+1. Sidebar alt moduller icin acilir grup mantigi
+2. Profil ayarlari ekranini tasarlama
+3. Vitrin formundaki arkaplan secimini gorsellestirme
+4. Admin CRUD aksiyonlarini da bildirim feed'ine dusurme
 
 ## Notlar
 

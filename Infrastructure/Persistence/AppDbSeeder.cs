@@ -18,6 +18,8 @@ public class AppDbSeeder
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
         var hasCategories = await _dbContext.Categories.AnyAsync(cancellationToken);
+        var hasBrands = await _dbContext.Brands.AnyAsync(cancellationToken);
+        var hasFeatures = await _dbContext.Features.AnyAsync(cancellationToken);
         var hasProducts = await _dbContext.Products.AnyAsync(cancellationToken);
 
         if (!hasCategories && !hasProducts)
@@ -34,6 +36,18 @@ public class AppDbSeeder
             var products = BuildProducts(document, categoryMap, uncategorizedCategoryId);
 
             await _dbContext.Products.AddRangeAsync(products, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        if (!hasBrands)
+        {
+            await _dbContext.Brands.AddRangeAsync(BuildBrands(), cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        if (!hasFeatures)
+        {
+            await _dbContext.Features.AddRangeAsync(BuildFeatures(), cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -116,6 +130,27 @@ public class AppDbSeeder
                 return product;
             })
             .ToList();
+    }
+
+    private static List<Brand> BuildBrands()
+    {
+        return new List<Brand>
+        {
+            new() { Name = "VitaCure", Slug = "vitacure", Description = "Platform icindeki temel private label marka kaydi.", IsActive = true },
+            new() { Name = "Solgar", Slug = "solgar", Description = "Vitamin ve mineral urunleri icin referans marka.", IsActive = true },
+            new() { Name = "Nature's Supreme", Slug = "natures-supreme", Description = "Takviye ve wellness kataloglarinda kullanilan marka grubu.", IsActive = true },
+            new() { Name = "Ocean", Slug = "ocean", Description = "Omega ve cocuk destek urunleri icin hazir katalog markasi.", IsActive = true }
+        };
+    }
+
+    private static List<Feature> BuildFeatures()
+    {
+        return new List<Feature>
+        {
+            new() { Name = "Urun Formu", Slug = "urun-formu", GroupName = "Form", OptionsContent = string.Join(Environment.NewLine, new[] { "Kapsul", "Tablet", "Sase", "Damla" }), IsActive = true },
+            new() { Name = "Hedef Destek", Slug = "hedef-destek", GroupName = "Hedef", OptionsContent = string.Join(Environment.NewLine, new[] { "Uyku", "Enerji", "Bagisiklik", "Sindirim" }), IsActive = true },
+            new() { Name = "Icerik Tipi", Slug = "icerik-tipi", GroupName = "Icerik", OptionsContent = string.Join(Environment.NewLine, new[] { "Vitamin", "Mineral", "Bitkisel", "Probiyotik" }), IsActive = true }
+        };
     }
 
     private static int ResolveCategoryId(

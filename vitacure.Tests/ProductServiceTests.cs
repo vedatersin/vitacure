@@ -45,6 +45,47 @@ public class ProductServiceTests
             ProductId = 10,
             TagId = 99
         });
+        dbContext.ProductMedias.AddRange(
+            new ProductMedia
+            {
+                Id = 1,
+                ProductId = 10,
+                Url = "/img/products/bottle_mag_nobg.png",
+                SortOrder = 0,
+                IsPrimary = true
+            },
+            new ProductMedia
+            {
+                Id = 2,
+                ProductId = 10,
+                Url = "/img/products/bottle_mag_detail.png",
+                SortOrder = 1,
+                IsPrimary = false
+            });
+        dbContext.ProductVariants.AddRange(
+            new ProductVariant
+            {
+                Id = 1,
+                ProductId = 10,
+                GroupName = "Boyut",
+                OptionName = "30 Tablet",
+                Price = 249m,
+                OldPrice = 349m,
+                Stock = 10,
+                SortOrder = 0,
+                IsActive = true
+            },
+            new ProductVariant
+            {
+                Id = 2,
+                ProductId = 10,
+                GroupName = "Boyut",
+                OptionName = "60 Tablet",
+                Price = 399m,
+                Stock = 5,
+                SortOrder = 1,
+                IsActive = true
+            });
 
         await dbContext.SaveChangesAsync();
 
@@ -58,6 +99,8 @@ public class ProductServiceTests
         Assert.Equal("uyku-sagligi", result.Category!.Slug);
         Assert.Single(result.ProductTags);
         Assert.Equal("mineral", result.ProductTags.First().Tag!.Slug);
+        Assert.Equal(2, result.ProductVariants.Count);
+        Assert.Equal(2, result.ProductMedias.Count);
     }
 
     [Fact]
@@ -118,6 +161,41 @@ public class ProductServiceTests
         var relatedProducts = result.ToList();
         Assert.Single(relatedProducts);
         Assert.Equal("same-category-product", relatedProducts[0].Slug);
+    }
+
+    [Fact]
+    public async Task GetProductsByCategorySlugAsync_Returns_Products_From_Secondary_Category_Relation()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Categories.AddRange(
+            new Category { Id = 1, Name = "Ana", Slug = "ana", Description = "A", IsActive = true },
+            new Category { Id = 2, Name = "Ek", Slug = "ek", Description = "B", IsActive = true });
+        dbContext.Products.Add(new Product
+        {
+            Id = 1,
+            Name = "Multi Product",
+            Slug = "multi-product",
+            Description = "Multi",
+            Price = 100m,
+            Rating = 4.1m,
+            ImageUrl = "/img/multi.png",
+            Stock = 10,
+            CategoryId = 1,
+            IsActive = true
+        });
+        dbContext.ProductCategories.Add(new ProductCategory
+        {
+            ProductId = 1,
+            CategoryId = 2
+        });
+        await dbContext.SaveChangesAsync();
+
+        var service = new ProductService(dbContext);
+
+        var result = await service.GetProductsByCategorySlugAsync("ek");
+
+        Assert.Single(result);
+        Assert.Equal("multi-product", result[0].Slug);
     }
 
     private static AppDbContext CreateDbContext()

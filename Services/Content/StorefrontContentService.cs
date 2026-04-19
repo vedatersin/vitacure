@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using vitacure.Application.Abstractions;
+using vitacure.Application.Utilities;
 using vitacure.Domain.Entities;
 using vitacure.Infrastructure.Persistence;
+using vitacure.Infrastructure.Services;
 using vitacure.Models.ViewModels;
 
 namespace vitacure.Services.Content;
@@ -126,7 +128,11 @@ public class StorefrontContentService : IStorefrontContentService
         var productQuery = _dbContext.Products
             .AsNoTracking()
             .Include(x => x.Category)
+            .Include(x => x.ProductCategories)
             .Where(x => x.IsActive && selectedCategoryIds.Contains(x.CategoryId));
+
+        productQuery = productQuery
+            .Where(x => selectedCategoryIds.Contains(x.CategoryId) || x.ProductCategories.Any(pc => selectedCategoryIds.Contains(pc.CategoryId)));
 
         if (!string.IsNullOrWhiteSpace(categorySlug))
         {
@@ -230,12 +236,24 @@ public class StorefrontContentService : IStorefrontContentService
             return null;
         }
 
+        var categoryIds = await _dbContext.Categories
+            .AsNoTracking()
+            .Where(x => x.IsActive && x.Slug == slug)
+            .Select(x => x.Id)
+            .Take(1)
+            .ToArrayAsync(cancellationToken);
+        if (categoryIds.Length == 0)
+        {
+            return null;
+        }
+
         var categoryProductsQuery = _dbContext.Products
             .AsNoTracking()
             .Include(x => x.Category)
+            .Include(x => x.ProductCategories)
             .Include(x => x.ProductTags)
             .ThenInclude(x => x.Tag)
-            .Where(x => x.IsActive && x.Category != null && x.Category.Slug == slug);
+            .Where(x => x.IsActive && (categoryIds.Contains(x.CategoryId) || x.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))));
 
         if (!string.IsNullOrWhiteSpace(tagSlug))
         {
@@ -256,7 +274,7 @@ public class StorefrontContentService : IStorefrontContentService
             .Take(12)
             .ToListAsync(cancellationToken);
 
-        var categoryTagOptions = await BuildCategoryTagOptionsAsync(slug, tagSlug, cancellationToken);
+        var categoryTagOptions = await BuildCategoryTagOptionsAsync(slug, categoryIds, tagSlug, cancellationToken);
         var sortFilter = document.Filters.FirstOrDefault(x => string.Equals(x.Group, "Sırala", StringComparison.OrdinalIgnoreCase));
         var shouldUseFallback = categoryProducts.Count == 0 && string.IsNullOrWhiteSpace(tagSlug);
         var productsForCategory = shouldUseFallback ? fallbackProducts : categoryProducts;
@@ -311,20 +329,26 @@ public class StorefrontContentService : IStorefrontContentService
         return new ProductDetailViewModel
         {
             Title = $"{product.Name} | VitaCure",
-            MetaDescription = string.IsNullOrWhiteSpace(product.Description) ? $"{product.Name} detay sayfasi." : product.Description,
+            MetaDescription = string.IsNullOrWhiteSpace(product.Description) ? $"{product.Name} detay sayfasi." : HtmlContentSanitizer.StripHtml(product.Description),
             CanonicalPath = $"/{product.Slug}",
             Name = product.Name,
             Slug = product.Slug,
             Description = product.Description,
             ImageUrl = product.ImageUrl,
             GalleryImages = BuildGalleryImages(product),
-            Price = FormatPrice(product.Price),
-            OldPrice = product.OldPrice.HasValue ? FormatPrice(product.OldPrice.Value) : string.Empty,
+            Price = BuildProductPrice(product),
+            OldPrice = BuildProductOldPrice(product),
             Rating = product.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
             RatingWidth = $"{Math.Round(product.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             SizeLabel = BuildProductSizeLabel(product.Name),
             CategoryName = product.Category.Name,
             CategorySlug = product.Category.Slug,
+            StockLabel = BuildStockLabel(product),
+            HasVariants = product.ProductVariants.Any(x => x.IsActive),
+            VariantGroupName = BuildVariantGroupName(product),
+            SelectedVariantLabel = BuildSelectedVariantLabel(product),
+            SelectedVariantId = GetPrimaryVariant(product)?.Id,
+            Variants = BuildProductVariants(product),
             CartProductSlug = product.Slug,
             Tags = product.ProductTags
                 .Where(x => x.Tag is not null)
@@ -344,30 +368,76 @@ public class StorefrontContentService : IStorefrontContentService
 
     private static IReadOnlyList<string> BuildGalleryImages(Product product)
     {
-        var images = new List<string>();
+        return ProductMediaSync.GetOrderedUrls(product);
+    }
 
-        if (!string.IsNullOrWhiteSpace(product.ImageUrl))
-        {
-            images.Add(product.ImageUrl);
-        }
+    private static string BuildProductPrice(Product product)
+    {
+        var selectedVariant = GetPrimaryVariant(product);
+        return FormatPrice(selectedVariant?.Price ?? product.Price);
+    }
 
-        if (!string.IsNullOrWhiteSpace(product.GalleryImageUrls))
-        {
-            images.AddRange(product.GalleryImageUrls
-                .Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Where(value => !string.IsNullOrWhiteSpace(value)));
-        }
+    private static string BuildProductOldPrice(Product product)
+    {
+        var selectedVariant = GetPrimaryVariant(product);
+        var oldPrice = selectedVariant?.OldPrice ?? product.OldPrice;
+        return oldPrice.HasValue ? FormatPrice(oldPrice.Value) : string.Empty;
+    }
 
-        return images
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+    private static string BuildStockLabel(Product product)
+    {
+        var selectedVariant = GetPrimaryVariant(product);
+        var stock = selectedVariant?.Stock ?? product.Stock;
+        return stock > 0 ? $"Stokta {stock} adet" : "Stokta yok";
+    }
+
+    private static string BuildVariantGroupName(Product product)
+    {
+        return GetPrimaryVariant(product)?.GroupName ?? string.Empty;
+    }
+
+    private static string BuildSelectedVariantLabel(Product product)
+    {
+        return GetPrimaryVariant(product)?.OptionName ?? string.Empty;
+    }
+
+    private static IReadOnlyList<ProductDetailVariantViewModel> BuildProductVariants(Product product)
+    {
+        var selectedVariant = GetPrimaryVariant(product);
+
+        return product.ProductVariants
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.OptionName)
+            .Select(x => new ProductDetailVariantViewModel
+            {
+                Id = x.Id,
+                Label = x.OptionName,
+                Price = FormatPrice(x.Price),
+                OldPrice = x.OldPrice.HasValue ? FormatPrice(x.OldPrice.Value) : null,
+                StockLabel = x.Stock > 0 ? $"Stok {x.Stock}" : "Stokta yok",
+                IsSelected = selectedVariant?.Id == x.Id,
+                IsActive = x.IsActive
+            })
             .ToArray();
     }
 
-    private async Task<IReadOnlyList<CategoryTagViewModel>> BuildCategoryTagOptionsAsync(string categorySlug, string? activeTagSlug, CancellationToken cancellationToken)
+    private static ProductVariant? GetPrimaryVariant(Product product)
+    {
+        return product.ProductVariants
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.OptionName)
+            .FirstOrDefault();
+    }
+
+    private async Task<IReadOnlyList<CategoryTagViewModel>> BuildCategoryTagOptionsAsync(string categorySlug, IReadOnlyList<int> categoryIds, string? activeTagSlug, CancellationToken cancellationToken)
     {
         var tagItems = await _dbContext.ProductTags
             .AsNoTracking()
-            .Where(x => x.Product != null && x.Tag != null && x.Product.IsActive && x.Product.Category != null && x.Product.Category.Slug == categorySlug)
+            .Where(x => x.Product != null && x.Tag != null && x.Product.IsActive &&
+                        (categoryIds.Contains(x.Product.CategoryId) ||
+                         x.Product.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))))
             .Select(x => new
             {
                 x.Tag!.Name,
@@ -600,12 +670,14 @@ public class StorefrontContentService : IStorefrontContentService
             Name = item.Name,
             SizeLabel = BuildProductSizeLabel(item.Name),
             ImageUrl = item.ImageUrl,
-            Price = item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ","),
-            OldPrice = item.OldPrice?.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture).Replace(".", ",") ?? string.Empty,
+            Price = BuildProductPrice(item),
+            OldPrice = BuildProductOldPrice(item),
             Rating = item.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture),
             RatingWidth = $"{Math.Round(item.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = item.Description ?? string.Empty,
             Href = $"/{item.Slug}",
+            AddToCartLabel = item.ProductVariants.Any(x => x.IsActive) ? "Urunu Incele" : "Sepete Ekle",
+            HasVariants = item.ProductVariants.Any(x => x.IsActive),
             CartProductSlug = item.Slug
         }).ToList();
     }

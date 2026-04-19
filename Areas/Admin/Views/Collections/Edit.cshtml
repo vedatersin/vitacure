@@ -1,0 +1,35 @@
+@model vitacure.Models.ViewModels.Admin.CollectionFormViewModel
+
+@{
+    ViewData["Title"] = "Koleksiyon Duzenle";
+
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog",
+        Title = "Koleksiyonu duzenle",
+        Description = "Urun gruplari ve merchandising katmanlari bu ekrandan revize edilir.",
+        IconClass = "fa-solid fa-pen-ruler",
+        AsideTitle = "Koleksiyon Notu",
+        AsideText = "Secili urunler degistiginde storefront ve merchandising yuzeyleri de etkilenir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Secili Urun", Value = Model.SelectedProductIds.Count.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Koleksiyonlar", Url = "/admin/collections" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminCompactHeader.cshtml", hero)
+    <partial name="_Form" model="Model" />
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

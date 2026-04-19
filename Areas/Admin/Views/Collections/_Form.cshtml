@@ -1,0 +1,131 @@
+@model vitacure.Models.ViewModels.Admin.CollectionFormViewModel
+@{
+    var selectedProducts = Model.ProductOptions
+        .Where(product => Model.SelectedProductIds.Contains(product.Id))
+        .ToList();
+}
+
+<form method="post" action="@Context.Request.Path" class="auth-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="admin-editor-layout">
+        <div class="admin-editor-main">
+            <section class="admin-editor-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Temel Bilgiler</span>
+                        <h2>Koleksiyon kimligi</h2>
+                        <p class="admin-editor-note">Koleksiyonlar kategori ve vitrinden ayri bir merchandising katmani olarak davranir.</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control auth-input" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Slug" class="form-label"></label>
+                        <input asp-for="Slug" class="form-control auth-input" />
+                        <span asp-validation-for="Slug" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Koleksiyonun ne icin var oldugunu kisaca anlatin..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-editor-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Urun Havuzu</span>
+                        <h2>Koleksiyona urun bagla</h2>
+                        <p class="admin-editor-note">Bu iliski ileride storefront landing, kampanya bloklari ve merchandising kurallari icin kullanilabilir.</p>
+                    </div>
+                </div>
+
+                <div class="auth-checkbox-grid admin-product-tag-grid">
+                    @foreach (var product in Model.ProductOptions)
+                    {
+                        var isChecked = Model.SelectedProductIds.Contains(product.Id);
+                        <label class="auth-checkbox-card">
+                            <input type="checkbox" name="SelectedProductIds" value="@product.Id" @(isChecked ? "checked" : null) />
+                            <span>@product.Name</span>
+                            <small>@product.CategoryName - @product.BrandName</small>
+                        </label>
+                    }
+                </div>
+            </section>
+        </div>
+
+        <aside class="admin-editor-aside">
+            <section class="admin-editor-card">
+                <div class="admin-editor-actions">
+                    <button type="submit" class="btn admin-editor-primary">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Kaydet</span>
+                    </button>
+                    <a href="/admin/collections" class="admin-editor-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Listeye Don</span>
+                    </a>
+                </div>
+            </section>
+
+            <section class="admin-editor-card">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="SortOrder" class="form-label"></label>
+                        <input asp-for="SortOrder" class="form-control auth-input" type="number" min="0" step="1" />
+                        <span asp-validation-for="SortOrder" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="ShowOnHome" class="form-check-input" />
+                            <label asp-for="ShowOnHome" class="form-check-label"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" />
+                            <label asp-for="IsActive" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-editor-card">
+                <div class="admin-editor-section-head">
+                    <div>
+                        <span class="admin-editor-kicker">Secili Urunler</span>
+                        <h2>Hizli ozet</h2>
+                    </div>
+                </div>
+
+                <div class="admin-editor-tag-summary">
+                    @if (selectedProducts.Count == 0)
+                    {
+                        <span class="admin-editor-tag-pill">Urun secilmedi</span>
+                    }
+                    else
+                    {
+                        @foreach (var product in selectedProducts.Take(12))
+                        {
+                            <span class="admin-editor-tag-pill">@product.Name</span>
+                        }
+                    }
+                </div>
+            </section>
+        </aside>
+    </div>
+</form>

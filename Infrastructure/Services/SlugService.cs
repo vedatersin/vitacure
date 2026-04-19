@@ -88,6 +88,36 @@ public class SlugService : ISlugService
             x => x.Name,
             x => x.Slug,
             cancellationToken);
+
+        await EnsureEntityConflictFreeAsync(
+            _dbContext.Brands.AsNoTracking(),
+            normalizedSlug,
+            SlugEntityType.Brand,
+            entityType == SlugEntityType.Brand ? currentEntityId : null,
+            x => x.Id,
+            x => x.Name,
+            x => x.Slug,
+            cancellationToken);
+
+        await EnsureEntityConflictFreeAsync(
+            _dbContext.Features.AsNoTracking(),
+            normalizedSlug,
+            SlugEntityType.Feature,
+            entityType == SlugEntityType.Feature ? currentEntityId : null,
+            x => x.Id,
+            x => x.Name,
+            x => x.Slug,
+            cancellationToken);
+
+        await EnsureEntityConflictFreeAsync(
+            _dbContext.Collections.AsNoTracking(),
+            normalizedSlug,
+            SlugEntityType.Collection,
+            entityType == SlugEntityType.Collection ? currentEntityId : null,
+            x => x.Id,
+            x => x.Name,
+            x => x.Slug,
+            cancellationToken);
     }
 
     public async Task<StorefrontSlugMatch> ResolveStorefrontAsync(string slug, CancellationToken cancellationToken = default)
@@ -133,6 +163,9 @@ public class SlugService : ISlugService
             SlugEntityType.Product => "urun",
             SlugEntityType.Tag => "etiket",
             SlugEntityType.Showcase => "vitrin",
+            SlugEntityType.Brand => "marka",
+            SlugEntityType.Feature => "ozellik",
+            SlugEntityType.Collection => "koleksiyon",
             _ => "kayit"
         };
 

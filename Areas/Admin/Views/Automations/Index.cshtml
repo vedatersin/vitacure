@@ -1,0 +1,29 @@
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Yapay Calisma Katmani",
+        Title = "Otomasyonlar",
+        Description = "Zamanlanmis akislari, heartbeat mantiklarini ve tekrarli admin gorevlerini yonetecek alan.",
+        IconClass = "fa-solid fa-bolt",
+        AsideTitle = "Hazirlik Notu",
+        AsideText = "Modul bos iskelet olarak acildi. Planli gorevler ve tekrarli kontroller icin alt bolumler sonraki turda eklenebilir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Durum", Value = "Hazir" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Akis", Value = "Yakinda" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Otomasyonlar", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        <h2>Otomasyon merkezi hazir</h2>
+        <p>Bu alan zamanlanmis isler, AI destekli tekrarli gorevler ve izleme akislari icin ayrildi.</p>
+    </section>
+</div>

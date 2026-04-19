@@ -1,0 +1,52 @@
+@model vitacure.Models.ViewModels.Admin.FeatureFormViewModel
+
+<form method="post" action="@Context.Request.Path" class="auth-form">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div class="admin-operator-card mb-4">
+        <span>Katalog Notu</span>
+        <strong>Ozellikler filtre, teknik detay ve varyant mantiginin cekirdek katmanidir</strong>
+        <small>Grup isimleri ve secenek listeleri urun editorunde tekrar kullanilir.</small>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control auth-input" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Slug" class="form-label"></label>
+            <input asp-for="Slug" class="form-control auth-input" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="GroupName" class="form-label"></label>
+            <input asp-for="GroupName" class="form-control auth-input" placeholder="Orn. Form, Icerik, Hedef" />
+            <span asp-validation-for="GroupName" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label asp-for="OptionsContent" class="form-label"></label>
+            <textarea asp-for="OptionsContent" class="form-control auth-textarea" rows="6" placeholder="Her satira bir secenek yazin. Orn. Kapsul&#10;Tablet&#10;Sase"></textarea>
+            <span asp-validation-for="OptionsContent" class="text-danger"></span>
+        </div>
+
+        <div class="col-12">
+            <label class="auth-checkbox-card">
+                <input asp-for="IsActive" />
+                <span>Ozellik aktif</span>
+                <small>Aktif ozellikler urun formunda secilebilir olur.</small>
+            </label>
+        </div>
+    </div>
+
+    <div class="auth-admin-actions mt-4">
+        <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
+        <a href="/admin/features" class="btn auth-submit-btn auth-tertiary-btn">Listeye Don</a>
+    </div>
+</form>

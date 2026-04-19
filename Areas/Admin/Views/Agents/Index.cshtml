@@ -1,0 +1,29 @@
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Yapay Calisma Katmani",
+        Title = "Agentlar",
+        Description = "Ajan gorevleri, uzman rolleri ve gelecekteki is parcaciklari icin ayrilan moduler alan.",
+        IconClass = "fa-solid fa-robot",
+        AsideTitle = "Hazirlik Notu",
+        AsideText = "Bu alan bos iskelet olarak hazirlandi. Alt paneller sonraki turda gorev tiplerine gore acilacak.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Durum", Value = "Hazir" },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Alt Alan", Value = "Yakinda" }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Agentlar", IsActive = true }
+        }
+    };
+}
+
+<div class="admin-page-grid">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+    <section class="admin-section-card">
+        <h2>Agent merkezi hazir</h2>
+        <p>Bu modulu ayri actim. Siradaki turda gorev kuyrugu, rol bazli agent setleri ve calisma gecmisi alt alanlarini baglayabiliriz.</p>
+    </section>
+</div>

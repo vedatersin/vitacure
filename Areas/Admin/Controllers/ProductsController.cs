@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,23 +12,14 @@ namespace vitacure.Areas.Admin.Controllers;
 [Authorize(Roles = "Admin,Editor")]
 public class ProductsController : AdminControllerBase
 {
-    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ".png",
-        ".jpg",
-        ".jpeg",
-        ".webp",
-        ".gif"
-    };
-
     private readonly IAdminProductService _adminProductService;
-    private readonly IWebHostEnvironment _environment;
+    private readonly IAdminMediaLibraryService _adminMediaLibraryService;
     private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(IAdminProductService adminProductService, IWebHostEnvironment environment, ILogger<ProductsController> logger)
+    public ProductsController(IAdminProductService adminProductService, IAdminMediaLibraryService adminMediaLibraryService, ILogger<ProductsController> logger)
     {
         _adminProductService = adminProductService;
-        _environment = environment;
+        _adminMediaLibraryService = adminMediaLibraryService;
         _logger = logger;
     }
 
@@ -58,10 +48,14 @@ public class ProductsController : AdminControllerBase
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ProductFormViewModel model, CancellationToken cancellationToken)
     {
+        await ValidateFeatureSelectionsAsync(model, cancellationToken);
+
         if (!ModelState.IsValid)
         {
             var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
+            model.BrandOptions = createModel.BrandOptions;
             model.CategoryOptions = createModel.CategoryOptions;
+            model.FeatureOptions = createModel.FeatureOptions;
             model.TagOptions = createModel.TagOptions;
             SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
@@ -76,7 +70,9 @@ public class ProductsController : AdminControllerBase
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
             var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
+            model.BrandOptions = createModel.BrandOptions;
             model.CategoryOptions = createModel.CategoryOptions;
+            model.FeatureOptions = createModel.FeatureOptions;
             model.TagOptions = createModel.TagOptions;
             SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
@@ -85,7 +81,9 @@ public class ProductsController : AdminControllerBase
         {
             _logger.LogError(ex, "Urun olusturma sirasinda beklenmedik hata.");
             var createModel = await _adminProductService.GetCreateModelAsync(cancellationToken);
+            model.BrandOptions = createModel.BrandOptions;
             model.CategoryOptions = createModel.CategoryOptions;
+            model.FeatureOptions = createModel.FeatureOptions;
             model.TagOptions = createModel.TagOptions;
             SetUnexpectedErrorToast("Urun kaydi guncellenemedi", ex);
             return View(model);
@@ -115,10 +113,14 @@ public class ProductsController : AdminControllerBase
             return BadRequest();
         }
 
+        await ValidateFeatureSelectionsAsync(model, cancellationToken);
+
         if (!ModelState.IsValid)
         {
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
+            model.BrandOptions = editModel?.BrandOptions ?? Array.Empty<ProductBrandOptionViewModel>();
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+            model.FeatureOptions = editModel?.FeatureOptions ?? Array.Empty<ProductFeatureOptionViewModel>();
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
@@ -133,7 +135,9 @@ public class ProductsController : AdminControllerBase
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
+            model.BrandOptions = editModel?.BrandOptions ?? Array.Empty<ProductBrandOptionViewModel>();
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+            model.FeatureOptions = editModel?.FeatureOptions ?? Array.Empty<ProductFeatureOptionViewModel>();
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             SetValidationToast("Urun kaydi guncellenemedi");
             return View(model);
@@ -142,7 +146,9 @@ public class ProductsController : AdminControllerBase
         {
             _logger.LogError(ex, "Urun guncelleme sirasinda beklenmedik hata. ProductId: {ProductId}", id);
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
+            model.BrandOptions = editModel?.BrandOptions ?? Array.Empty<ProductBrandOptionViewModel>();
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+            model.FeatureOptions = editModel?.FeatureOptions ?? Array.Empty<ProductFeatureOptionViewModel>();
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             SetUnexpectedErrorToast("Urun kaydi guncellenemedi", ex);
             return View(model);
@@ -161,28 +167,20 @@ public class ProductsController : AdminControllerBase
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] string? slug, CancellationToken cancellationToken)
     {
-        if (file is null || file.Length == 0)
+        try
         {
-            return BadRequest(new { error = "Gorsel secilmedi." });
+            var item = await _adminMediaLibraryService.UploadAsync(file, slug, cancellationToken);
+            return Json(new { url = item.Url, id = item.Id, name = item.OriginalFileName });
         }
-
-        var extension = Path.GetExtension(file.FileName);
-        if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension))
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = "Desteklenmeyen gorsel formati." });
+            return BadRequest(new { error = ex.Message });
         }
-
-        var uploadsDirectory = Path.Combine(_environment.WebRootPath, "img", "products");
-        Directory.CreateDirectory(uploadsDirectory);
-
-        var safeSlug = NormalizeFileSegment(slug);
-        var fileName = $"{safeSlug}-{DateTime.UtcNow:yyyyMMddHHmmssfff}{extension.ToLowerInvariant()}";
-        var fullPath = Path.Combine(uploadsDirectory, fileName);
-
-        await using var stream = new FileStream(fullPath, FileMode.Create);
-        await file.CopyToAsync(stream, cancellationToken);
-
-        return Json(new { url = $"/img/products/{fileName}" });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Urun gorseli yuklenirken beklenmedik hata.");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Gorsel yuklenemedi." });
+        }
     }
 
     private static ProductListViewModel ApplyFilters(ProductListViewModel model, string? q, string? status, string? stock)
@@ -198,7 +196,8 @@ public class ProductsController : AdminControllerBase
             query = query.Where(item =>
                 item.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
                 item.Slug.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                item.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase));
+                item.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                item.BrandName.Contains(search, StringComparison.OrdinalIgnoreCase));
         }
 
         query = normalizedStatus switch
@@ -232,15 +231,54 @@ public class ProductsController : AdminControllerBase
     private bool IsAjaxRequest()
         => string.Equals(Request.Headers["X-Requested-With"].ToString(), "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 
-    private static string NormalizeFileSegment(string? value)
+    private async Task ValidateFeatureSelectionsAsync(ProductFormViewModel model, CancellationToken cancellationToken)
     {
-        var raw = string.IsNullOrWhiteSpace(value) ? "product" : value.Trim().ToLowerInvariant();
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = new string(raw.Select(character => invalidChars.Contains(character) ? '-' : character).ToArray());
+        var sourceModel = model.Id.HasValue
+            ? await _adminProductService.GetEditModelAsync(model.Id.Value, cancellationToken)
+            : await _adminProductService.GetCreateModelAsync(cancellationToken);
 
-        return sanitized
-            .Replace(" ", "-")
-            .Replace("--", "-")
-            .Trim('-');
+        model.BrandOptions = sourceModel?.BrandOptions ?? Array.Empty<ProductBrandOptionViewModel>();
+        model.CategoryOptions = sourceModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
+        model.FeatureOptions = sourceModel?.FeatureOptions ?? Array.Empty<ProductFeatureOptionViewModel>();
+        model.TagOptions = sourceModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
+        model.SelectedCategoryIds = model.SelectedCategoryIds
+            .Where(x => x > 0)
+            .Append(model.CategoryId)
+            .Distinct()
+            .ToArray();
+
+        var selectedFeatureIds = model.SelectedFeatureIds
+            .Where(x => x > 0)
+            .Distinct()
+            .ToHashSet();
+
+        foreach (var feature in model.FeatureOptions.Where(feature => selectedFeatureIds.Contains(feature.Id) && feature.Options.Count > 0))
+        {
+            var hasValue = model.SelectedFeatureValues.TryGetValue(feature.Id, out var value) &&
+                           !string.IsNullOrWhiteSpace(value);
+
+            if (!hasValue)
+            {
+                ModelState.AddModelError(nameof(model.SelectedFeatureIds), $"'{feature.Name}' icin bir secenek belirlemelisiniz.");
+            }
+        }
+
+        var variants = model.Variants
+            .Where(variant => !string.IsNullOrWhiteSpace(variant.GroupName) || !string.IsNullOrWhiteSpace(variant.OptionName) || !string.IsNullOrWhiteSpace(variant.Sku))
+            .ToList();
+
+        for (var index = 0; index < variants.Count; index++)
+        {
+            var variant = variants[index];
+            if (string.IsNullOrWhiteSpace(variant.GroupName) || string.IsNullOrWhiteSpace(variant.OptionName))
+            {
+                ModelState.AddModelError(nameof(model.Variants), $"Variant satiri {index + 1} icin eksen ve secenek alanlari zorunludur.");
+            }
+
+            if (variant.Price <= 0)
+            {
+                ModelState.AddModelError(nameof(model.Variants), $"Variant satiri {index + 1} icin fiyat sifirdan buyuk olmalidir.");
+            }
+        }
     }
 }

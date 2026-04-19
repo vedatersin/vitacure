@@ -32,19 +32,32 @@
             <span class="pc-price-old">&#8378; @Model.OldPrice</span>
         </div>
         <div class="pc-add-btn-row">
-            <button
-                class="pc-add-btn"
-                type="button"
-                aria-pressed="false"
-                data-cart-button
-                data-cart-product-id="@Model.CartProductSlug"
-                data-default-label="@Model.AddToCartLabel"
-                data-added-label="Eklendi">
-                <i class="fa-solid fa-cart-shopping pc-add-btn-icon pc-add-btn-icon-cart"></i>
-                <i class="fa-solid fa-spinner pc-add-btn-icon pc-add-btn-icon-spinner"></i>
-                <i class="fa-regular fa-circle-check pc-add-btn-icon pc-add-btn-icon-check"></i>
-                <span class="pc-add-btn-text">@Model.AddToCartLabel</span>
-            </button>
+            @if (Model.HasVariants)
+            {
+                <button class="pc-add-btn"
+                        type="button"
+                        data-product-href="@Model.Href"
+                        data-product-inspect-button>
+                    <i class="fa-solid fa-magnifying-glass pc-add-btn-icon pc-add-btn-icon-cart"></i>
+                    <span class="pc-add-btn-text">@Model.AddToCartLabel</span>
+                </button>
+            }
+            else
+            {
+                <button
+                    class="pc-add-btn"
+                    type="button"
+                    aria-pressed="false"
+                    data-cart-button
+                    data-cart-product-id="@Model.CartProductSlug"
+                    data-default-label="@Model.AddToCartLabel"
+                    data-added-label="Eklendi">
+                    <i class="fa-solid fa-cart-shopping pc-add-btn-icon pc-add-btn-icon-cart"></i>
+                    <i class="fa-solid fa-spinner pc-add-btn-icon pc-add-btn-icon-spinner"></i>
+                    <i class="fa-regular fa-circle-check pc-add-btn-icon pc-add-btn-icon-check"></i>
+                    <span class="pc-add-btn-text">@Model.AddToCartLabel</span>
+                </button>
+            }
         </div>
     </div>
 </a>

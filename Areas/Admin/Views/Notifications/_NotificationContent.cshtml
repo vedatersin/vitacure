@@ -57,12 +57,25 @@
                     <div>
                         <span class="admin-page-eyebrow">@Model.SelectedNotification.CategoryLabel</span>
                         <h2>@Model.SelectedNotification.Title</h2>
-                        <p>@Model.SelectedNotification.Actor • @Model.SelectedNotification.Source</p>
+                        <p>@Model.SelectedNotification.Actor | @Model.SelectedNotification.Source</p>
                     </div>
                     <small>@Model.SelectedNotification.OccurredAt.ToLocalTime().ToString("dd MMMM yyyy HH:mm")</small>
                 </div>
 
+                <div class="admin-notification-detail-tags">
+                    <span>@Model.SelectedNotification.Source</span>
+                    <span>@Model.SelectedNotification.CategoryLabel</span>
+                    <span class="@(Model.SelectedNotification.IsUnread ? "is-unread" : "is-read")">
+                        @(Model.SelectedNotification.IsUnread ? "Yeni" : "Okundu")
+                    </span>
+                    @if (Model.SelectedNotification.ReadAt.HasValue)
+                    {
+                        <span>Okundu: @Model.SelectedNotification.ReadAt.Value.ToLocalTime().ToString("dd MMM HH:mm")</span>
+                    }
+                </div>
+
                 <div class="admin-notification-detail-body">
+                    <p class="admin-notification-detail-summary">@Model.SelectedNotification.Summary</p>
                     <p>@Model.SelectedNotification.Body</p>
                 </div>
 

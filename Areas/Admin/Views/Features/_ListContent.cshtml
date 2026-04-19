@@ -1,0 +1,92 @@
+@model vitacure.Models.ViewModels.Admin.FeatureListViewModel
+
+@{
+    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    {
+        Eyebrow = "Katalog Genisleme",
+        Title = "Ozellik listesi",
+        Description = "Storefront filtre bloklari ve urun editorundeki secilebilir metadata gruplari bu listeden beslenir.",
+        IconClass = "fa-solid fa-sliders",
+        AsideTitle = "Ozellik ozeti",
+        AsideText = "Aktif ve kullanimda olan ozellikler katalogun ne kadar derinlestigini gosterir.",
+        Stats = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kullanimda", Value = Model.UsedCount.ToString() }
+        },
+        Breadcrumbs = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Ozellikler", IsActive = true }
+        }
+    };
+
+    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
+    {
+        ActionUrl = "/admin/features",
+        SearchPlaceholder = "Ozellik ara, grup bul, secenek setini kontrol et...",
+        SearchValue = Model.SearchTerm,
+        PrimaryActionLabel = "Yeni Ozellik",
+        PrimaryActionUrl = "/admin/features/create",
+        Selects = new[]
+        {
+            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            {
+                Name = "status",
+                Label = "Durum",
+                Value = Model.StatusFilter,
+                Options = new[]
+                {
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum ozellikler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
+                }
+            }
+        }
+    };
+}
+
+@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+
+<section class="admin-section-card">
+    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+
+    <div class="admin-table-wrap">
+        <table class="table auth-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ozellik</th>
+                    <th>Grup</th>
+                    <th>Slug</th>
+                    <th>Secenekler</th>
+                    <th>Urun Sayisi</th>
+                    <th>Durum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var feature in Model.Features)
+                {
+                    <tr>
+                        <td>@feature.Id</td>
+                        <td>@feature.Name</td>
+                        <td>@feature.GroupName</td>
+                        <td>@feature.Slug</td>
+                        <td>@(string.IsNullOrWhiteSpace(feature.OptionsPreview) ? "-" : feature.OptionsPreview)</td>
+                        <td>@feature.ProductCount</td>
+                        <td>
+                            <span class="auth-status-badge @(feature.IsActive ? "is-active" : "is-passive")">
+                                @(feature.IsActive ? "Aktif" : "Pasif")
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="/admin/features/edit/@feature.Id" class="btn auth-table-link">Duzenle</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

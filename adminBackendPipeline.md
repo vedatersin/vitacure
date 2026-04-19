@@ -25,6 +25,9 @@ Kapsam: admin auth, dashboard verileri, katalog CRUD, bildirim backend'i, cache 
 - [x] Order listeleme modulu acildi
 - [x] Admin CRUD sonrasi output cache invalidation eklendi
 - [x] Cache gozlemlenebilirligi dashboard'a baglandi
+- [x] Admin bildirim entity, service ve migration omurgasi eklendi
+- [x] Read/unread state, liste, detay ve sayac endpoint'leri gercek veriye baglandi
+- [x] Siparis, favori, sepet, uye kaydi, e-posta dogrulama ve sifre sifirlama akislarindan bildirim uretimi eklendi
 
 ## Devam Eden ve Acik Isler
 
@@ -44,10 +47,10 @@ Kapsam: admin auth, dashboard verileri, katalog CRUD, bildirim backend'i, cache 
 
 ### Bildirim backend'i
 
-- [ ] Admin bildirim entity yapisi
-- [ ] Read/unread state
-- [ ] Liste, detay ve sayac endpoint'leri
-- [ ] Yeni siparis, favori, sepete ekleme, yeni uye kaydi gibi eventlerden bildirim uretimi
+- [x] Admin bildirim entity yapisi
+- [x] Read/unread state
+- [x] Liste, detay ve sayac endpoint'leri
+- [x] Yeni siparis, favori, sepete ekleme, yeni uye kaydi gibi eventlerden bildirim uretimi
 
 ### Altyapi
 
@@ -69,6 +72,6 @@ Bu basliklar `homeBackendPipeline.md` icinde takip edilir.
 
 ## Bir Sonraki Sira
 
-1. Admin notification backend omurgasi
-2. User role assignment ve reset akislari
-3. Audit trail ihtiyacinin netlestirilmesi
+1. User role assignment ve reset akislari
+2. Audit trail ihtiyacinin netlestirilmesi
+3. Admin CRUD aksiyonlarini da notification feed ve audit trail'e baglamak

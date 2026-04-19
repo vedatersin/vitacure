@@ -176,7 +176,7 @@
                                                     <td>@order.Status</td>
                                                     <td>@order.TotalQuantity</td>
                                                     <td>&#8378; @order.TotalAmount</td>
-                                                    <td>@string.Join(", ", order.Items.Select(item => $"{item.ProductName} x{item.Quantity}"))</td>
+                                                    <td>@string.Join(", ", order.Items.Select(item => $"{item.ProductName}{(string.IsNullOrWhiteSpace(item.VariantLabel) ? string.Empty : $" ({item.VariantLabel})")} x{item.Quantity}"))</td>
                                                 </tr>
                                             }
                                         </tbody>

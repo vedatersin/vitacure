@@ -13,6 +13,8 @@ public class CartItemViewModel
 {
     public string ProductSlug { get; set; } = string.Empty;
     public string ProductName { get; set; } = string.Empty;
+    public int? VariantId { get; set; }
+    public string? VariantLabel { get; set; }
     public string ProductImageUrl { get; set; } = string.Empty;
     public string ProductHref { get; set; } = "#";
     public int Quantity { get; set; }
