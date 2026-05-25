@@ -73,6 +73,8 @@ public class AdminCategoryService : IAdminCategoryService
             Slug = category.Slug,
             Description = category.Description,
             ParentId = category.ParentId,
+            ImageUrl = category.ImageUrl,
+            ProductSortType = category.ProductSortType,
             SeoTitle = category.SeoTitle,
             MetaDescription = category.MetaDescription,
             IsActive = category.IsActive,
@@ -91,6 +93,8 @@ public class AdminCategoryService : IAdminCategoryService
             Slug = normalizedSlug,
             Description = model.Description.Trim(),
             ParentId = model.ParentId,
+            ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Trim(),
+            ProductSortType = string.IsNullOrWhiteSpace(model.ProductSortType) ? null : model.ProductSortType.Trim(),
             SeoTitle = string.IsNullOrWhiteSpace(model.SeoTitle) ? null : model.SeoTitle.Trim(),
             MetaDescription = string.IsNullOrWhiteSpace(model.MetaDescription) ? null : model.MetaDescription.Trim(),
             IsActive = model.IsActive
@@ -122,6 +126,8 @@ public class AdminCategoryService : IAdminCategoryService
         entity.Slug = normalizedSlug;
         entity.Description = model.Description.Trim();
         entity.ParentId = model.ParentId;
+        entity.ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Trim();
+        entity.ProductSortType = string.IsNullOrWhiteSpace(model.ProductSortType) ? null : model.ProductSortType.Trim();
         entity.SeoTitle = string.IsNullOrWhiteSpace(model.SeoTitle) ? null : model.SeoTitle.Trim();
         entity.MetaDescription = string.IsNullOrWhiteSpace(model.MetaDescription) ? null : model.MetaDescription.Trim();
         entity.IsActive = model.IsActive;

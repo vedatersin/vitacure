@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using vitacure.Domain.Entities;
+using vitacure.Domain.Enums;
 using vitacure.Infrastructure.Persistence;
 using vitacure.Infrastructure.Services;
 using vitacure.Models.ViewModels.Admin;
@@ -26,7 +27,7 @@ public class AdminProductServiceTests
         dbContext.Features.Add(new Feature
         {
             Id = 30,
-            Name = "Urun Formu",
+            Name = "Ürün Formu",
             Slug = "urun-formu",
             GroupName = "Form",
             IsActive = true
@@ -114,6 +115,14 @@ public class AdminProductServiceTests
             Slug = "ocean",
             IsActive = true
         });
+        dbContext.GoogleProductCategories.Add(new GoogleProductCategory
+        {
+            Id = 90,
+            Name = "Saglik ve Guzellik",
+            Slug = "saglik-ve-guzellik",
+            IsActive = true,
+            SortOrder = 1
+        });
         dbContext.Features.Add(new Feature
         {
             Id = 25,
@@ -141,6 +150,7 @@ public class AdminProductServiceTests
             ImageUrl = "/img/yeni-urun.png",
             Stock = 25,
             BrandId = 7,
+            GoogleProductCategoryId = 90,
             CategoryId = 1,
             IsActive = true,
             SelectedFeatureValues = new Dictionary<int, string> { [25] = "Uyku" },
@@ -153,11 +163,44 @@ public class AdminProductServiceTests
         Assert.Equal("Yeni Ürün", created!.Name);
         Assert.Equal("yeni-urun", created.Slug);
         Assert.Equal(7, created.BrandId);
+        Assert.Equal(90, created.GoogleProductCategoryId);
         Assert.Equal(1, created.CategoryId);
         Assert.Equal(1, await dbContext.ProductFeatures.CountAsync(x => x.ProductId == id));
         Assert.Equal("Uyku", (await dbContext.ProductFeatures.FirstAsync(x => x.ProductId == id && x.FeatureId == 25)).Value);
         Assert.Equal(2, await dbContext.ProductTags.CountAsync(x => x.ProductId == id));
         Assert.Equal(1, cacheInvalidation.ProductInvalidationCount);
+    }
+
+    [Fact]
+    public async Task GetCreateModelAsync_Selects_Saglik_And_Loads_Google_Category_Options()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.GoogleProductCategories.AddRange(
+            new GoogleProductCategory
+            {
+                Id = 1,
+                Name = "Elektronik",
+                Slug = "elektronik",
+                IsActive = true,
+                SortOrder = 2
+            },
+            new GoogleProductCategory
+            {
+                Id = 2,
+                Name = "Saglik ve Guzellik",
+                Slug = "saglik-ve-guzellik",
+                IsActive = true,
+                SortOrder = 1
+            });
+        await dbContext.SaveChangesAsync();
+
+        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
+
+        var model = await service.GetCreateModelAsync();
+
+        Assert.Equal(2, model.GoogleProductCategoryId);
+        Assert.Equal(2, model.GoogleProductCategoryOptions.Count);
+        Assert.Contains(model.GoogleProductCategoryOptions, option => option.Name == "Saglik ve Guzellik");
     }
 
     [Fact]
@@ -178,7 +221,7 @@ public class AdminProductServiceTests
 
         var id = await service.CreateAsync(new ProductFormViewModel
         {
-            Name = "Medyali Urun",
+            Name = "Medyali Ürün",
             Slug = "medyali-urun",
             Description = "Test",
             Price = 100m,
@@ -230,7 +273,7 @@ public class AdminProductServiceTests
 
         var id = await service.CreateAsync(new ProductFormViewModel
         {
-            Name = "Bagli Medya Urunu",
+            Name = "Bagli Medya Ürünü",
             Slug = "bagli-medya-urunu",
             Description = "Test",
             Price = 100m,
@@ -278,27 +321,45 @@ public class AdminProductServiceTests
             Stock = 1,
             CategoryId = 1,
             IsActive = true,
+            VariantGroups = new[]
+            {
+                new ProductVariantGroupInputViewModel
+                {
+                    Id = -10,
+                    Name = "Boyut",
+                    SelectionStyle = "list",
+                    ShowOnCard = true,
+                    IsPrimary = true,
+                    SortOrder = 0,
+                    Options = new[]
+                    {
+                        new ProductVariantOptionInputViewModel { Id = -11, Name = "30 Tablet", SortOrder = 0 },
+                        new ProductVariantOptionInputViewModel { Id = -12, Name = "60 Tablet", SortOrder = 1 }
+                    }
+                }
+            },
             Variants = new[]
             {
                 new ProductVariantInputViewModel
                 {
-                    GroupName = "Boyut",
-                    OptionName = "30 Tablet",
+                    DisplayName = "30 Tablet",
                     Price = 189m,
                     OldPrice = 219m,
                     Stock = 8,
                     SortOrder = 0,
-                    IsActive = true
+                    IsActive = true,
+                    IsDefault = true,
+                    OptionIds = new[] { -11 }
                 },
                 new ProductVariantInputViewModel
                 {
-                    GroupName = "Boyut",
-                    OptionName = "60 Tablet",
+                    DisplayName = "60 Tablet",
                     Price = 299m,
                     OldPrice = 349m,
                     Stock = 12,
                     SortOrder = 1,
-                    IsActive = true
+                    IsActive = true,
+                    OptionIds = new[] { -12 }
                 }
             }
         });
@@ -311,6 +372,95 @@ public class AdminProductServiceTests
         Assert.Equal(189m, created.Price);
         Assert.Equal(219m, created.OldPrice);
         Assert.Equal(20, created.Stock);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Persists_Simple_Bundle_Items_And_Computes_Summary()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Categories.Add(new Category
+        {
+            Id = 1,
+            Name = "Paketler",
+            Slug = "paketler",
+            Description = "A",
+            IsActive = true
+        });
+        dbContext.Products.AddRange(
+            new Product
+            {
+                Id = 10,
+                Name = "Badem",
+                Slug = "badem",
+                Description = "Ürün",
+                Price = 50m,
+                Stock = 8,
+                CategoryId = 1,
+                IsActive = true
+            },
+            new Product
+            {
+                Id = 11,
+                Name = "Kaju",
+                Slug = "kaju",
+                Description = "Ürün",
+                Price = 30m,
+                Stock = 12,
+                CategoryId = 1,
+                IsActive = true
+            });
+        await dbContext.SaveChangesAsync();
+
+        var service = new AdminProductService(dbContext, new FakeCacheInvalidationService(), new SlugService(dbContext));
+
+        var id = await service.CreateAsync(new ProductFormViewModel
+        {
+            CreateMode = "bundle",
+            ProductKind = ProductKind.Bundle,
+            BundleMode = "simple",
+            BundlePricingMode = "sum",
+            BundleAdjustmentType = "increase",
+            BundleAdjustmentAmount = 10m,
+            Name = "Kuruyemis Paketi",
+            Slug = "kuruyemis-paketi",
+            Description = "Test paket",
+            Price = 1m,
+            ImageUrl = "/img/paket.png",
+            Stock = 1,
+            CategoryId = 1,
+            IsActive = true,
+            BundleItems = new[]
+            {
+                new ProductBundleItemInputViewModel
+                {
+                    ProductId = 10,
+                    ProductName = "Badem",
+                    UnitPrice = 50m,
+                    Quantity = 1,
+                    SortOrder = 0
+                },
+                new ProductBundleItemInputViewModel
+                {
+                    ProductId = 11,
+                    ProductName = "Kaju",
+                    UnitPrice = 30m,
+                    Quantity = 2,
+                    SortOrder = 1
+                }
+            }
+        });
+
+        var created = await dbContext.Products
+            .Include(x => x.ProductBundleItems.OrderBy(item => item.SortOrder))
+            .FirstAsync(x => x.Id == id);
+
+        Assert.Equal(ProductKind.Bundle, created.ProductKind);
+        Assert.Equal("simple", created.BundleMode);
+        Assert.Equal("sum", created.BundlePricingMode);
+        Assert.Equal(120m, created.Price);
+        Assert.Equal(6, created.Stock);
+        Assert.Equal(2, created.ProductBundleItems.Count);
+        Assert.All(created.ProductBundleItems, item => Assert.Equal(id, item.ProductId));
     }
 
     [Fact]
@@ -327,7 +477,7 @@ public class AdminProductServiceTests
 
         var id = await service.CreateAsync(new ProductFormViewModel
         {
-            Name = "Yeni Urun",
+            Name = "Yeni Ürün",
             Slug = "yeni-urun",
             Description = "Test",
             Price = 100m,
@@ -366,7 +516,7 @@ public class AdminProductServiceTests
 
         await Assert.ThrowsAsync<vitacure.Application.SlugConflictException>(() => service.CreateAsync(new ProductFormViewModel
         {
-            Name = "Yeni Urun",
+            Name = "Yeni Ürün",
             Slug = "login",
             Description = "Test aciklamasi",
             Price = 249m,

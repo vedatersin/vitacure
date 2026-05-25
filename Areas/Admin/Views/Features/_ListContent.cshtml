@@ -4,11 +4,11 @@
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
         Eyebrow = "Katalog Genisleme",
-        Title = "Ozellik listesi",
-        Description = "Storefront filtre bloklari ve urun editorundeki secilebilir metadata gruplari bu listeden beslenir.",
+        Title = "Özellik listesi",
+        Description = "Storefront filtre bloklari ve ürün editöründeki seçilebilir metadata gruplari bu listeden beslenir.",
         IconClass = "fa-solid fa-sliders",
-        AsideTitle = "Ozellik ozeti",
-        AsideText = "Aktif ve kullanimda olan ozellikler katalogun ne kadar derinlestigini gosterir.",
+        AsideTitle = "Özellik özeti",
+        AsideText = "Aktif ve kullanimda olan özellikler katalogun ne kadar derinleştiğini gösterir.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -18,16 +18,16 @@
         Breadcrumbs = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Ozellikler", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Özellikler", IsActive = true }
         }
     };
 
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/features",
-        SearchPlaceholder = "Ozellik ara, grup bul, secenek setini kontrol et...",
+        SearchPlaceholder = "Özellik ara, grup bul, seçenek setini kontrol et...",
         SearchValue = Model.SearchTerm,
-        PrimaryActionLabel = "Yeni Ozellik",
+        PrimaryActionLabel = "Yeni Özellik",
         PrimaryActionUrl = "/admin/features/create",
         Selects = new[]
         {
@@ -38,7 +38,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum ozellikler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm özellikler" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
                 }
@@ -57,11 +57,11 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Ozellik</th>
+                    <th>Özellik</th>
                     <th>Grup</th>
                     <th>Slug</th>
-                    <th>Secenekler</th>
-                    <th>Urun Sayisi</th>
+                    <th>Seçenekler</th>
+                    <th>Ürün Sayısı</th>
                     <th>Durum</th>
                     <th></th>
                 </tr>
@@ -82,7 +82,7 @@
                             </span>
                         </td>
                         <td class="text-end">
-                            <a href="/admin/features/edit/@feature.Id" class="btn auth-table-link">Duzenle</a>
+                            <a href="/admin/features/edit/@feature.Id" class="btn auth-table-link">D�zenle</a>
                         </td>
                     </tr>
                 }

@@ -19,6 +19,7 @@ public class AdminNotificationService : IAdminNotificationService
         };
 
     private readonly AppDbContext _dbContext;
+    private static readonly DateTime DemoSeedUtc = new(2026, 04, 21, 09, 30, 0, DateTimeKind.Utc);
 
     public AdminNotificationService(AppDbContext dbContext)
     {
@@ -40,6 +41,7 @@ public class AdminNotificationService : IAdminNotificationService
             .OrderByDescending(x => x.OccurredAt)
             .ThenByDescending(x => x.Id)
             .ToListAsync(cancellationToken);
+        notifications = EnsureDemoNotificationsForEmptyState(notifications);
 
         var activeCategory = NormalizeCategory(category);
         var filteredNotifications = activeCategory == "all"
@@ -80,7 +82,7 @@ public class AdminNotificationService : IAdminNotificationService
         };
     }
 
-    public async Task<AdminNotificationSummaryViewModel> GetSummaryAsync(int take = 4, CancellationToken cancellationToken = default)
+    public async Task<AdminNotificationSummaryViewModel> GetSummaryAsync(int take = 5, CancellationToken cancellationToken = default)
     {
         var normalizedTake = Math.Max(1, take);
         var items = await _dbContext.AdminNotifications
@@ -89,8 +91,9 @@ public class AdminNotificationService : IAdminNotificationService
             .ThenByDescending(x => x.Id)
             .Take(normalizedTake)
             .ToListAsync(cancellationToken);
-
-        var unreadCount = await _dbContext.AdminNotifications.CountAsync(x => !x.IsRead, cancellationToken);
+        var unreadCount = await _dbContext.AdminNotifications
+            .AsNoTracking()
+            .CountAsync(x => !x.IsRead, cancellationToken);
 
         return new AdminNotificationSummaryViewModel
         {
@@ -270,6 +273,94 @@ public class AdminNotificationService : IAdminNotificationService
         return notificationId.HasValue
             ? $"/admin/notifications?category={Uri.EscapeDataString(categoryValue)}&notificationId={notificationId.Value}"
             : $"/admin/notifications?category={Uri.EscapeDataString(categoryValue)}";
+    }
+
+    private static List<AdminNotification> EnsureDemoNotificationsForEmptyState(IReadOnlyCollection<AdminNotification> notifications)
+    {
+        if (notifications.Count > 0)
+        {
+            return notifications
+                .OrderByDescending(x => x.OccurredAt)
+                .ThenByDescending(x => x.Id)
+                .ToList();
+        }
+
+        return BuildDemoNotifications()
+            .OrderByDescending(x => x.OccurredAt)
+            .ThenByDescending(x => x.Id)
+            .ToList();
+    }
+
+    private static IReadOnlyList<AdminNotification> BuildDemoNotifications()
+    {
+        return new List<AdminNotification>
+        {
+            new()
+            {
+                Title = "Yeni siparis odeme onayina gecti",
+                Summary = "Siparis #4821 odeme onayi aldi ve paketleme sirasina girdi.",
+                Body = "Storefront siparis akisi uzerinden gelen #4821 numarali kayit odeme onayi aldi. Paketleme ve kargo etiketi adimi icin satis ekibi hazir bekliyor.",
+                Actor = "Satis Akisi",
+                Source = "Checkout",
+                CategoryKey = "orders",
+                TargetLabel = "Siparisi Ac",
+                TargetUrl = "/admin/orders",
+                OccurredAt = DemoSeedUtc.AddMinutes(-6),
+                IsRead = false
+            },
+            new()
+            {
+                Title = "Sepette biriken urunler artis gosterdi",
+                Summary = "3 farkli kullanici ayni urunu sepete ekledi ancak odeme tamamlanmadi.",
+                Body = "Sepet akisinda ayni urun icin kisa surede tekrar eden ekleme goruldu. Stok ve kampanya etkisini izlemek icin Bildirim Merkezi'nde ayrintilar gorunuyor.",
+                Actor = "Sepet Takibi",
+                Source = "Storefront",
+                CategoryKey = "cart",
+                TargetLabel = "Sepetleri Incele",
+                TargetUrl = "/admin/notifications?category=cart",
+                OccurredAt = DemoSeedUtc.AddMinutes(-11),
+                IsRead = false
+            },
+            new()
+            {
+                Title = "Favorilere eklenen urun one cikti",
+                Summary = "C vitamini serumu son 1 saatte favorilerde onde gorunuyor.",
+                Body = "Favori akisinda C vitamini serumu dikkat cekici sekilde yukseliyor. Kampanya veya vitrin karari icin katalog tarafinda incelenebilir.",
+                Actor = "Ilgi Takibi",
+                Source = "Favoriler",
+                CategoryKey = "favorites",
+                TargetLabel = "Kataloga Git",
+                TargetUrl = "/admin/products",
+                OccurredAt = DemoSeedUtc.AddMinutes(-16),
+                IsRead = false
+            },
+            new()
+            {
+                Title = "Yeni uye kaydi dogrulama bekliyor",
+                Summary = "Yeni kayit olan kullanici e-posta dogrulama adimini tamamlama asamasinda.",
+                Body = "Uyelik akisindan gelen yeni kayit tamamlandi ancak dogrulama adimi beklemede. Musteri deneyimi icin auth ve bildirim zinciri izlenmeli.",
+                Actor = "Uyelik Akisi",
+                Source = "Auth",
+                CategoryKey = "members",
+                TargetLabel = "Kullanicilari Gor",
+                TargetUrl = "/admin/users",
+                OccurredAt = DemoSeedUtc.AddMinutes(-22),
+                IsRead = false
+            },
+            new()
+            {
+                Title = "Yetkilendirme denemesi basariyla sonuclandi",
+                Summary = "Yonetim paneline guvenli giris yapan oturum kaydi izlendi.",
+                Body = "Auth katmani uzerinde yeni yonetici oturumu basariyla acildi. Guvenlik akisi normal seyrinde ilerliyor ve ek uyarı gerekmiyor.",
+                Actor = "Guvenlik Katmani",
+                Source = "Admin Auth",
+                CategoryKey = "auth",
+                TargetLabel = "Auth Kayitlari",
+                TargetUrl = "/admin/notifications?category=auth",
+                OccurredAt = DemoSeedUtc.AddMinutes(-29),
+                IsRead = false
+            }
+        };
     }
 
     private sealed record NotificationCategoryDefinition(string Key, string Label, string IconClass, string AccentClass);

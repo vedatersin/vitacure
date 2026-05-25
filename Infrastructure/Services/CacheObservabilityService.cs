@@ -75,7 +75,7 @@ public class CacheObservabilityService : ICacheObservabilityService
     {
         if (totalLookups == 0 && writeCount == 0 && evictionCount == 0)
         {
-            return "Henuz storefront cache trafigi olusmadi.";
+            return "Henüz storefront cache trafigi olusmadi.";
         }
 
         return $"Toplam {totalLookups} okuma, {hitCount} hit, {missCount} miss, {writeCount} yazma ve {evictionCount} invalidation gozlemlendi.";

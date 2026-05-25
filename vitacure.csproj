@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DefaultItemExcludes>$(DefaultItemExcludes);.codex-*\**;bin-codex\**;obj-codex\**;outputs\**;artifacts\**;temp-build*\**;temp-test*\**</DefaultItemExcludes>
+    <DefaultItemExcludesInProjectFolder>$(DefaultItemExcludesInProjectFolder);.codex-*\**;bin-codex\**;obj-codex\**;outputs\**;artifacts\**;temp-build*\**;temp-test*\**</DefaultItemExcludesInProjectFolder>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,14 +21,25 @@
 
   <ItemGroup>
     <Compile Remove="vitacure.Tests\\**\\*.cs" />
+    <Compile Remove="vitacure.Tests\\bin\\**\\*.cs" />
+    <Compile Remove="vitacure.Tests\\obj\\**\\*.cs" />
     <Compile Remove=".codex-*\\**\\*.cs" />
     <Compile Remove="obj-codex\\**\\*.cs" />
+    <Compile Remove="artifacts\\**\\*.cs" />
     <EmbeddedResource Remove="vitacure.Tests\\**\\*" />
+    <EmbeddedResource Remove="vitacure.Tests\\bin\\**\\*" />
+    <EmbeddedResource Remove="vitacure.Tests\\obj\\**\\*" />
     <EmbeddedResource Remove=".codex-*\\**\\*" />
     <EmbeddedResource Remove="obj-codex\\**\\*" />
+    <EmbeddedResource Remove="artifacts\\**\\*" />
     <None Remove="vitacure.Tests\\**\\*" />
+    <None Remove="vitacure.Tests\\bin\\**\\*" />
+    <None Remove="vitacure.Tests\\obj\\**\\*" />
     <None Remove=".codex-*\\**\\*" />
     <None Remove="obj-codex\\**\\*" />
+    <None Remove="artifacts\\**\\*" />
+    <Content Remove="vitacure.Tests\\bin\\**\\*" />
+    <Content Remove="vitacure.Tests\\obj\\**\\*" />
   </ItemGroup>
 
 </Project>

@@ -85,6 +85,9 @@
 
             const html = await response.text();
             root.innerHTML = html;
+            window.dispatchEvent(new CustomEvent("codex:admin-async-updated", {
+                detail: { root }
+            }));
 
             if (pushState) {
                 window.history.pushState({}, "", url);

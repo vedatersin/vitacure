@@ -2,7 +2,9 @@
 
 @{
     var promptsJson = System.Text.Json.JsonSerializer.Serialize(Model.PromptPoolByCategory);
-    var categoriesJson = System.Text.Json.JsonSerializer.Serialize(Model.Categories.Select(x => new { x.Slug, Name = x.DisplayName }));
+    var categoriesJson = Model.Variant == "home"
+        ? System.Text.Json.JsonSerializer.Serialize(Model.Showcases.Select(x => new { Slug = x.PromptKey, x.Name }))
+        : System.Text.Json.JsonSerializer.Serialize(Model.Categories.Select(x => new { x.Slug, Name = x.DisplayName }));
 }
 
 <div class="ag-chat-widget"

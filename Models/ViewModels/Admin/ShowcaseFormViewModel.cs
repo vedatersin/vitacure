@@ -21,18 +21,24 @@ public class ShowcaseFormViewModel : IValidatableObject
     [Display(Name = "Ikon Sinifi")]
     public string IconClass { get; set; } = "fa-solid fa-sparkles";
 
+    [Display(Name = "Ikon Rengi")]
+    public string IconColor { get; set; } = "#4b63d3";
+
     [Required]
     [Display(Name = "Vitrin Basligi")]
     public string Title { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Aciklama")]
+    [Display(Name = "A�iklama")]
     public string Description { get; set; } = string.Empty;
 
     [Display(Name = "Etiketler")]
     public string TagsContent { get; set; } = string.Empty;
 
-    [Display(Name = "Arkaplan Gorseli")]
+    [Display(Name = "Ornek Sohbet Cumleleri")]
+    public string ExamplePromptsContent { get; set; } = string.Empty;
+
+    [Display(Name = "Arkaplan G�rseli")]
     public string BackgroundImageUrl { get; set; } = string.Empty;
 
     [Display(Name = "Arkaplan Dosyasi")]
@@ -44,7 +50,7 @@ public class ShowcaseFormViewModel : IValidatableObject
     [Display(Name = "SEO Basligi")]
     public string? SeoTitle { get; set; }
 
-    [Display(Name = "Meta Aciklama")]
+    [Display(Name = "Meta A�iklama")]
     public string? MetaDescription { get; set; }
 
     [Display(Name = "Ana Sayfada Goster")]
@@ -56,10 +62,14 @@ public class ShowcaseFormViewModel : IValidatableObject
     [Display(Name = "Sira")]
     public int SortOrder { get; set; }
 
+    [Display(Name = "Ana Kategori")]
+    public int? PrimaryCategoryId { get; set; }
+
     public IReadOnlyList<ShowcaseBackgroundOptionViewModel> BackgroundOptions { get; set; } = Array.Empty<ShowcaseBackgroundOptionViewModel>();
 
     public IReadOnlyList<ShowcaseCategoryOptionViewModel> CategoryOptions { get; set; } = Array.Empty<ShowcaseCategoryOptionViewModel>();
     public List<int> SelectedCategoryIds { get; set; } = new();
+    public IReadOnlyList<string> TagSuggestions { get; set; } = Array.Empty<string>();
 
     public IReadOnlyList<ShowcaseProductOptionViewModel> ProductOptions { get; set; } = Array.Empty<ShowcaseProductOptionViewModel>();
     public List<int> SelectedFeaturedProductIds { get; set; } = new();
@@ -69,14 +79,14 @@ public class ShowcaseFormViewModel : IValidatableObject
         if ((BackgroundImageFile is null || BackgroundImageFile.Length == 0) && string.IsNullOrWhiteSpace(BackgroundImageUrl))
         {
             yield return new ValidationResult(
-                "The Arkaplan Gorseli field is required.",
+                "The Arkaplan G�rseli field is required.",
                 new[] { nameof(BackgroundImageUrl) });
         }
 
         if (!string.IsNullOrWhiteSpace(Description) && Description.Length > MaxDescriptionLength)
         {
             yield return new ValidationResult(
-                $"Aciklama en fazla {MaxDescriptionLength} karakter olabilir.",
+                $"A�iklama en fazla {MaxDescriptionLength} karakter olabilir.",
                 new[] { nameof(Description) });
         }
     }
@@ -86,6 +96,8 @@ public class ShowcaseCategoryOptionViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public int? ParentId { get; set; }
+    public string Slug { get; set; } = string.Empty;
 }
 
 public class ShowcaseProductOptionViewModel

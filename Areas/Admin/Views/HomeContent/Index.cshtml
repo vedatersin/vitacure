@@ -1,16 +1,16 @@
 @model vitacure.Models.ViewModels.Admin.HomeContentFormViewModel
 
 @{
-    ViewData["Title"] = "Home Icerigi";
+    ViewData["Title"] = "Home I�erigi";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
-        Eyebrow = "Storefront Yonetimi",
-        Title = "Ana sayfa icerigini yonet",
-        Description = "Hero, section basliklari, banner ve kampanya alanlari storefront home deneyimini dogrudan besler.",
+        Eyebrow = "Storefront Y�netimi",
+        Title = "Ana sayfa i�erigini y�net",
+        Description = "Hero, se�tion basliklari, banner ve kampanya alanlari storefront home deneyimini dogrudan besler.",
         IconClass = "fa-solid fa-house",
-        AsideTitle = "Yonetim notu",
-        AsideText = "Bu ekrandaki her alan home UI tarafinda canli kullanilir. CTA linkleri ve gorsel URL'leri yayin akisina direkt etki eder.",
+        AsideTitle = "Y�netim notu",
+        AsideText = "Bu ekrandaki her alan home UI tarafinda canli kullanilir. CTA linkleri ve g�rsel URL'leri yayin akisina direkt etki eder.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Alan", Value = "Home" },
@@ -19,7 +19,7 @@
         Breadcrumbs = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Home Icerigi", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Home I�erigi", IsActive = true }
         }
     };
 }

@@ -7,7 +7,7 @@ public class FeatureFormViewModel
     public int? Id { get; set; }
 
     [Required]
-    [Display(Name = "Ozellik Adi")]
+    [Display(Name = "Özellik Adi")]
     public string Name { get; set; } = string.Empty;
 
     [Required]
@@ -18,7 +18,7 @@ public class FeatureFormViewModel
     [Display(Name = "Grup")]
     public string GroupName { get; set; } = string.Empty;
 
-    [Display(Name = "Secenekler")]
+    [Display(Name = "Seçenekler")]
     public string? OptionsContent { get; set; }
 
     [Display(Name = "Aktif")]

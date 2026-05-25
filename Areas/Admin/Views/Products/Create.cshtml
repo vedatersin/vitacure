@@ -1,39 +1,19 @@
 @model vitacure.Models.ViewModels.Admin.ProductFormViewModel
 
 @{
-    ViewData["Title"] = "Yeni Urun";
-
-    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
-    {
-        Eyebrow = "Katalog Yonetimi",
-        Title = "Yeni urun olustur",
-        Description = "Bu form storefront urun kartlarini ve detay sayfasini besleyecek kaydi olusturur.",
-        IconClass = "fa-solid fa-capsules",
-        AsideTitle = "Form akis notu",
-        AsideText = "Fiyat, stok, gorsel ve etiket secimleri storefront deneyimini aninda etkiler. Kayit oncesi kategori ve aktiflik durumunu kontrol etmek iyi olur.",
-        Stats = new[]
-        {
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Mod", Value = "Yeni" },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Durum", Value = Model.IsActive ? "Aktif" : "Pasif" }
-        },
-        Breadcrumbs = new[]
-        {
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Urunler", Url = "/admin/products" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Yeni", IsActive = true }
-        }
-    };
+    ViewData["Title"] = "Yeni Ürün";
 }
 
 <div class="admin-page-grid">
-    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminCompactHeader.cshtml", hero)
     <partial name="_Form" model="Model" />
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/pages/admin-category-form.js" asp-append-version="true"></script>
     <script src="~/js/pages/admin-product-gallery.js" asp-append-version="true"></script>
     <script src="~/js/pages/admin-product-form.js" asp-append-version="true"></script>
     <script src="~/js/pages/admin-product-variants.js" asp-append-version="true"></script>
+    <script src="~/js/pages/admin-product-bundles.js" asp-append-version="true"></script>
     <script src="~/js/pages/admin-richtext.js" asp-append-version="true"></script>
 }

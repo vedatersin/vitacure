@@ -1,4 +1,11 @@
 .ag-category-pill {
+    --pill-bg: rgba(255, 255, 255, 0.16);
+    --pill-bg-hover: rgba(255, 255, 255, 0.24);
+    --pill-bg-active: rgba(255, 255, 255, 0.34);
+    --pill-border: rgba(255, 255, 255, 0.1);
+    --pill-border-active: rgba(255, 255, 255, 0.36);
+    --pill-shadow: rgba(255, 255, 255, 0.16);
+    --pill-icon-color: #ffffff;
     position: relative;
     flex: 1;
     display: flex;
@@ -11,31 +18,31 @@
     text-align: center;
     text-decoration: none;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.16);
+    background: var(--pill-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--pill-border);
     cursor: pointer;
     margin-top: 25px;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .ag-category-pill:hover {
-    background: rgba(255, 255, 255, 0.24);
+    background: var(--pill-bg-hover);
     border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 15px var(--pill-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18);
     transform: translateY(-5px);
     color: #fff;
 }
 
 .ag-category-pill.active {
-    background: rgba(255, 255, 255, 0.34);
-    border-color: rgba(255, 255, 255, 0.36);
+    background: var(--pill-bg-active);
+    border-color: var(--pill-border-active);
     box-shadow: 0 12px 24px rgba(255, 255, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.28);
     color: #fff;
 }
 
 .ag-category-pill.active:hover {
-    background: rgba(255, 255, 255, 0.38);
+    background: color-mix(in srgb, var(--pill-bg-active) 86%, white);
     border-color: rgba(255, 255, 255, 0.42);
     box-shadow: 0 14px 28px rgba(255, 255, 255, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
@@ -48,12 +55,14 @@
     transform: translateX(-50%);
     transition: transform 0.25s ease, filter 0.25s ease, opacity 0.25s ease;
     opacity: 0.9;
+    color: var(--pill-icon-color);
 }
 
 .ag-category-pill span {
     font-size: 1.14rem;
     font-weight: 700;
     line-height: 1.2;
+    color: #fff;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
     transition: opacity 0.25s ease, text-shadow 0.25s ease;
     opacity: 0.92;
@@ -66,7 +75,7 @@
 
 .ag-category-pill.active i {
     opacity: 1;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.16));
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.24));
 }
 
 .ag-category-pill.active span {
@@ -74,9 +83,26 @@
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5), 0 0 14px rgba(255, 255, 255, 0.14);
 }
 
-.bg-uyku i { color: #1e3a8a; }
-.bg-multi i { color: #fba91c; }
-.bg-zihin i { color: #d67aff; }
-.bg-koruma i { color: #0f766e; }
-.bg-kas i { color: #ff5e79; }
-.bg-zayiflama i { color: #f59e0b; }
+.bg-uyku {
+    --pill-icon-color: #4b63d3;
+}
+
+.bg-multi {
+    --pill-icon-color: #d6a11d;
+}
+
+.bg-zihin {
+    --pill-icon-color: #d4569a;
+}
+
+.bg-koruma {
+    --pill-icon-color: #35a966;
+}
+
+.bg-kas {
+    --pill-icon-color: #d94b57;
+}
+
+.bg-zayiflama {
+    --pill-icon-color: #e07a2f;
+}

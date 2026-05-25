@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using vitacure.Domain.Entities;
@@ -149,7 +149,7 @@ public class StorefrontContentServiceTests
             dbContext.Products.Add(new Product
             {
                 Id = 1,
-                Name = "Coklu Kategori Urunu",
+                Name = "Coklu Kategori Ürünü",
                 Slug = "coklu-kategori-urunu",
                 Description = "Test",
                 Price = 120m,
@@ -616,13 +616,13 @@ public class StorefrontContentServiceTests
       "compactBackLabel": "Geri",
       "compactCategoryLabel": "Kategori",
       "searchFilterLabel": "Kategori",
-      "mainPlaceholder": "Urun veya semptom yazin",
+      "mainPlaceholder": "Ürün veya semptom yazin",
       "fullscreenTitle": "Buyut",
       "addFileTitle": "Dosya ekle",
       "chatModeLabel": "Sohbet",
       "searchModeLabel": "Ara",
       "fileMenuDocumentLabel": "Dokuman",
-      "fileMenuImageLabel": "Gorsel",
+      "fileMenuImageLabel": "Görsel",
       "searchPlaceholder": "Ara",
       "searchPlaceholderLocked": "Kategori icinde ara"
     },
@@ -646,10 +646,10 @@ public class StorefrontContentServiceTests
     }
   ],
   "sections": [
-    { "title": "One Cikan Urunler" },
+    { "title": "One Cikan Ürünler" },
     { "title": "Populer Takviyeler" },
     { "title": "Kampanyalar" },
-    { "title": "Firsat Urunleri" }
+    { "title": "Firsat Ürünleri" }
   ],
   "seoCandidates": [ "Vitacure test aciklamasi" ]
 }

@@ -124,7 +124,7 @@
                 return;
             }
 
-            libraryGrid.innerHTML = "<div class='admin-media-library-empty'>Yukleniyor...</div>";
+            libraryGrid.innerHTML = "<div class='admin-media-library-empty'>Y�kleniyor...</div>";
             libraryModal.hidden = false;
             document.body.classList.add("is-modal-open");
 
@@ -136,14 +136,14 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error("Kutuphane yuklenemedi.");
+                    throw new Error("K�t�phane yuklenemedi.");
                 }
 
                 const payload = await response.json();
                 const assets = Array.isArray(payload) ? payload : [];
 
                 if (assets.length === 0) {
-                    libraryGrid.innerHTML = "<div class='admin-media-library-empty'>Kutuphane henuz bos.</div>";
+                    libraryGrid.innerHTML = "<div class='admin-media-library-empty'>K�t�phane hen�z bos.</div>";
                     return;
                 }
 
@@ -159,7 +159,7 @@
                     `;
                     button.addEventListener("click", () => {
                         if (items.length >= maxItems) {
-                            window.alert(\`En fazla ${maxItems} gorsel ekleyebilirsiniz.\`);
+                            window.alert(\`En fazla ${maxItems} g�rsel ekleyebilirsiniz.\`);
                             return;
                         }
 
@@ -173,7 +173,7 @@
                     libraryGrid.appendChild(button);
                 });
             } catch (error) {
-                libraryGrid.innerHTML = `<div class='admin-media-library-empty'>${error instanceof Error ? error.message : "Kutuphane yuklenemedi."}</div>`;
+                libraryGrid.innerHTML = `<div class='admin-media-library-empty'>${error instanceof Error ? error.message : "K�t�phane yuklenemedi."}</div>`;
             }
         };
 
@@ -187,8 +187,8 @@
                 tile.className = `admin-product-media-tile${index === 0 ? " is-active" : ""}`;
                 tile.draggable = true;
                 tile.innerHTML = `
-                    <img src="${src || fallbackImage}" alt="Urun gorseli ${index + 1}" />
-                    <span>${index === 0 ? "Kapak" : `${index + 1}. Gorsel`}</span>
+                    <img src="${src || fallbackImage}" alt="�r�n g�rseli ${index + 1}" />
+                    <span>${index === 0 ? "Kapak" : `${index + 1}. G�rsel`}</span>
                     <span class="admin-product-media-tile-overlay">Kapak yap</span>
                     <span class="admin-product-media-tile-remove"><i class="fa-solid fa-xmark"></i></span>
                 `;
@@ -241,7 +241,7 @@
                     event.preventDefault();
                     event.stopPropagation();
 
-                    if (!window.confirm("Bu gorseli silmek istiyor musunuz?")) {
+                    if (!window.confirm("Bu g�rseli silmek istiyor musunuz?")) {
                         return;
                     }
 
@@ -258,7 +258,7 @@
                 addTile.className = "admin-product-media-tile is-add";
                 addTile.innerHTML = `
                     <span class="admin-product-media-add-icon"><i class="fa-solid fa-plus"></i></span>
-                    <span>Gorsel Ekle</span>
+                    <span>G�rsel Ekle</span>
                 `;
                 addTile.addEventListener("click", () => fileInput.click());
                 strip.appendChild(addTile);
@@ -287,7 +287,7 @@
 
             if (!response.ok) {
                 const payload = await response.json().catch(() => ({}));
-                throw new Error(payload.error || "Gorsel yuklenemedi.");
+                throw new Error(payload.error || "G�rsel yuklenemedi.");
             }
 
             return await response.json();
@@ -300,7 +300,7 @@
             }
 
             if (items.length >= maxItems) {
-                window.alert(`En fazla ${maxItems} gorsel ekleyebilirsiniz.`);
+                window.alert(`En fazla ${maxItems} g�rsel ekleyebilirsiniz.`);
                 fileInput.value = "";
                 return;
             }
@@ -312,7 +312,7 @@
                     render();
                 }
             } catch (error) {
-                window.alert(error instanceof Error ? error.message : "Gorsel yuklenemedi.");
+                window.alert(error instanceof Error ? error.message : "G�rsel yuklenemedi.");
             } finally {
                 fileInput.value = "";
             }
@@ -328,7 +328,7 @@
             event.preventDefault();
             event.stopPropagation();
 
-            if (!items[0]?.url || !window.confirm("Bu gorseli silmek istiyor musunuz?")) {
+            if (!items[0]?.url || !window.confirm("Bu g�rseli silmek istiyor musunuz?")) {
                 return;
             }
 

@@ -70,7 +70,7 @@ public class AdminMediaLibraryService : IAdminMediaLibraryService
     {
         if (file is null || file.Length == 0)
         {
-            throw new InvalidOperationException("Gorsel secilmedi.");
+            throw new InvalidOperationException("Görsel secilmedi.");
         }
 
         var extension = Path.GetExtension(file.FileName);

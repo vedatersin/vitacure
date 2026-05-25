@@ -26,6 +26,7 @@ public class ProductDetailViewModel
     public string AddToCartLabel { get; set; } = "Sepete Ekle";
     public string CartProductSlug { get; set; } = string.Empty;
     public IReadOnlyList<string> Tags { get; set; } = Array.Empty<string>();
+    public IReadOnlyList<ProductDetailTechnicalItemViewModel> TechnicalDetails { get; set; } = Array.Empty<ProductDetailTechnicalItemViewModel>();
     public IReadOnlyList<BreadcrumbItemViewModel> Breadcrumbs { get; set; } = Array.Empty<BreadcrumbItemViewModel>();
     public IReadOnlyList<ProductCardViewModel> RelatedProducts { get; set; } = Array.Empty<ProductCardViewModel>();
 }
@@ -39,4 +40,10 @@ public class ProductDetailVariantViewModel
     public string StockLabel { get; set; } = string.Empty;
     public bool IsSelected { get; set; }
     public bool IsActive { get; set; }
+}
+
+public class ProductDetailTechnicalItemViewModel
+{
+    public string Label { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
 }

@@ -123,6 +123,7 @@ builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IAdminTagService, AdminTagService>();
 builder.Services.AddScoped<IAdminShowcaseService, AdminShowcaseService>();
 builder.Services.AddScoped<IAdminHomeContentService, AdminHomeContentService>();
+builder.Services.AddScoped<IkasCatalogImportService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ISlugService, SlugService>();
@@ -131,20 +132,32 @@ builder.Services.AddScoped<IStorefrontContentService, StorefrontContentService>(
 builder.Services.AddScoped<LocalAssetStorageService>();
 builder.Services.AddScoped<S3CompatibleAssetStorageService>();
 builder.Services.AddScoped<IAssetStorageService, AssetStorageService>();
-builder.Services.AddSingleton<IMockContentService, MockContentService>();
 
 var app = builder.Build();
+var ikasImportJsonPath = ResolveImportJsonPath(args);
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await dbContext.Database.MigrateAsync();
+    await EnsureProductSchemaHotfixAsync(dbContext);
+    await EnsureGoogleProductCategorySchemaHotfixAsync(dbContext);
+    await EnsureProductExperienceSchemaHotfixAsync(dbContext);
 
-    var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
-    await seeder.SeedAsync();
+    if (!string.IsNullOrWhiteSpace(ikasImportJsonPath))
+    {
+        var importer = scope.ServiceProvider.GetRequiredService<IkasCatalogImportService>();
+        await importer.ImportFromJsonAsync(ikasImportJsonPath);
+        return;
+    }
+    else
+    {
+        var seeder = scope.ServiceProvider.GetRequiredService<AppDbSeeder>();
+        await seeder.SeedAsync();
 
-    var identitySeeder = scope.ServiceProvider.GetRequiredService<IdentitySeeder>();
-    await identitySeeder.SeedAsync();
+        var identitySeeder = scope.ServiceProvider.GetRequiredService<IdentitySeeder>();
+        await identitySeeder.SeedAsync();
+    }
 }
 
 if (!app.Environment.IsDevelopment())
@@ -188,3 +201,151 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+static string? ResolveImportJsonPath(IEnumerable<string> args)
+{
+    var values = args.ToArray();
+    for (var index = 0; index < values.Length; index++)
+    {
+        var current = values[index];
+        if (string.Equals(current, "--import-ikas-json", StringComparison.OrdinalIgnoreCase))
+        {
+            return index + 1 < values.Length ? values[index + 1] : null;
+        }
+
+        const string prefix = "--import-ikas-json=";
+        if (current.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return current[prefix.Length..];
+        }
+    }
+
+    return null;
+}
+
+static async Task EnsureProductSchemaHotfixAsync(AppDbContext dbContext)
+{
+    const string migrationId = "20260426121500_AddProductKindAndUnitPricingFields";
+    const string productVersion = "8.0.11";
+
+    await dbContext.Database.ExecuteSqlRawAsync(
+        $$"""
+        IF COL_LENGTH('dbo.Products', 'ProductKind') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [ProductKind] nvarchar(24) NOT NULL CONSTRAINT [DF_Products_ProductKind_Hotfix] DEFAULT N'Physical';
+        END
+
+        IF COL_LENGTH('dbo.Products', 'ReviewCount') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [ReviewCount] int NOT NULL CONSTRAINT [DF_Products_ReviewCount_Hotfix] DEFAULT 0;
+        END
+
+        IF COL_LENGTH('dbo.Products', 'UnitComparisonAmount') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [UnitComparisonAmount] decimal(12,4) NULL;
+        END
+
+        IF COL_LENGTH('dbo.Products', 'UnitComparisonType') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [UnitComparisonType] nvarchar(16) NULL;
+        END
+
+        IF COL_LENGTH('dbo.Products', 'UnitContentAmount') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [UnitContentAmount] decimal(12,4) NULL;
+        END
+
+        IF COL_LENGTH('dbo.Products', 'UnitContentType') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [UnitContentType] nvarchar(16) NULL;
+        END
+
+        IF OBJECT_ID(N'[dbo].[__EFMigrationsHistory]', N'U') IS NOT NULL
+           AND NOT EXISTS (SELECT 1 FROM [dbo].[__EFMigrationsHistory] WHERE [MigrationId] = N'{{migrationId}}')
+        BEGIN
+            INSERT INTO [dbo].[__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+            VALUES (N'{{migrationId}}', N'{{productVersion}}');
+        END
+        """);
+}
+
+static async Task EnsureGoogleProductCategorySchemaHotfixAsync(AppDbContext dbContext)
+{
+    await dbContext.Database.ExecuteSqlRawAsync(
+        """
+        IF OBJECT_ID(N'[dbo].[GoogleProductCategories]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [dbo].[GoogleProductCategories]
+            (
+                [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                [Name] NVARCHAR(200) NOT NULL,
+                [Slug] NVARCHAR(200) NOT NULL,
+                [ParentId] INT NULL,
+                [IsActive] BIT NOT NULL CONSTRAINT [DF_GoogleProductCategories_IsActive_Hotfix] DEFAULT 1,
+                [SortOrder] INT NOT NULL CONSTRAINT [DF_GoogleProductCategories_SortOrder_Hotfix] DEFAULT 0
+            );
+
+            CREATE UNIQUE INDEX [IX_GoogleProductCategories_Slug] ON [dbo].[GoogleProductCategories]([Slug]);
+        END
+
+        IF COL_LENGTH('dbo.Products', 'GoogleProductCategoryId') IS NULL
+        BEGIN
+            ALTER TABLE [dbo].[Products] ADD [GoogleProductCategoryId] int NULL;
+        END
+        """);
+}
+
+static async Task EnsureProductExperienceSchemaHotfixAsync(AppDbContext dbContext)
+{
+    await dbContext.Database.ExecuteSqlRawAsync(
+        """
+        IF OBJECT_ID(N'[dbo].[CustomFieldDefinitions]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [dbo].[CustomFieldDefinitions]
+            (
+                [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                [Name] NVARCHAR(150) NOT NULL,
+                [Slug] NVARCHAR(150) NOT NULL,
+                [FieldType] NVARCHAR(64) NOT NULL,
+                [IsFilterable] BIT NOT NULL CONSTRAINT [DF_CustomFieldDefinitions_IsFilterable_Hotfix] DEFAULT 0,
+                [IsActive] BIT NOT NULL CONSTRAINT [DF_CustomFieldDefinitions_IsActive_Hotfix] DEFAULT 1
+            );
+
+            CREATE UNIQUE INDEX [IX_CustomFieldDefinitions_Slug] ON [dbo].[CustomFieldDefinitions]([Slug]);
+        END
+
+        IF OBJECT_ID(N'[dbo].[PersonalizationDefinitions]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [dbo].[PersonalizationDefinitions]
+            (
+                [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                [Name] NVARCHAR(150) NOT NULL,
+                [Slug] NVARCHAR(150) NOT NULL,
+                [InputType] NVARCHAR(64) NOT NULL,
+                [IsActive] BIT NOT NULL CONSTRAINT [DF_PersonalizationDefinitions_IsActive_Hotfix] DEFAULT 1
+            );
+
+            CREATE UNIQUE INDEX [IX_PersonalizationDefinitions_Slug] ON [dbo].[PersonalizationDefinitions]([Slug]);
+        END
+
+        IF OBJECT_ID(N'[dbo].[ProductCustomFields]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [dbo].[ProductCustomFields]
+            (
+                [ProductId] INT NOT NULL,
+                [CustomFieldDefinitionId] INT NOT NULL,
+                CONSTRAINT [PK_ProductCustomFields] PRIMARY KEY ([ProductId], [CustomFieldDefinitionId])
+            );
+        END
+
+        IF OBJECT_ID(N'[dbo].[ProductPersonalizations]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [dbo].[ProductPersonalizations]
+            (
+                [ProductId] INT NOT NULL,
+                [PersonalizationDefinitionId] INT NOT NULL,
+                CONSTRAINT [PK_ProductPersonalizations] PRIMARY KEY ([ProductId], [PersonalizationDefinitionId])
+            );
+        END
+        """);
+}

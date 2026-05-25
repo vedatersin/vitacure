@@ -47,25 +47,25 @@ public class FeaturesController : AdminControllerBase
     {
         if (!ModelState.IsValid)
         {
-            SetValidationToast("Ozellik kaydi guncellenemedi");
+            SetValidationToast("Özellik kaydi guncellenemedi");
             return View(model);
         }
 
         try
         {
             await _adminFeatureService.CreateAsync(model, cancellationToken);
-            SetRedirectToast("success", "Kayit basariyla eklendi", "Ozellik kaydi olusturuldu.");
+            SetRedirectToast("success", "Kayit basariyla eklendi", "Özellik kaydi olusturuldu.");
         }
         catch (SlugConflictException ex)
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
-            SetValidationToast("Ozellik kaydi guncellenemedi");
+            SetValidationToast("Özellik kaydi guncellenemedi");
             return View(model);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ozellik olusturma sirasinda beklenmedik hata.");
-            SetUnexpectedErrorToast("Ozellik kaydi guncellenemedi", ex);
+            _logger.LogError(ex, "Özellik olusturma sirasinda beklenmedik hata.");
+            SetUnexpectedErrorToast("Özellik kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -95,7 +95,7 @@ public class FeaturesController : AdminControllerBase
 
         if (!ModelState.IsValid)
         {
-            SetValidationToast("Ozellik kaydi guncellenemedi");
+            SetValidationToast("Özellik kaydi guncellenemedi");
             return View(model);
         }
 
@@ -107,13 +107,13 @@ public class FeaturesController : AdminControllerBase
         catch (SlugConflictException ex)
         {
             ModelState.AddModelError(nameof(model.Slug), ex.Message);
-            SetValidationToast("Ozellik kaydi guncellenemedi");
+            SetValidationToast("Özellik kaydi guncellenemedi");
             return View(model);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ozellik guncelleme sirasinda beklenmedik hata. FeatureId: {FeatureId}", id);
-            SetUnexpectedErrorToast("Ozellik kaydi guncellenemedi", ex);
+            _logger.LogError(ex, "Özellik guncelleme sirasinda beklenmedik hata. FeatureId: {FeatureId}", id);
+            SetUnexpectedErrorToast("Özellik kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -122,7 +122,7 @@ public class FeaturesController : AdminControllerBase
             return NotFound();
         }
 
-        SetRedirectToast("success", "Kayit basariyla guncellendi", "Ozellik kaydi guncellendi.");
+        SetRedirectToast("success", "Kayit basariyla guncellendi", "Özellik kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
     }
 

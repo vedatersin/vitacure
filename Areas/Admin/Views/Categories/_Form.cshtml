@@ -1,30 +1,24 @@
-﻿@model vitacure.Models.ViewModels.Admin.CategoryFormViewModel
+@model vitacure.Models.ViewModels.Admin.CategoryFormViewModel
 
-<form method="post" action="@Context.Request.Path" class="auth-form">
+<form method="post" action="@Context.Request.Path" class="auth-form" data-admin-category-form="true">
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
     <div class="admin-operator-card mb-4">
         <span>Form Notu</span>
-        <strong>Kategori kaydi storefront route'unu etkiler</strong>
-        <small>Ozellikle slug alanini degistirirken mevcut URL etkisini dikkate al.</small>
+        <strong>Kategori kaydi storefront route ve urun gruplanmasini etkiler</strong>
+        <small>Slug, ust kategori ve siralama olcutu birlikte kategori deneyimini belirler.</small>
     </div>
 
-    <div class="row g-3">
-        <div class="col-md-6">
+    <div class="admin-product-field-grid admin-product-field-grid-single">
+        <div>
             <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control auth-input" />
+            <input asp-for="Name" class="form-control auth-input" placeholder="Orn. Cilt Bakimi" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="col-md-6">
-            <label asp-for="Slug" class="form-label"></label>
-            <input asp-for="Slug" class="form-control auth-input" />
-            <span asp-validation-for="Slug" class="text-danger"></span>
-        </div>
-
-        <div class="col-md-6">
+        <div>
             <label asp-for="ParentId" class="form-label"></label>
             <select asp-for="ParentId" class="form-select auth-input">
                 <option value="">Yok</option>
@@ -35,31 +29,75 @@
             </select>
         </div>
 
-        <div class="col-md-6 d-flex align-items-end">
-            <div class="form-check mb-2">
-                <input asp-for="IsActive" class="form-check-input" />
-                <label asp-for="IsActive" class="form-check-label"></label>
+        <div class="admin-product-field-span">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description"
+                      class="form-control auth-textarea"
+                      rows="6"
+                      placeholder="Kategori aciklamasi"
+                      data-admin-richtext="true"
+                      data-richtext-placeholder="Kategori aciklamasi"></textarea>
+        </div>
+
+        <div class="admin-product-field-span">
+            <label asp-for="ImageUrl" class="form-label"></label>
+            <div class="admin-category-image-uploader" data-category-image-upload="true" data-upload-url="/admin/categories/upload-image">
+                <input asp-for="ImageUrl" type="hidden" data-category-image-input />
+                <input type="file" class="d-none" accept="image/png,image/jpeg,image/webp,image/gif" data-category-file-input />
+                <button type="button" class="admin-category-image-dropzone" data-category-image-trigger>
+                    <img src="@Model.ImageUrl" alt="@Model.Name" data-category-image-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
+                    <span class="admin-category-image-empty" data-category-image-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
+                        <i class="fa-regular fa-image"></i>
+                        <strong>Görsel Ekle</strong>
+                        <small>Maksimum 10 MB. jpg, jpeg, png, webp veya gif yukleyebilirsiniz.</small>
+                    </span>
+                </button>
+                <div class="admin-product-media-toolbar">
+                    <button type="button" class="admin-editor-secondary" data-category-image-clear @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
+                        <span>Görseli Kaldir</span>
+                    </button>
+                </div>
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div>
         </div>
 
-        <div class="col-12">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control auth-textarea" rows="5"></textarea>
+        <div>
+            <label asp-for="ProductSortType" class="form-label"></label>
+            <select asp-for="ProductSortType" class="form-select auth-input">
+                <option value="">Siralama olcutu seciniz</option>
+                @foreach (var option in Model.SortOptions)
+                {
+                    <option value="@option">@option</option>
+                }
+            </select>
         </div>
 
-        <div class="col-md-6">
+        <div>
+            <label asp-for="Slug" class="form-label"></label>
+            <input asp-for="Slug" class="form-control auth-input" placeholder="cilt-bakimi" />
+            <span asp-validation-for="Slug" class="text-danger"></span>
+        </div>
+
+        <div>
             <label asp-for="SeoTitle" class="form-label"></label>
-            <input asp-for="SeoTitle" class="form-control auth-input" />
+            <input asp-for="SeoTitle" class="form-control auth-input" placeholder="SEO basligi" />
         </div>
 
-        <div class="col-md-6">
+        <div>
             <label asp-for="MetaDescription" class="form-label"></label>
-            <input asp-for="MetaDescription" class="form-control auth-input" />
+            <textarea asp-for="MetaDescription" class="form-control auth-textarea" rows="3" placeholder="Meta aciklama"></textarea>
+        </div>
+
+        <div class="admin-product-field-span">
+            <label class="admin-product-check-row">
+                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                <span>Kategori aktif olarak yayinlansin</span>
+            </label>
         </div>
     </div>
 
     <div class="auth-admin-actions mt-4">
         <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
-        <a href="/admin/categories" class="btn auth-submit-btn auth-tertiary-btn">Listeye Dön</a>
+        <a href="/admin/categories" class="btn auth-submit-btn auth-tertiary-btn">Listeye Don</a>
     </div>
 </form>

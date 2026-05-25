@@ -1,6 +1,5 @@
 @model vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
 
-<section class="admin-section-card admin-compact-header">
-    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminBreadcrumb.cshtml", Model.Breadcrumbs)
-    <h1 class="admin-compact-title">@Model.Title</h1>
+<section class="admin-page-header-simple admin-page-header-simple-title-only">
+    <h1 class="admin-page-header-simple-title">@Model.Title</h1>
 </section>

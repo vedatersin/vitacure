@@ -8,7 +8,7 @@ public class CacheMetricsViewModel
     public int WriteCount { get; set; }
     public int EvictionCount { get; set; }
     public IReadOnlyList<string> RecentEvictedTags { get; set; } = Array.Empty<string>();
-    public string StatusLabel { get; set; } = "Soğuk";
-    public string Detail { get; set; } = "Henüz cache trafiği oluşmadı.";
+    public string StatusLabel { get; set; } = "Soguk";
+    public string Detail { get; set; } = "Hen�z cache trafigi olusmadi.";
     public string HitRateLabel { get; set; } = "%0";
 }

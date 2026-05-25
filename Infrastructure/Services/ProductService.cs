@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using vitacure.Application.Abstractions;
 using vitacure.Domain.Entities;
+using vitacure.Domain.Enums;
 using vitacure.Infrastructure.Persistence;
 
 namespace vitacure.Infrastructure.Services;
@@ -34,7 +35,7 @@ public class ProductService : IProductService
             .Include(x => x.ProductCategories)
             .Include(x => x.ProductMedias)
             .Include(x => x.ProductVariants)
-            .Where(x => x.IsActive && (categoryIds.Contains(x.CategoryId) || x.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))))
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen && (categoryIds.Contains(x.CategoryId ?? 0) || x.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))))
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
@@ -45,7 +46,7 @@ public class ProductService : IProductService
             .AsNoTracking()
             .Include(x => x.ProductMedias)
             .Include(x => x.ProductVariants)
-            .Where(x => x.IsActive)
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen)
             .OrderByDescending(x => x.Rating)
             .ThenBy(x => x.Name)
             .Take(12)
@@ -57,11 +58,14 @@ public class ProductService : IProductService
         return await _dbContext.Products
             .AsNoTracking()
             .Include(x => x.Category)
+            .Include(x => x.Brand)
             .Include(x => x.ProductMedias)
+            .Include(x => x.ProductFeatures)
+            .ThenInclude(x => x.Feature)
             .Include(x => x.ProductTags)
             .ThenInclude(x => x.Tag)
             .Include(x => x.ProductVariants)
-            .FirstOrDefaultAsync(x => x.Slug == slug && x.IsActive, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Slug == slug && x.Status == ProductPublishingStatus.PublishedOpen, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Product>> GetRelatedProductsAsync(int categoryId, int excludedProductId, int take = 4, CancellationToken cancellationToken = default)
@@ -70,7 +74,7 @@ public class ProductService : IProductService
             .AsNoTracking()
             .Include(x => x.ProductMedias)
             .Include(x => x.ProductVariants)
-            .Where(x => x.IsActive && x.CategoryId == categoryId && x.Id != excludedProductId)
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen && x.CategoryId == categoryId && x.Id != excludedProductId)
             .OrderByDescending(x => x.Rating)
             .ThenBy(x => x.Name)
             .Take(take)

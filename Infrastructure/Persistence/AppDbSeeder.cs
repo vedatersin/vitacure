@@ -17,41 +17,87 @@ public class AppDbSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        var hasCategories = await _dbContext.Categories.AnyAsync(cancellationToken);
-        var hasBrands = await _dbContext.Brands.AnyAsync(cancellationToken);
-        var hasFeatures = await _dbContext.Features.AnyAsync(cancellationToken);
-        var hasProducts = await _dbContext.Products.AnyAsync(cancellationToken);
-
-        if (!hasCategories && !hasProducts)
-        {
-            var document = await LoadDocumentAsync(cancellationToken);
-            var categories = BuildCategories(document);
-            await _dbContext.Categories.AddRangeAsync(categories, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            var categoryMap = await _dbContext.Categories
-                .ToDictionaryAsync(x => x.Slug, x => x.Id, cancellationToken);
-
-            var uncategorizedCategoryId = categoryMap["uncategorized"];
-            var products = BuildProducts(document, categoryMap, uncategorizedCategoryId);
-
-            await _dbContext.Products.AddRangeAsync(products, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        if (!hasBrands)
-        {
-            await _dbContext.Brands.AddRangeAsync(BuildBrands(), cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-
-        if (!hasFeatures)
-        {
-            await _dbContext.Features.AddRangeAsync(BuildFeatures(), cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-
+        await EnsureDefaultGoogleProductCategoriesAsync(cancellationToken);
+        await EnsureDefaultCustomFieldDefinitionsAsync(cancellationToken);
+        await EnsureDefaultPersonalizationDefinitionsAsync(cancellationToken);
         await EnsureDefaultShowcasesAsync(cancellationToken);
+    }
+
+    private async Task EnsureDefaultGoogleProductCategoriesAsync(CancellationToken cancellationToken)
+    {
+        if (await _dbContext.GoogleProductCategories.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        var definitions = new[]
+        {
+            "Bavullar ve Cantalar",
+            "Bebek ve Kucuk Cocuk ?r?nleri",
+            "Buro Malzemeleri",
+            "Din ve Torenler",
+            "Elektronik",
+            "Ev ve Bahce",
+            "Hayvanlar ve Evcil Hayvan ?r?nleri",
+            "Hirdavat",
+            "Kameralar ve Optik Malzemeler",
+            "Kiyafet ve Aksesuarlar",
+            "Medya",
+            "Mobilyalar",
+            "Oyuncaklar ve Oyunlar",
+            "Sanat ve Eglence",
+            "Saglik ve Guzellik",
+            "Spor Malzemeleri",
+            "Tasitlar ve Parcalar",
+            "Yazilim",
+            "Yetiskinlere Yonelik ?r?nler",
+            "Yiyecek, Icecekler ve Tutun Mamulleri",
+            "Is ve Endustri"
+        };
+
+        var categories = definitions
+            .Select((name, index) => new GoogleProductCategory
+            {
+                Name = name,
+                Slug = Slugify(name),
+                IsActive = true,
+                SortOrder = index + 1
+            })
+            .ToList();
+
+        _dbContext.GoogleProductCategories.AddRange(categories);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task EnsureDefaultCustomFieldDefinitionsAsync(CancellationToken cancellationToken)
+    {
+        if (await _dbContext.CustomFieldDefinitions.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        _dbContext.CustomFieldDefinitions.AddRange(
+            new CustomFieldDefinition { Name = "Yikama Talimatlari", Slug = "yikama-talimatlari", FieldType = "HTML", IsFilterable = false, IsActive = true },
+            new CustomFieldDefinition { Name = "Teknik ?zellikler", Slug = "teknik-ozellikler", FieldType = "Table", IsFilterable = true, IsActive = true },
+            new CustomFieldDefinition { Name = "?l?? Tablosu", Slug = "olcu-tablosu", FieldType = "Table", IsFilterable = false, IsActive = true });
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task EnsureDefaultPersonalizationDefinitionsAsync(CancellationToken cancellationToken)
+    {
+        if (await _dbContext.PersonalizationDefinitions.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        _dbContext.PersonalizationDefinitions.AddRange(
+            new PersonalizationDefinition { Name = "Hediye Notu", Slug = "hediye-notu", InputType = "Text", IsActive = true },
+            new PersonalizationDefinition { Name = "Dosya Yukleme", Slug = "dosya-yukleme", InputType = "File", IsActive = true },
+            new PersonalizationDefinition { Name = "Tarih", Slug = "tarih", InputType = "Date", IsActive = true });
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<MockSeedDocument> LoadDocumentAsync(CancellationToken cancellationToken)
@@ -147,9 +193,9 @@ public class AppDbSeeder
     {
         return new List<Feature>
         {
-            new() { Name = "Urun Formu", Slug = "urun-formu", GroupName = "Form", OptionsContent = string.Join(Environment.NewLine, new[] { "Kapsul", "Tablet", "Sase", "Damla" }), IsActive = true },
+            new() { Name = "?r?n Formu", Slug = "urun-formu", GroupName = "Form", OptionsContent = string.Join(Environment.NewLine, new[] { "Kapsul", "Tablet", "Sase", "Damla" }), IsActive = true },
             new() { Name = "Hedef Destek", Slug = "hedef-destek", GroupName = "Hedef", OptionsContent = string.Join(Environment.NewLine, new[] { "Uyku", "Enerji", "Bagisiklik", "Sindirim" }), IsActive = true },
-            new() { Name = "Icerik Tipi", Slug = "icerik-tipi", GroupName = "Icerik", OptionsContent = string.Join(Environment.NewLine, new[] { "Vitamin", "Mineral", "Bitkisel", "Probiyotik" }), IsActive = true }
+            new() { Name = "I?erik Tipi", Slug = "icerik-tipi", GroupName = "I?erik", OptionsContent = string.Join(Environment.NewLine, new[] { "Vitamin", "Mineral", "Bitkisel", "Probiyotik" }), IsActive = true }
         };
     }
 
@@ -193,12 +239,12 @@ public class AppDbSeeder
     private static string Slugify(string value)
     {
         return value.Trim().ToLowerInvariant()
-            .Replace("ç", "c")
-            .Replace("ğ", "g")
-            .Replace("ı", "i")
-            .Replace("ö", "o")
-            .Replace("ş", "s")
-            .Replace("ü", "u")
+            .Replace("�", "c")
+            .Replace("g", "g")
+            .Replace("i", "i")
+            .Replace("�", "o")
+            .Replace("s", "s")
+            .Replace("�", "u")
             .Replace("&", string.Empty)
             .Replace("+", "plus")
             .Replace("  ", " ")
@@ -221,17 +267,22 @@ public class AppDbSeeder
         var existingShowcases = await _dbContext.Showcases
             .Include(x => x.ShowcaseCategories)
             .Include(x => x.FeaturedProducts)
+            .Include(x => x.Prompts)
+            .Include(x => x.Tags)
             .ToListAsync(cancellationToken);
         var definitions = BuildDefaultShowcaseDefinitions();
         var hasChanges = false;
+        var usedCategoryIds = new HashSet<int>();
 
         for (var index = 0; index < definitions.Count; index++)
         {
             var definition = definitions[index];
-            if (!categoryLookup.TryGetValue(definition.CategorySlug, out var category))
+            if (!TryResolveShowcaseCategory(categoryLookup, categories, definition, usedCategoryIds, out var category))
             {
                 continue;
             }
+
+            usedCategoryIds.Add(category.Id);
 
             var featuredProductIds = category.Products
                 .Where(x => x.IsActive)
@@ -254,10 +305,13 @@ public class AppDbSeeder
                     Name = definition.Name,
                     Slug = definition.Slug,
                     IconClass = definition.IconClass,
+                    IconColor = GetDefaultShowcaseIconColor(definition.CategorySlug),
                     Title = category.Name,
                     Description = category.Description,
                     TagsContent = BuildDefaultTags(category.Slug),
+                    ExamplePromptsContent = string.Join(Environment.NewLine, GetDefaultShowcasePrompts(definition.CategorySlug)),
                     BackgroundImageUrl = ResolveShowcaseBackgroundImage(category.Name, definition.CategorySlug),
+                    PrimaryCategoryId = category.Id,
                     IsDark = !string.Equals(definition.CategorySlug, "uyku-sagligi", StringComparison.OrdinalIgnoreCase),
                     SeoTitle = category.SeoTitle,
                     MetaDescription = category.MetaDescription,
@@ -269,6 +323,8 @@ public class AppDbSeeder
                 _dbContext.Showcases.Add(showcase);
                 existingShowcases.Add(showcase);
                 SyncShowcaseCategories(showcase, category.Id);
+                SyncShowcaseTags(showcase, category.Slug);
+                SyncShowcasePrompts(showcase, definition.CategorySlug);
                 SyncFeaturedProducts(showcase, featuredProductIds);
                 hasChanges = true;
             }
@@ -309,6 +365,37 @@ public class AppDbSeeder
         }
     }
 
+    private static void SyncShowcasePrompts(Showcase showcase, string categorySlug)
+    {
+        showcase.Prompts.Clear();
+        foreach (var item in GetDefaultShowcasePrompts(categorySlug).Select((text, index) => new { text, index }))
+        {
+            showcase.Prompts.Add(new ShowcasePrompt
+            {
+                ShowcaseId = showcase.Id,
+                Text = item.text,
+                SortOrder = item.index
+            });
+        }
+    }
+
+    private static void SyncShowcaseTags(Showcase showcase, string categorySlug)
+    {
+        showcase.Tags.Clear();
+        foreach (var item in BuildDefaultTags(categorySlug)
+            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select((text, index) => new { text, index }))
+        {
+            showcase.Tags.Add(new ShowcaseTag
+            {
+                ShowcaseId = showcase.Id,
+                Name = item.text,
+                Slug = Slugify(item.text),
+                SortOrder = item.index
+            });
+        }
+    }
+
     private bool RepairExistingShowcase(
         Showcase showcase,
         DefaultShowcaseDefinition definition,
@@ -336,6 +423,12 @@ public class AppDbSeeder
             hasChanges = true;
         }
 
+        if (string.IsNullOrWhiteSpace(showcase.IconColor))
+        {
+            showcase.IconColor = GetDefaultShowcaseIconColor(definition.CategorySlug);
+            hasChanges = true;
+        }
+
         if (string.IsNullOrWhiteSpace(showcase.Title))
         {
             showcase.Title = category.Name;
@@ -351,6 +444,18 @@ public class AppDbSeeder
         if (string.IsNullOrWhiteSpace(showcase.TagsContent))
         {
             showcase.TagsContent = BuildDefaultTags(category.Slug);
+            hasChanges = true;
+        }
+
+        if (string.IsNullOrWhiteSpace(showcase.ExamplePromptsContent))
+        {
+            showcase.ExamplePromptsContent = string.Join(Environment.NewLine, GetDefaultShowcasePrompts(definition.CategorySlug));
+            hasChanges = true;
+        }
+
+        if (!showcase.PrimaryCategoryId.HasValue)
+        {
+            showcase.PrimaryCategoryId = category.Id;
             hasChanges = true;
         }
 
@@ -390,6 +495,18 @@ public class AppDbSeeder
             hasChanges = true;
         }
 
+        if (showcase.Prompts.Count == 0)
+        {
+            SyncShowcasePrompts(showcase, definition.CategorySlug);
+            hasChanges = true;
+        }
+
+        if (showcase.Tags.Count == 0)
+        {
+            SyncShowcaseTags(showcase, category.Slug);
+            hasChanges = true;
+        }
+
         if (hasChanges)
         {
             showcase.UpdatedAt = DateTime.UtcNow;
@@ -402,12 +519,57 @@ public class AppDbSeeder
     {
         return new[]
         {
-            new DefaultShowcaseDefinition("Uyku Sağlığı", "uyku-rutini", "uyku-sagligi", "uyku-sagligi", "fa-solid fa-moon"),
+            new DefaultShowcaseDefinition("Uyku Sagligi", "uyku-rutini", "uyku-sagligi", "uyku-sagligi", "fa-solid fa-moon"),
             new DefaultShowcaseDefinition("Multivitamin & Enerji", "multivitamin-enerji-plani", "multivitamin-enerji", "multivitamin-enerji", "fa-solid fa-sun"),
-            new DefaultShowcaseDefinition("Zihin & Hafıza Güçlendirme", "zihin-hafiza-rotasi", "zihin-hafiza-guclendirme", "zihin-hafiza-guclendirme", "fa-solid fa-brain"),
-            new DefaultShowcaseDefinition("Hastalıklara Karşı Koruma", "bagisiklik-koruma-plani", "hastaliklara-karsi-koruma", "hastaliklara-karsi-koruma", "fa-solid fa-shield-heart"),
-            new DefaultShowcaseDefinition("Kas ve İskelet Sağlığı", "kas-iskelet-destegi", "kas-ve-iskelet-sagligi", "kas-ve-iskelet-sagligi", "fa-solid fa-bone"),
-            new DefaultShowcaseDefinition("Zayıflama Desteği", "zayiflama-rotasi", "zayiflama-destegi", "zayiflama-destegi", "fa-solid fa-person-running")
+            new DefaultShowcaseDefinition("Zihin & Hafiza G��lendirme", "zihin-hafiza-rotasi", "zihin-hafiza-guclendirme", "zihin-hafiza-guclendirme", "fa-solid fa-brain"),
+            new DefaultShowcaseDefinition("Hastaliklara Karsi Koruma", "bagisiklik-koruma-plani", "hastaliklara-karsi-koruma", "hastaliklara-karsi-koruma", "fa-solid fa-shield-heart"),
+            new DefaultShowcaseDefinition("Kas ve Iskelet Sagligi", "kas-iskelet-destegi", "kas-ve-iskelet-sagligi", "kas-ve-iskelet-sagligi", "fa-solid fa-bone"),
+            new DefaultShowcaseDefinition("Zayiflama Destegi", "zayiflama-rotasi", "zayiflama-destegi", "zayiflama-destegi", "fa-solid fa-person-running")
+        };
+    }
+
+    private static bool TryResolveShowcaseCategory(
+        IReadOnlyDictionary<string, Category> categoryLookup,
+        IReadOnlyList<Category> categories,
+        DefaultShowcaseDefinition definition,
+        IReadOnlySet<int> usedCategoryIds,
+        out Category category)
+    {
+        if (categoryLookup.TryGetValue(definition.CategorySlug, out category!))
+        {
+            return true;
+        }
+
+        var matchTerms = GetMatchTerms(definition);
+        category = categories
+            .Where(item => !usedCategoryIds.Contains(item.Id))
+            .Select(item => new
+            {
+                Category = item,
+                Score = matchTerms.Count(term =>
+                    NormalizeForMatch(item.Name).Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    NormalizeForMatch(item.Slug).Contains(term, StringComparison.OrdinalIgnoreCase))
+            })
+            .Where(item => item.Score > 0)
+            .OrderByDescending(item => item.Score)
+            .ThenBy(item => item.Category.Name.Length)
+            .Select(item => item.Category)
+            .FirstOrDefault()!;
+
+        return category is not null;
+    }
+
+    private static IReadOnlyList<string> GetMatchTerms(DefaultShowcaseDefinition definition)
+    {
+        return definition.Slug switch
+        {
+            "uyku-rutini" => ["uyku", "melatonin"],
+            "multivitamin-enerji-plani" => ["multivitamin", "enerji", "b12"],
+            "zihin-hafiza-rotasi" => ["zihin", "hafiza", "odak", "omega"],
+            "bagisiklik-koruma-plani" => ["bagisiklik", "koruma", "beta glukan", "c vitamini"],
+            "kas-iskelet-destegi" => ["kas", "kemik", "eklem", "kolajen"],
+            "zayiflama-rotasi" => ["zayiflama", "metabolizma", "odem", "detoks"],
+            _ => Array.Empty<string>()
         };
     }
 
@@ -416,12 +578,64 @@ public class AppDbSeeder
         return slug switch
         {
             "uyku-sagligi" => string.Join(Environment.NewLine, new[] { "Melatonin", "Gece Rutini", "Rahatlama" }),
-            "multivitamin-enerji" => string.Join(Environment.NewLine, new[] { "Enerji", "Günlük Destek", "B12" }),
-            "zihin-hafiza-guclendirme" => string.Join(Environment.NewLine, new[] { "Odak", "Hafıza", "Zihinsel Performans" }),
-            "hastaliklara-karsi-koruma" => string.Join(Environment.NewLine, new[] { "Bağışıklık", "Koruma", "C Vitamini" }),
-            "kas-ve-iskelet-sagligi" => string.Join(Environment.NewLine, new[] { "Kemik", "Eklem", "Kas Desteği" }),
-            "zayiflama-destegi" => string.Join(Environment.NewLine, new[] { "Metabolizma", "Yağ Yakımı", "Diyet Desteği" }),
+            "multivitamin-enerji" => string.Join(Environment.NewLine, new[] { "Enerji", "G�nl�k Destek", "B12" }),
+            "zihin-hafiza-guclendirme" => string.Join(Environment.NewLine, new[] { "Odak", "Hafiza", "Zihinsel Performans" }),
+            "hastaliklara-karsi-koruma" => string.Join(Environment.NewLine, new[] { "Bagisiklik", "Koruma", "C Vitamini" }),
+            "kas-ve-iskelet-sagligi" => string.Join(Environment.NewLine, new[] { "Kemik", "Eklem", "Kas Destegi" }),
+            "zayiflama-destegi" => string.Join(Environment.NewLine, new[] { "Metabolizma", "Yag Yakimi", "Diyet Destegi" }),
             _ => string.Empty
+        };
+    }
+
+    private static string GetDefaultShowcaseIconColor(string slug)
+    {
+        return slug switch
+        {
+            "uyku-sagligi" => "#4b63d3",
+            "multivitamin-enerji" => "#d6a11d",
+            "zihin-hafiza-guclendirme" => "#d4569a",
+            "hastaliklara-karsi-koruma" => "#35a966",
+            "kas-ve-iskelet-sagligi" => "#d94b57",
+            "zayiflama-destegi" => "#e07a2f",
+            _ => "#4b63d3"
+        };
+    }
+
+    private static IReadOnlyList<string> GetDefaultShowcasePrompts(string slug)
+    {
+        return slug switch
+        {
+            "uyku-sagligi" => [
+                "Gece rutini icin hangi destekleri onerirsin?",
+                "Uykuya dalmakta zorlanirsam hangi urunlere bakmaliyim?",
+                "Daha derin ve kaliteli uyku icin bana bir kombin hazirla."
+            ],
+            "multivitamin-enerji" => [
+                "Gun boyu enerjimi destekleyecek bir rutin kurabilir misin?",
+                "Yorgunluk icin multivitamin ve B12 tarafinda ne onerirsin?",
+                "Sabah daha dinamik hissetmek icin bana urun sec."
+            ],
+            "zihin-hafiza-guclendirme" => [
+                "Odaklanma ve hafiza icin hangi destekler uygun olur?",
+                "Zihinsel performansi destekleyen urunleri gosterir misin?",
+                "Calisirken konsantrasyonumu artiracak bir kombin isterim."
+            ],
+            "hastaliklara-karsi-koruma" => [
+                "Bagisiklik destegi icin nereden baslamaliyim?",
+                "Mevsim gecislerinde koruyucu bir rutin onerir misin?",
+                "Hastaliga karsi gunluk destek urunlerini listele."
+            ],
+            "kas-ve-iskelet-sagligi" => [
+                "Eklem ve kemik destegi icin hangi urunler uygun?",
+                "Spor sonrasi kas toparlanmasi icin ne onerirsin?",
+                "Kas ve iskelet sagligi icin bana bir paket cikar."
+            ],
+            "zayiflama-destegi" => [
+                "Kilo kontrolu icin destek urunleri gosterir misin?",
+                "Metabolizma ve odem tarafinda ne onerirsin?",
+                "Zayiflama hedefim icin bana bir baslangic rutini hazirla."
+            ],
+            _ => Array.Empty<string>()
         };
     }
 
@@ -473,10 +687,10 @@ public class AppDbSeeder
         {
             "uyku-sagligi" or "uyku-rutini" => "/img/uykuBg.png",
             "multivitamin-enerji" or "multivitamin-enerji-plani" => "/img/multivitaminBg.png",
-            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "/img/zekaHafızaBg.png",
-            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "/img/hastalıkKorumaBg.png",
-            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "/img/kasİskeletBg.png",
-            "zayiflama-destegi" or "zayiflama-rotasi" => "/img/zayıflamaBg.png",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "/img/zekaHafizaBg.png",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "/img/hastalikKorumaBg.png",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "/img/kasIskeletBg.png",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "/img/zayiflamaBg.png",
             _ => string.Empty
         };
     }
@@ -501,13 +715,13 @@ public class AppDbSeeder
         }
 
         return value.Trim().ToLowerInvariant()
-            .Replace("ı", "i")
-            .Replace("İ", "i")
-            .Replace("ğ", "g")
-            .Replace("ü", "u")
-            .Replace("ş", "s")
-            .Replace("ö", "o")
-            .Replace("ç", "c")
+            .Replace("i", "i")
+            .Replace("I", "i")
+            .Replace("g", "g")
+            .Replace("�", "u")
+            .Replace("s", "s")
+            .Replace("�", "o")
+            .Replace("�", "c")
             .Replace("&", string.Empty)
             .Replace("-", string.Empty)
             .Replace("_", string.Empty)

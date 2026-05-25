@@ -37,7 +37,7 @@
 
                     <div class="col-12">
                         <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Koleksiyonun ne icin var oldugunu kisaca anlatin..."></textarea>
+                        <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Koleksiyonun ne i�in var oldugunu kisaca anlatin..."></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
@@ -46,9 +46,9 @@
             <section class="admin-editor-card">
                 <div class="admin-editor-section-head">
                     <div>
-                        <span class="admin-editor-kicker">Urun Havuzu</span>
-                        <h2>Koleksiyona urun bagla</h2>
-                        <p class="admin-editor-note">Bu iliski ileride storefront landing, kampanya bloklari ve merchandising kurallari icin kullanilabilir.</p>
+                        <span class="admin-editor-kicker">�r�n Havuzu</span>
+                        <h2>Koleksiyona �r�n bagla</h2>
+                        <p class="admin-editor-note">Bu iliski ileride storefront landing, kampanya bloklari ve merchandising kurallari i�in kullanilabilir.</p>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
                     </button>
                     <a href="/admin/collections" class="admin-editor-secondary">
                         <i class="fa-solid fa-arrow-left"></i>
-                        <span>Listeye Don</span>
+                        <span>Listeye D�n</span>
                     </a>
                 </div>
             </section>
@@ -107,7 +107,7 @@
             <section class="admin-editor-card">
                 <div class="admin-editor-section-head">
                     <div>
-                        <span class="admin-editor-kicker">Secili Urunler</span>
+                        <span class="admin-editor-kicker">Se�ili �r�nler</span>
                         <h2>Hizli ozet</h2>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                 <div class="admin-editor-tag-summary">
                     @if (selectedProducts.Count == 0)
                     {
-                        <span class="admin-editor-tag-pill">Urun secilmedi</span>
+                        <span class="admin-editor-tag-pill">�r�n se�ilmedi</span>
                     }
                     else
                     {

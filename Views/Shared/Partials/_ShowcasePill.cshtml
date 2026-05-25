@@ -2,8 +2,9 @@
 
 <a href="/@Model.Slug"
    class="ag-category-pill @Model.PillCssClass"
+   style="@(string.IsNullOrWhiteSpace(Model.IconColor) ? null : $"--pill-icon-color: {Model.IconColor};")"
    data-category-pill
-   data-category-slug="@(string.IsNullOrWhiteSpace(Model.CategorySlug) ? Model.Slug : Model.CategorySlug)"
+   data-category-slug="@(string.IsNullOrWhiteSpace(Model.PromptKey) ? Model.Slug : Model.PromptKey)"
    data-category-name="@Model.Title">
     <i class="@Model.IconClass"></i>
     <span>@Model.Name</span>

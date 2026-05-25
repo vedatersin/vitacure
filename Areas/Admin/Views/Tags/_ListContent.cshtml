@@ -5,10 +5,10 @@
     {
         Eyebrow = "Segmentasyon",
         Title = "Etiket listesi",
-        Description = "Urun segmentasyonu ve storefront filtreleme hazirligi icin kullanilacak etiketler burada yonetilir.",
+        Description = "Ürün segmentasyonu ve storefront filtreleme hazirligi için kullanilacak etiketler burada yönetilir.",
         IconClass = "fa-solid fa-tags",
-        AsideTitle = "Etiket ozeti",
-        AsideText = "Urunlerle iliskili etiketlerin kullanim yogunlugu bu panelde kisa bir referans olarak tutulur.",
+        AsideTitle = "Etiket özeti",
+        AsideText = "Ürünlerle ilişkili etiketlerin kullanim yogunlugu bu panelde kısa bir referans olarak tutulur.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -37,7 +37,7 @@
                 Value = Model.UsageFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum etiketler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm etiketler" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "used", Label = "Kullanimda" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "unused", Label = "Kullanim disi" }
                 }
@@ -58,7 +58,7 @@
                     <th>ID</th>
                     <th>Ad</th>
                     <th>Slug</th>
-                    <th>Urun Sayisi</th>
+                    <th>Ürün Sayısı</th>
                     <th></th>
                 </tr>
             </thead>
@@ -71,7 +71,7 @@
                         <td>@tag.Slug</td>
                         <td>@tag.ProductCount</td>
                         <td class="text-end">
-                            <a href="/admin/tags/edit/@tag.Id" class="btn auth-table-link">Duzenle</a>
+                            <a href="/admin/tags/edit/@tag.Id" class="btn auth-table-link">D�zenle</a>
                         </td>
                     </tr>
                 }

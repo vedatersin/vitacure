@@ -5,7 +5,7 @@ namespace vitacure.Application.Abstractions;
 public interface IAdminNotificationService
 {
     Task<AdminNotificationModuleViewModel> GetModuleAsync(string? category, int? notificationId, CancellationToken cancellationToken = default);
-    Task<AdminNotificationSummaryViewModel> GetSummaryAsync(int take = 4, CancellationToken cancellationToken = default);
+    Task<AdminNotificationSummaryViewModel> GetSummaryAsync(int take = 5, CancellationToken cancellationToken = default);
     Task CreateAsync(AdminNotificationCreateRequest request, CancellationToken cancellationToken = default);
 }
 

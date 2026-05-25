@@ -5,10 +5,10 @@
     {
         Eyebrow = "Operasyon",
         Title = "Siparis listesi",
-        Description = "Sepetten olusturulan siparisler, durumlari ve gelir etkisi burada izlenir.",
+        Description = "Sepetten oluştürülan siparisler, durumlari ve gelir etkisi burada izlenir.",
         IconClass = "fa-solid fa-bag-shopping",
-        AsideTitle = "Operasyon ozeti",
-        AsideText = "Acil takip gerektiren siparisler ve toplam gelir bu ekranin saginda hizli bir bakisla okunabilir.",
+        AsideTitle = "Operasyon özeti",
+        AsideText = "Acil takip gerektiren siparisler ve toplam gelir bu ekranin sağinda hizli bir bakışla okunabilir.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -25,7 +25,7 @@
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/orders",
-        SearchPlaceholder = "Siparis no, musteri, durum veya e-posta ara...",
+        SearchPlaceholder = "Siparis no, müşteri, durum veya e-posta ara...",
         SearchValue = Model.SearchTerm,
         Selects = new[]
         {
@@ -36,7 +36,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm durumlar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "pending", Label = "Bekleyenler" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "completed", Label = "Tamamlananlar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "cancelled", Label = "Iptaller" }
@@ -49,9 +49,9 @@
                 Value = Model.VolumeFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum siparisler" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "single", Label = "Tek urunlu" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "multi", Label = "Cok urunlu" }
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm siparisler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "single", Label = "Tek ürünlu" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "multi", Label = "Çok ürünlu" }
                 }
             }
         }
@@ -68,7 +68,7 @@
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Musteri</th>
+                    <th>Müşteri</th>
                     <th>E-posta</th>
                     <th>Durum</th>
                     <th>Adet</th>

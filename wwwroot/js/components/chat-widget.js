@@ -200,15 +200,21 @@
                 return null;
             }
 
-            const category = orderedCategories[categoryIndex % orderedCategories.length];
-            if (!promptQueues[category.slug] || promptQueues[category.slug].length === 0) {
-                promptQueues[category.slug] = shuffle(Array.isArray(promptsByCategory[category.slug]) ? promptsByCategory[category.slug] : []);
+            for (let offset = 0; offset < orderedCategories.length; offset += 1) {
+                const index = (categoryIndex + offset) % orderedCategories.length;
+                const category = orderedCategories[index];
+                if (!promptQueues[category.slug] || promptQueues[category.slug].length === 0) {
+                    promptQueues[category.slug] = shuffle(Array.isArray(promptsByCategory[category.slug]) ? promptsByCategory[category.slug] : []);
+                }
+
+                const prompt = promptQueues[category.slug].shift();
+                if (prompt) {
+                    categoryIndex = (index + 1) % orderedCategories.length;
+                    return { prompt, category };
+                }
             }
 
-            const prompt = promptQueues[category.slug].shift();
-            categoryIndex = (categoryIndex + 1) % orderedCategories.length;
-
-            return prompt ? { prompt, category } : null;
+            return null;
         }
 
         function typePlaceholder(text, index, callback) {
@@ -264,7 +270,7 @@
             }
             setActiveCategoryPill(next.category.slug);
 
-            const previousText = input.placeholder || "";
+            const previousText = input.placeholder === mainPlaceholder ? "" : (input.placeholder || "");
             if (previousText) {
                 erasePlaceholder(previousText, previousText.length, function () {
                     typePlaceholder(next.prompt, 0);
@@ -356,7 +362,7 @@
             Array.from(files).forEach((file) => {
                 const item = document.createElement("div");
                 item.className = "ag-file-item";
-                item.innerHTML = `<i class="${file.type.startsWith("image/") ? "fa-regular fa-image" : "fa-solid fa-file-pdf"}"></i><span>${file.name}</span><button type="button" class="ag-file-remove" aria-label="Dosyayı kaldır"><i class="fa-solid fa-xmark"></i></button>`;
+                item.innerHTML = `<i class="${file.type.startsWith("image/") ? "fa-regular fa-image" : "fa-solid fa-file-pdf"}"></i><span>${file.name}</span><button type="button" class="ag-file-remove" aria-label="Dosyayi kaldir"><i class="fa-solid fa-xmark"></i></button>`;
                 item.querySelector(".ag-file-remove")?.addEventListener("click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();

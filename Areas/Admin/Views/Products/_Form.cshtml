@@ -1,495 +1,1429 @@
+@using System.Text.Json
+@using vitacure.Domain.Enums
 @model vitacure.Models.ViewModels.Admin.ProductFormViewModel
 @{
     var allCategories = Model.CategoryOptions.ToList();
     var parentCategories = allCategories.Where(option => option.ParentId is null).OrderBy(option => option.Name).ToList();
     var selectedCategory = allCategories.FirstOrDefault(option => option.Id == Model.CategoryId);
     var selectedCategoryIds = Model.SelectedCategoryIds
-        .Append(Model.CategoryId)
+        .Append(Model.CategoryId ?? 0)
         .Where(id => id > 0)
         .Distinct()
         .ToHashSet();
-    var selectedParentId = selectedCategory?.ParentId ?? (parentCategories.Any(option => option.Id == Model.CategoryId) ? Model.CategoryId : 0);
-    var selectedChildId = selectedCategory?.ParentId is not null ? Model.CategoryId : 0;
+    var selectedParentId = selectedCategory?.ParentId ?? (parentCategories.Any(option => option.Id == Model.CategoryId) ? Model.CategoryId ?? 0 : 0);
+    var selectedChildId = selectedCategory?.ParentId is not null ? Model.CategoryId ?? 0 : 0;
     var selectedCategoryLabel = selectedCategory is null
         ? "Kategori secilmedi"
         : selectedCategory.ParentId is null
             ? selectedCategory.Name
             : $"{parentCategories.FirstOrDefault(option => option.Id == selectedCategory.ParentId)?.Name ?? "Kategori"} / {selectedCategory.Name}";
-    var selectedBrand = Model.BrandOptions.FirstOrDefault(option => option.Id == Model.BrandId)?.Name ?? "Marka secilmedi";
     var selectedFeatures = Model.FeatureOptions.Where(feature => Model.SelectedFeatureIds.Contains(feature.Id)).ToList();
+    var selectedCustomFields = Model.CustomFieldOptions.Where(option => Model.SelectedCustomFieldIds.Contains(option.Id)).OrderBy(option => option.Name).ToList();
+    var selectedPersonalizations = Model.PersonalizationOptions.Where(option => Model.SelectedPersonalizationIds.Contains(option.Id)).OrderBy(option => option.Name).ToList();
     var selectedTags = Model.TagOptions.Where(tag => Model.SelectedTagIds.Contains(tag.Id)).ToList();
     var variants = Model.Variants.ToList();
-    var featureGroups = Model.FeatureOptions
-        .GroupBy(feature => feature.GroupName)
-        .OrderBy(group => group.Key)
-        .ToList();
-    bool IsMerchandisingTag(vitacure.Models.ViewModels.Admin.ProductTagOptionViewModel tag)
+    var bundleItems = Model.BundleItems.OrderBy(item => item.ParentVariantId ?? 0).ThenBy(item => item.SortOrder).ToList();
+    var featureGroups = Model.FeatureOptions.GroupBy(feature => feature.GroupName).OrderBy(group => group.Key).ToList();
+    var isBundleMode = string.Equals(Model.CreateMode, "bundle", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Model.CreateMode, "bundle-variant", StringComparison.OrdinalIgnoreCase)
+        || Model.ProductKind == ProductKind.Bundle;
+    var isBundleVariantMode = string.Equals(Model.CreateMode, "bundle-variant", StringComparison.OrdinalIgnoreCase)
+        || (isBundleMode && string.Equals(Model.BundleMode, "variant", StringComparison.OrdinalIgnoreCase))
+        || (isBundleMode && variants.Count > 0);
+    var isVariantMode = string.Equals(Model.CreateMode, "variant", StringComparison.OrdinalIgnoreCase) || isBundleVariantMode || variants.Count > 0;
+    var shouldRenderVariantSection = isVariantMode || isBundleMode;
+    var initialTab = isBundleMode ? "bundle-type" : "basic";
+    var pageTitle = Model.Id.HasValue
+        ? isBundleMode
+            ? (isBundleVariantMode ? "Varyantli Paket ?r?nu D?zenle" : "Paket ?r?nu D?zenle")
+            : (isVariantMode ? "Varyantli ?r?n? D?zenle" : "Basit ?r?n? D?zenle")
+        : isBundleMode
+            ? (isBundleVariantMode ? "Varyantli Paket ?r?n Ekle" : "Paket ?r?n Ekle")
+            : (isVariantMode ? "Varyantli ?r?n Ekle" : "Basit ?r?n Ekle");
+    var hasReviewSummary = Model.ReviewCount > 0;
+    var roundedRating = (int)Math.Round(Math.Clamp(Model.Rating, 0m, 5m), MidpointRounding.AwayFromZero);
+    var categorySelectorPayload = JsonSerializer.Serialize(allCategories.Select(option => new
     {
-        var normalized = $"{tag.Name} {tag.Slug}".ToLowerInvariant();
-        return normalized.Contains("one cikan") ||
-               normalized.Contains("onecikan") ||
-               normalized.Contains("featured") ||
-               normalized.Contains("kamp") ||
-               normalized.Contains("campaign") ||
-               normalized.Contains("firsat") ||
-               normalized.Contains("yeni") ||
-               normalized.Contains("new") ||
-               normalized.Contains("hediye") ||
-               normalized.Contains("editor");
-    }
-    var merchandisingTags = Model.TagOptions.Where(IsMerchandisingTag).Take(4).ToList();
-    var hasDiscount = Model.OldPrice.HasValue && Model.OldPrice.Value > Model.Price;
-    var statusText = Model.IsActive ? "Yayinda" : "Taslak";
+        option.Id,
+        option.Name,
+        option.ParentId
+    }));
+    var tagSelectorPayload = JsonSerializer.Serialize(Model.TagOptions.Select(option => new
+    {
+        option.Id,
+        option.Name,
+        option.Slug
+    }));
+    var customFieldPayload = JsonSerializer.Serialize(Model.CustomFieldOptions.Select(option => new
+    {
+        option.Id,
+        option.Name,
+        option.Slug,
+        option.FieldType,
+        option.IsFilterable
+    }));
+    var personalizationPayload = JsonSerializer.Serialize(Model.PersonalizationOptions.Select(option => new
+    {
+        option.Id,
+        option.Name,
+        option.Slug,
+        option.InputType
+    }));
+    var variantGroupsPayload = JsonSerializer.Serialize(Model.VariantGroups.Select(group => new
+    {
+        group.Id,
+        group.Name,
+        group.SelectionStyle,
+        group.ShowOnCard,
+        group.IsPrimary,
+        group.SortOrder,
+        Options = group.Options.Select(option => new
+        {
+            option.Id,
+            option.Name,
+            option.ColorHex,
+            option.SwatchImageUrl,
+            option.SortOrder
+        })
+    }));
+    var variantRowsPayload = JsonSerializer.Serialize(variants.Select(variant => new
+    {
+        variant.Id,
+        variant.DisplayName,
+        variant.GroupName,
+        variant.OptionName,
+        variant.ImageUrl,
+        variant.Sku,
+        variant.Barcode,
+        variant.Price,
+        variant.OldPrice,
+        variant.PurchasePrice,
+        variant.Stock,
+        variant.Desi,
+        variant.HsCode,
+        variant.SortOrder,
+        variant.IsDefault,
+        variant.IsActive,
+        variant.OptionIds
+    }));
+    var variantPresetsPayload = JsonSerializer.Serialize(Model.VariantPresets.Select(preset => new
+    {
+        preset.Name,
+        preset.SelectionStyle,
+        Options = preset.Options.Select(option => new
+        {
+            option.Name,
+            option.ColorHex,
+            option.SwatchImageUrl
+        })
+    }));
+    var variantFieldVisibilityPayload = JsonSerializer.Serialize(new
+    {
+        Model.VariantFieldVisibility.ShowImage,
+        Model.VariantFieldVisibility.ShowBarcode,
+        Model.VariantFieldVisibility.ShowPurchasePrice,
+        Model.VariantFieldVisibility.ShowDesi,
+        Model.VariantFieldVisibility.ShowHsCode
+    });
+    var bundleProductsPayload = JsonSerializer.Serialize(Model.BundleProductOptions.Select(product => new
+    {
+        product.Id,
+        product.Name,
+        product.Slug,
+        product.ImageUrl,
+        product.Price,
+        product.Stock,
+        product.HasVariants,
+        Variants = product.Variants.Select(variant => new
+        {
+            variant.Id,
+            variant.Label,
+            variant.Price,
+            variant.Stock
+        })
+    }));
+    var bundleItemsPayload = JsonSerializer.Serialize(bundleItems.Select(item => new
+    {
+        item.Id,
+        item.ParentVariantId,
+        item.ProductId,
+        item.ProductVariantId,
+        item.EntryMode,
+        item.ProductName,
+        item.ProductImageUrl,
+        item.ProductVariantLabel,
+        item.UnitPrice,
+        item.Quantity,
+        item.MinQuantity,
+        item.MaxQuantity,
+        item.SortOrder
+    }));
 }
 
-<form method="post" action="@Context.Request.Path" class="auth-form admin-product-form-shell" data-admin-product-form="true">
+<form method="post" action="@Context.Request.Path" class="auth-form admin-product-form-shell" data-admin-product-form="true" data-product-initial-tab="@initialTab">
     @Html.AntiForgeryToken()
     <input asp-for="Id" type="hidden" />
+    <input asp-for="CreateMode" type="hidden" />
+    <input asp-for="BundleMode" type="hidden" data-bundle-mode-input />
+    <input asp-for="BundlePricingMode" type="hidden" data-bundle-pricing-mode-input />
+    <input type="hidden" value="@Model.BundleAdjustmentType" data-bundle-adjustment-type-input />
     <input asp-for="CategoryId" type="hidden" data-product-category-input />
-    <input asp-for="IsActive" type="hidden" data-product-status-input />
+    <input asp-for="Status" type="hidden" data-product-status-input />
 
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="admin-editor-layout admin-product-editor-layout admin-product-editor-layout-v2">
-        <div class="admin-editor-main">
-            <section class="admin-editor-card admin-product-hero-card">
-                <div class="admin-product-hero-head">
-                    <div>
-                        <span class="admin-editor-kicker">Urun Formu</span>
-                        <h2>Urun bilgilerini tamamlayin</h2>
-                        <p class="admin-editor-note">Fotograf, kategori, etiket ve ozellik secimleri storefront karti ile detay sayfasini birlikte besler.</p>
+    <div class="admin-product-single-shell" data-product-page-shell>
+        <header class="admin-product-page-intro" data-product-page-intro>
+            <div class="admin-product-page-copy">
+                <div class="admin-product-page-breadcrumb">
+                    <a href="/admin/products">?r?nler</a>
+                    <span>@pageTitle</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="admin-product-topbar" data-product-sticky-bar>
+            <div class="admin-product-tab-shell" data-product-tab-shell>
+                <button type="button" class="admin-product-tab-arrow is-left" data-product-tab-arrow="left" aria-label="Sekmeleri sola kaydir">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <nav class="admin-product-tab-nav admin-product-tab-nav-top" data-product-tab-nav aria-label="?r?n duzenleme sekmeleri">
+                    @if (isBundleMode)
+                    {
+                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-type">Paket ?r?n T?r?</button>
+                    }
+                    <button type="button" class="admin-product-tab-button" data-product-tab="basic">Temel Bilgi</button>
+                    @if (shouldRenderVariantSection)
+                    {
+                        <button type="button" class="admin-product-tab-button" data-product-tab="variant" data-bundle-variant-tab @(isBundleMode && !isBundleVariantMode ? "hidden" : null)>Varyant</button>
+                    }
+                    @if (isBundleMode)
+                    {
+                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-items">Paketteki ?r?nler</button>
+                        <button type="button" class="admin-product-tab-button" data-product-tab="price">Fiyat</button>
+                    }
+                    <button type="button" class="admin-product-tab-button" data-product-tab="media">Medya</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="details">?r?n Detayi</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="inventory">Envanter</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="seo">SEO</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="features">Filtreler</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="custom-fields">?zel Alanlar</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="personalization">?r?n ?zellestirmesi</button>
+                </nav>
+                <button type="button" class="admin-product-tab-arrow is-right" data-product-tab-arrow="right" aria-label="Sekmeleri saga kaydir">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="admin-product-topbar-actions">
+                <label class="admin-product-status-wrap" aria-label="?r?n durumu">
+                    <select class="form-select auth-input" data-product-status-select>
+                        @if (Model.Status == ProductPublishingStatus.Draft)
+                        {
+                            <option value="Draft" selected>Taslak</option>
+                        }
+                        else
+                        {
+                            <option value="Draft">Taslak</option>
+                        }
+                        @if (Model.Status == ProductPublishingStatus.PublishedClosed)
+                        {
+                            <option value="PublishedClosed" selected>Satisa Kapali Yayinla</option>
+                        }
+                        else
+                        {
+                            <option value="PublishedClosed">Satisa Kapali Yayinla</option>
+                        }
+                        @if (Model.Status == ProductPublishingStatus.PublishedOpen)
+                        {
+                            <option value="PublishedOpen" selected>Satisa A?ik Yayinla</option>
+                        }
+                        else
+                        {
+                            <option value="PublishedOpen">Satisa A?ik Yayinla</option>
+                        }
+                        @if (Model.Status == ProductPublishingStatus.Archived)
+                        {
+                            <option value="Archived" selected>Arsivle</option>
+                        }
+                        else
+                        {
+                            <option value="Archived">Arsivle</option>
+                        }
+                    </select>
+                </label>
+
+                <button type="submit" class="btn admin-editor-primary admin-product-save-button">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Kaydet</span>
+                </button>
+            </div>
+        </div>
+
+        @if (isBundleMode)
+        {
+            <section class="admin-editor-card admin-bundle-mode-card" data-bundle-editor data-product-tab-panel="bundle-type">
+                <div class="admin-editor-section-head">
+                    <div class="admin-product-inline-heading" data-inline-info-wrap>
+                        <h2>Paket �r�n T�r�</h2>
+                        <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Paket urun turu aciklamasini goster">
+                            <span>i</span>
+                        </button>
+                        <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                            <strong>Paket �r�n T�r�</strong>
+                            <span>Basit paket tek set mantigiyla calisir. Varyantli paket ise her kombinasyon icin farkli paket icerigi tanimlamanizi saglar.</span>
+                        </div>
                     </div>
-                    <div class="admin-product-hero-meta">
-                        <span class="admin-product-status-badge @(Model.IsActive ? "is-active" : null)" data-product-status-badge>@statusText</span>
-                        <span class="admin-product-inline-meta">
-                            <i class="fa-solid fa-layer-group"></i>
-                            <span data-product-category-path>@selectedCategoryLabel</span>
-                        </span>
-                    </div>
+                </div>
+
+                <div class="admin-bundle-mode-grid">
+                    <button type="button" class="admin-bundle-mode-option" data-bundle-mode-option="simple">
+                        <strong>Basit Paket �r�n�</strong>
+                        <span>Paketinizde tek bir kombinasyon sunmak isterseniz</span>
+                    </button>
+                    <button type="button" class="admin-bundle-mode-option" data-bundle-mode-option="variant">
+                        <strong>Varyantli Paket �r�n�</strong>
+                        <span>Paketinizde alt farkli kombinasyonlar sunmak isterseniz</span>
+                    </button>
                 </div>
             </section>
+        }
 
-            <section class="admin-editor-card">
-                <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Medya</span>
-                        <h2>Urun fotograflarini yukleyin</h2>
-                        <p class="admin-editor-note">Kapak gorseli ilk kutuda buyuk gorunur. Diger kareler galeri ve detay slayti olarak kullanilir.</p>
+        <section class="admin-editor-card admin-product-form-card" data-product-tab-panel="basic">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>Temel Bilgiler</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Temel bilgi aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>Temel Bilgiler</strong>
+                        <span>Taslak disindaki durumlarda urun adi, kategori, fiyat, aciklama ve gorsel alanlari zorunludur.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-product-field-grid admin-product-field-grid-single">
+                <input asp-for="Rating" type="hidden" />
+                <input asp-for="ReviewCount" type="hidden" />
+
+                <div class="admin-product-field-span">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control auth-input" placeholder="Orn. Clinique Nemlendirici 50 ml" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="ProductKind" class="form-label">?r?n Turu</label>
+                    <select asp-for="ProductKind" class="form-select auth-input">
+                        <option value="@ProductKind.Physical">Fiziksel ?r?n</option>
+                        <option value="@ProductKind.Digital">Dijital ?r?n</option>
+                        <option value="@ProductKind.Bundle">Paket ?r?n</option>
+                    </select>
+                    <span class="admin-editor-note">Dijital urunlerde odeme akisi kargo ve adres adimlarini atlayabilir. Paket urunlerde stok ve fiyat akisi bundle alanlarindan yonetilir.</span>
+                </div>
+
+                @if (!isBundleMode)
+                {
+                <div>
+                    <label asp-for="Price" class="form-label">Satis Fiyati</label>
+                    <div class="admin-product-input-wrap">
+                        <input asp-for="Price" class="form-control auth-input" type="number" min="0" step="0.01" />
+                        <span>TL</span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="OldPrice" class="form-label">Indirimli Fiyat</label>
+                    <div class="admin-product-input-wrap">
+                        <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
+                        <span>TL</span>
+                    </div>
+                    <span asp-validation-for="OldPrice" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="PurchasePrice" class="form-label">Alis Fiyati</label>
+                    <div class="admin-product-input-wrap">
+                        <input asp-for="PurchasePrice" class="form-control auth-input" type="number" min="0" step="0.01" />
+                        <span>TL</span>
+                    </div>
+                    <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+                </div>
+                }
+
+                <div class="admin-product-field-span">
+                    <label class="admin-product-check-row">
+                        <input asp-for="ShowUnitPrice" class="form-check-input" type="checkbox" data-unit-price-toggle />
+                        <span>Bu urun icin birim fiyat goster</span>
+                    </label>
+                </div>
+
+                <div class="admin-product-field-span admin-product-review-summary" data-review-summary @(hasReviewSummary ? null : "hidden")>
+                    <label class="form-label">Degerlendirme</label>
+                    <div class="admin-product-review-stars" aria-label="@($"{Model.Rating:0.0} yildiz, {Model.ReviewCount} degerlendirme")">
+                        @for (var index = 1; index <= 5; index++)
+                        {
+                            <span class="@(index <= roundedRating ? "is-filled" : null)">?</span>
+                        }
+                        <strong>@Model.Rating.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)</strong>
+                        <small>(@Model.ReviewCount)</small>
                     </div>
                 </div>
 
-                <div class="admin-product-media-editor admin-product-media-editor-v2"
-                     data-product-gallery-editor="true"
-                     data-gallery-upload-url="/admin/products/upload-image"
-                     data-gallery-library-url="/admin/media/library-items"
-                     data-gallery-max-items="4">
-                    <input asp-for="ImageUrl" type="hidden" data-gallery-cover-input />
-                    <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
-                    <input asp-for="MediaItemsJson" type="hidden" data-gallery-items-json />
-                    <input type="file"
-                           class="d-none"
-                           accept="image/png,image/jpeg,image/webp,image/gif"
-                           data-gallery-file-input />
+                <div class="admin-product-field-span admin-product-unit-price-panel" data-unit-price-panel @(Model.ShowUnitPrice ? null : "hidden")>
+                    <div class="admin-product-unit-price-grid">
+                        <div class="admin-variant-empty-copy">
+                            <label asp-for="UnitContentAmount" class="form-label">?r?n?n Birim ?l??s?</label>
+                            <div class="admin-product-unit-input-row">
+                                <input asp-for="UnitContentAmount" class="form-control auth-input" type="number" min="0" step="0.0001" data-unit-content-amount />
+                                <select asp-for="UnitContentType" class="form-select auth-input" data-unit-content-type>
+                                    <option value="">Se?iniz</option>
+                                    <optgroup label="Hacim">
+                                        <option value="ml">ml</option>
+                                        <option value="cl">cl</option>
+                                        <option value="l">l</option>
+                                        <option value="m3">m3</option>
+                                    </optgroup>
+                                    <optgroup label="Agirlik">
+                                        <option value="mg">mg</option>
+                                        <option value="gr">gr</option>
+                                        <option value="kg">kg</option>
+                                    </optgroup>
+                                    <optgroup label="Boyut">
+                                        <option value="mm">mm</option>
+                                        <option value="cm">cm</option>
+                                        <option value="m">m</option>
+                                    </optgroup>
+                                    <optgroup label="Alan">
+                                        <option value="m2">m2</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <span asp-validation-for="UnitContentAmount" class="text-danger"></span>
+                            <span asp-validation-for="UnitContentType" class="text-danger"></span>
+                        </div>
 
-                    <div class="admin-product-media-preview">
-                        <button type="button" class="admin-product-media-preview-stage" data-gallery-main-trigger>
-                            <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
-                            <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <strong>Urun fotografini yukleyin</strong>
-                                <small>Maksimum 10 MB. PNG, JPG, WEBP veya GIF dosyalari kullanabilirsiniz.</small>
-                            </span>
-                            <span class="admin-product-media-preview-overlay">Onizle</span>
-                            <span class="admin-product-media-preview-remove" data-gallery-main-remove @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
-                                <i class="fa-solid fa-xmark"></i>
-                            </span>
+                        <div>
+                            <label asp-for="UnitComparisonAmount" class="form-label">Satilan Birim</label>
+                            <div class="admin-product-unit-input-row">
+                                <input asp-for="UnitComparisonAmount" class="form-control auth-input" type="number" min="0" step="0.0001" data-unit-comparison-amount />
+                                <select asp-for="UnitComparisonType" class="form-select auth-input" data-unit-comparison-type>
+                                    <option value="">Se?iniz</option>
+                                    <optgroup label="Hacim">
+                                        <option value="ml">ml</option>
+                                        <option value="cl">cl</option>
+                                        <option value="l">l</option>
+                                        <option value="m3">m3</option>
+                                    </optgroup>
+                                    <optgroup label="Agirlik">
+                                        <option value="mg">mg</option>
+                                        <option value="gr">gr</option>
+                                        <option value="kg">kg</option>
+                                    </optgroup>
+                                    <optgroup label="Boyut">
+                                        <option value="mm">mm</option>
+                                        <option value="cm">cm</option>
+                                        <option value="m">m</option>
+                                    </optgroup>
+                                    <optgroup label="Alan">
+                                        <option value="m2">m2</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <span asp-validation-for="UnitComparisonAmount" class="text-danger"></span>
+                            <span asp-validation-for="UnitComparisonType" class="text-danger"></span>
+                        </div>
+
+                        <div class="admin-product-unit-price-result">
+                            <label class="form-label">Birim Fiyat</label>
+                            <strong data-unit-price-result>-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-editor-card" data-product-tab-panel="media">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>Medya</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Medya aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>Medya</strong>
+                        <span>Kapak gorseli urun listesinde ve detay sayfasinda ilk kare olarak kullanilir.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-product-media-editor admin-product-media-editor-v2"
+                 data-product-gallery-editor="true"
+                 data-gallery-upload-url="/admin/products/upload-image"
+                 data-gallery-library-url="/admin/media/library-items"
+                 data-gallery-max-items="4">
+                <input asp-for="ImageUrl" type="hidden" data-gallery-cover-input />
+                <textarea asp-for="GalleryImageUrls" class="d-none" data-gallery-hidden></textarea>
+                <input asp-for="MediaItemsJson" type="hidden" data-gallery-items-json />
+                <input type="file" class="d-none" accept="image/png,image/jpeg,image/webp,image/gif" data-gallery-file-input />
+
+                <div class="admin-product-media-preview">
+                    <button type="button" class="admin-product-media-preview-stage" data-gallery-main-trigger>
+                        <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
+                        <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <strong>?r?n fotografini yukleyin</strong>
+                            <small>Maksimum 10 MB. PNG, JPG, WEBP veya GIF kullanabilirsiniz.</small>
+                        </span>
+                        <span class="admin-product-media-preview-overlay">Onizle</span>
+                        <span class="admin-product-media-preview-remove" data-gallery-main-remove @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null)>
+                            <i class="fa-solid fa-xmark"></i>
+                        </span>
+                    </button>
+
+                    <div class="admin-product-media-strip" data-gallery-strip></div>
+                    <div class="admin-product-media-toolbar">
+                        <button type="button" class="admin-editor-secondary" data-gallery-open-library>
+                            <i class="fa-solid fa-images"></i>
+                            <span>Kutuphaneden Sec</span>
                         </button>
+                    </div>
+                    <div class="admin-product-media-help">Kapak gorseli ilk kare olur. Maksimum 4 gorsel ekleyebilirsiniz.</div>
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
 
-                        <div class="admin-product-media-strip" data-gallery-strip></div>
-                        <div class="admin-product-media-toolbar">
-                            <button type="button" class="admin-editor-secondary" data-gallery-open-library>
-                                <i class="fa-solid fa-images"></i>
-                                <span>Kutuphaneden Sec</span>
+        <section class="admin-editor-card admin-product-step-card" data-product-tab-panel="details">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>?r?n Detayi</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?r?n detayi aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>?r?n Detayi</strong>
+                        <span>G?rsel7-8-9 filtre altyapisini besleyecek urun siniflandirmasini burada tamamlayin.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-product-field-grid admin-product-field-grid-single">
+                <div>
+                    <label asp-for="BrandId" class="form-label"></label>
+                    <select asp-for="BrandId" class="form-select auth-input">
+                        <option value="">Se?iniz</option>
+                        @foreach (var option in Model.BrandOptions)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="BrandId" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label class="form-label" for="product-tag-selector-input">Etiket</label>
+                    <script type="application/json" data-product-tag-options>@Html.Raw(tagSelectorPayload)</script>
+                    <div class="admin-product-tag-selector" data-product-tag-selector>
+                        <div class="admin-product-tag-selector-control" data-tag-selector-control>
+                            <div class="admin-product-tag-selector-chips" data-tag-selector-chips>
+                                @foreach (var tag in selectedTags)
+                                {
+                                    <span class="admin-product-tag-chip" data-tag-chip="@tag.Id">
+                                        <span>@tag.Name</span>
+                                        <button type="button" data-tag-remove="@tag.Id" aria-label="@($"{tag.Name} etiketini kaldir")">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </span>
+                                }
+                            </div>
+                            <input id="product-tag-selector-input" type="text" class="admin-product-tag-selector-input" data-tag-selector-input placeholder="Etiket ara veya yeni ekle" autocomplete="off" />
+                            <button type="button" class="admin-product-tag-selector-clear" data-tag-selector-clear aria-label="Etiket aramasini temizle" @(selectedTags.Count == 0 ? "hidden" : null)>
+                                <i class="fa-regular fa-circle-xmark"></i>
                             </button>
                         </div>
-                        <div class="admin-product-media-help">Kapak gorseli ilk kare olur. Maksimum 4 gorsel ekleyebilirsin.</div>
-                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="admin-editor-card admin-product-form-card">
-                <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Temel Bilgiler</span>
-                        <h2>Urun detaylari</h2>
-                        <p class="admin-editor-note">Baslik, marka, fiyat ve aciklama alanlarini katalog diliyle tamamlayin.</p>
-                    </div>
-                </div>
-
-                <div class="admin-product-field-grid">
-                    <div class="admin-product-field-span">
-                        <label asp-for="Name" class="form-label"></label>
-                        <input asp-for="Name" class="form-control auth-input" placeholder="Orn. Clinique Nemlendirici 50 ml" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="BrandId" class="form-label"></label>
-                        <select asp-for="BrandId" class="form-select auth-input">
-                            <option value="">Seciniz</option>
-                            @foreach (var option in Model.BrandOptions)
+                        <div class="admin-product-tag-selector-menu" data-tag-selector-menu hidden>
+                            <div class="admin-product-tag-selector-list" data-tag-selector-list></div>
+                            <div class="admin-product-tag-selector-empty" data-tag-selector-empty hidden>
+                                <div class="admin-product-tag-selector-empty-illustration">
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <strong data-tag-selector-empty-title>Sonuc bulunamadi</strong>
+                                <p data-tag-selector-empty-copy>Yeni deger eklemek icin isim yazip ENTER tusuna basin</p>
+                            </div>
+                        </div>
+                        <div class="d-none" data-product-selected-tag-inputs>
+                            @foreach (var tagId in Model.SelectedTagIds)
                             {
-                                <option value="@option.Id">@option.Name</option>
+                                <input type="checkbox" name="SelectedTagIds" value="@tagId" checked />
                             }
-                        </select>
-                        <span asp-validation-for="BrandId" class="text-danger"></span>
-                    </div>
-
-                    <div class="admin-product-field-span">
-                        <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description"
-                                  class="form-control auth-textarea admin-product-description"
-                                  rows="7"
-                                  placeholder="Bu urune ait detayli aciklamayi yazin..."
-                                  data-admin-richtext="true"
-                                  data-richtext-placeholder="Bu urune ait detayli aciklamayi yazin..."></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="Price" class="form-label"></label>
-                        <div class="admin-product-input-wrap">
-                            <input asp-for="Price" class="form-control auth-input" type="number" min="0.01" step="0.01" />
-                            <span>TL</span>
                         </div>
-                        <span asp-validation-for="Price" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="OldPrice" class="form-label">Indirimli Fiyat</label>
-                        <div class="admin-product-input-wrap">
-                            <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
-                            <span>TL</span>
-                        </div>
-                        <span asp-validation-for="OldPrice" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="Stock" class="form-label"></label>
-                        <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
-                        <div class="admin-editor-note">Variant tanimlanmazsa ana stok bu alan uzerinden kullanilir.</div>
-                        <span asp-validation-for="Stock" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="Rating" class="form-label"></label>
-                        <input asp-for="Rating" class="form-control auth-input" type="number" min="0" max="5" step="0.1" />
-                        <span asp-validation-for="Rating" class="text-danger"></span>
-                    </div>
-
-                    <div>
-                        <label asp-for="Slug" class="form-label"></label>
-                        <input asp-for="Slug" class="form-control auth-input" placeholder="clinique-nemlendirici-50-ml" />
-                        <span asp-validation-for="Slug" class="text-danger"></span>
                     </div>
                 </div>
-            </section>
 
-            <section class="admin-editor-card admin-product-variant-card" data-variant-editor>
+                <div>
+                    <label asp-for="GoogleProductCategoryId" class="form-label">Google ?r?n Kategorisi</label>
+                    <select asp-for="GoogleProductCategoryId" class="form-select auth-input">
+                        <option value="">Se?iniz</option>
+                        @foreach (var option in Model.GoogleProductCategoryOptions)
+                        {
+                            <option value="@option.Id">@option.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="GoogleProductCategoryId" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="SupplierName" class="form-label"></label>
+                    <input asp-for="SupplierName" class="form-control auth-input" placeholder="Tedarik?i adi" />
+                    <span asp-validation-for="SupplierName" class="text-danger"></span>
+                </div>
+
+                <div class="admin-product-field-span">
+                    <script type="application/json" data-product-category-options>@Html.Raw(categorySelectorPayload)</script>
+                    <div class="admin-product-category-panel" data-product-category-panel>
+                        <div class="admin-product-category-empty" data-product-category-empty @(selectedCategoryIds.Count > 0 ? "hidden" : null)>
+                            <strong>Hen?z bir kategori eklemediniz.</strong>
+                            <p>?r?nlerinize ait kategorileri girin.</p>
+                            <button type="button" class="admin-editor-primary admin-product-category-open-button" data-category-selector-open>Kategori Ekle</button>
+                        </div>
+
+                        <div class="admin-product-category-selected" data-product-category-selected @(selectedCategoryIds.Count == 0 ? "hidden" : null)>
+                            <div class="admin-product-selection-head">
+                                <h3>Kategori</h3>
+                                <button type="button" class="admin-editor-ghost" data-category-selector-open>Kategorileri D?zenle</button>
+                            </div>
+                            <div class="admin-product-selected-list" data-product-selected-category-list>
+                                @foreach (var option in allCategories.OrderBy(option => option.ParentId.HasValue ? 1 : 0).ThenBy(option => option.Name))
+                                {
+                                    if (!selectedCategoryIds.Contains(option.Id))
+                                    {
+                                        continue;
+                                    }
+
+                                    var label = option.ParentId is null ? option.Name : $"{parentCategories.FirstOrDefault(parent => parent.Id == option.ParentId)?.Name ?? "Kategori"} / {option.Name}";
+                                    var isPrimary = option.Id == (Model.CategoryId ?? 0);
+                                    <div class="admin-product-selected-row" data-category-row="@option.Id">
+                                        <div class="admin-product-selected-copy">
+                                            <strong>@label</strong>
+                                            @if (isPrimary)
+                                            {
+                                                <span class="admin-product-primary-badge">Ana Kategori</span>
+                                            }
+                                        </div>
+                                        <details class="admin-product-item-menu">
+                                            <summary>
+                                                <i class="fa-solid fa-ellipsis"></i>
+                                            </summary>
+                                            <div class="admin-product-item-menu-panel">
+                                                <button type="button" data-category-action="edit" data-category-id="@option.Id">D?zenle</button>
+                                                @if (!isPrimary)
+                                                {
+                                                    <button type="button" data-category-action="make-primary" data-category-id="@option.Id">Ana Kategori Yap</button>
+                                                }
+                                                <button type="button" class="is-danger" data-category-action="remove" data-category-id="@option.Id">Kaldir</button>
+                                            </div>
+                                        </details>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-none" data-product-selected-category-inputs>
+                            @foreach (var categoryId in selectedCategoryIds)
+                            {
+                                <input type="checkbox" name="SelectedCategoryIds" value="@categoryId" checked />
+                            }
+                        </div>
+                    </div>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="admin-product-field-span">
+                    <label asp-for="Description" class="form-label"></label>
+                    <textarea asp-for="Description"
+                              class="form-control auth-textarea admin-product-description"
+                              rows="7"
+                              placeholder="Bu urune ait detayli aciklamayi yazin..."
+                              data-admin-richtext="true"
+                              data-richtext-placeholder="Bu urune ait detayli aciklamayi yazin..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+        </section>
+
+        @if (shouldRenderVariantSection)
+        {
+            <section class="admin-editor-card admin-product-variant-card" data-variant-editor data-product-tab-panel="variant" data-bundle-variant-panel @(isBundleMode && !isBundleVariantMode ? "hidden" : null)>
                 <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Variantlar</span>
-                        <h2>Secenek bazli fiyat ve stok yonet</h2>
-                        <p class="admin-editor-note">Boyut, aroma veya form gibi secenekler icin ayri fiyat, stok ve SKU tanimlayabilirsin. Aktif variant varsa kart fiyatini ilk aktif variant belirler.</p>
+                    <div class="admin-product-inline-heading" data-inline-info-wrap>
+                        <h2>Varyant</h2>
+                        <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Varyant aciklamasini goster">
+                            <span>i</span>
+                        </button>
+                        <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                            <strong>Varyant</strong>
+                            <span>Varyant turu, secim stili ve uye listelerini yoneterek her kombinasyon icin ayri fiyat, stok ve medya tanimlayin.</span>
+                        </div>
                     </div>
                     <button type="button" class="admin-editor-secondary admin-variant-add-button" data-variant-add>
                         <i class="fa-solid fa-plus"></i>
-                        <span>Variant Ekle</span>
+                        <span>Varyant Ekle</span>
                     </button>
                 </div>
 
-                <div class="admin-variant-list" data-variant-list>
-                    @if (variants.Count == 0)
-                    {
-                        <div class="admin-variant-empty" data-variant-empty>
-                            <i class="fa-solid fa-layer-group"></i>
-                            <div>
-                                <strong>Henuz variant tanimlanmadi</strong>
-                                <p>Tek urun mantigiyla devam etmek istersen fiyat ve stok yukaridaki alanlardan calisir.</p>
+                <script type="application/json" data-variant-groups-payload>@Html.Raw(variantGroupsPayload)</script>
+                <script type="application/json" data-variant-rows-payload>@Html.Raw(variantRowsPayload)</script>
+                <script type="application/json" data-variant-presets-payload>@Html.Raw(variantPresetsPayload)</script>
+                <script type="application/json" data-variant-visibility-payload>@Html.Raw(variantFieldVisibilityPayload)</script>
+
+                <div class="d-none" data-variant-group-inputs></div>
+                <div class="d-none" data-variant-row-inputs></div>
+                <div class="d-none" data-variant-visibility-inputs></div>
+
+                <div class="admin-variant-builder">
+                    <div class="admin-product-empty-state admin-variant-empty-state" data-variant-empty>
+                        <div>
+                            <strong>Hen�z varyant eklenmedi.</strong>
+                            <p>Varyant eklemek i�in ilk olarak Varyant Ekle butonuna tiklayin.</p>
+                        </div>
+                        <button type="button" class="admin-editor-primary admin-variant-empty-cta" data-variant-add>Varyant Ekle</button>
+                    </div>
+
+                    <div class="admin-variant-content" data-variant-content hidden>
+                        <div class="admin-product-selection-head">
+                            <h3>Varyant Gruplari</h3>
+                            <div class="admin-variant-toolbar">
+                                <details class="admin-product-item-menu admin-variant-settings-menu">
+                                    <summary>
+                                        <i class="fa-solid fa-sliders"></i>
+                                    </summary>
+                                    <div class="admin-product-item-menu-panel admin-variant-settings-panel">
+                                        <label><input type="checkbox" data-variant-column-toggle="showImage" /> �r�n G�rseli</label>
+                                        <label><input type="checkbox" data-variant-column-toggle="showPurchasePrice" /> Alis Fiyati</label>
+                                        <label><input type="checkbox" data-variant-column-toggle="showBarcode" /> Barkod</label>
+                                        <label><input type="checkbox" data-variant-column-toggle="showDesi" /> Desi</label>
+                                        <label><input type="checkbox" data-variant-column-toggle="showHsCode" /> HS Kodu</label>
+                                    </div>
+                                </details>
+                                <button type="button" class="admin-editor-ghost" data-variant-add>Varyant Ekle</button>
                             </div>
                         </div>
-                    }
 
-                    @for (var index = 0; index < variants.Count; index++)
-                    {
-                        var variant = variants[index];
-                        <div class="admin-variant-row" data-variant-row>
-                            <input type="hidden" name="Variants[@index].Id" value="@variant.Id" />
+                        <div class="admin-product-selected-list admin-variant-group-list" data-variant-group-list></div>
 
-                            <div class="admin-variant-grid">
-                                <div>
-                                    <label class="form-label">Varyasyon Ekseni</label>
-                                    <input class="form-control auth-input" name="Variants[@index].GroupName" value="@variant.GroupName" placeholder="Orn. Boyut" />
-                                </div>
-                                <div>
-                                    <label class="form-label">Secenek</label>
-                                    <input class="form-control auth-input" name="Variants[@index].OptionName" value="@variant.OptionName" placeholder="Orn. 60 Tablet" />
-                                </div>
-                                <div>
-                                    <label class="form-label">SKU</label>
-                                    <input class="form-control auth-input" name="Variants[@index].Sku" value="@variant.Sku" placeholder="VT-60TB" />
-                                </div>
-                                <div>
-                                    <label class="form-label">Fiyat</label>
-                                    <input class="form-control auth-input" type="number" min="0.01" step="0.01" name="Variants[@index].Price" value="@variant.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" />
-                                </div>
-                                <div>
-                                    <label class="form-label">Eski Fiyat</label>
-                                    <input class="form-control auth-input" type="number" min="0" step="0.01" name="Variants[@index].OldPrice" value="@(variant.OldPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty)" />
-                                </div>
-                                <div>
-                                    <label class="form-label">Stok</label>
-                                    <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[@index].Stock" value="@variant.Stock" />
-                                </div>
-                                <div>
-                                    <label class="form-label">Sira</label>
-                                    <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[@index].SortOrder" value="@variant.SortOrder" />
-                                </div>
-                                <div class="admin-variant-toggle-wrap">
-                                    <label class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="Variants[@index].IsActive" value="true" @(variant.IsActive ? "checked" : null) />
-                                        <input type="hidden" name="Variants[@index].IsActive" value="false" />
-                                        <span class="form-check-label">Aktif</span>
-                                    </label>
-                                </div>
+                        <div class="admin-variant-table-shell">
+                            <div class="admin-variant-table-toolbar">
+                                <label class="admin-product-search-field admin-variant-search">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="search" placeholder="Varyantlarda ara" data-variant-search-input />
+                                </label>
+                                <span class="admin-variant-count" data-variant-count></span>
                             </div>
 
-                            <button type="button" class="admin-variant-remove" data-variant-remove>
-                                <i class="fa-solid fa-trash"></i>
-                                <span>Kaldir</span>
+                            <div class="admin-variant-table-wrap">
+                                <table class="admin-variant-table">
+                                    <thead data-variant-table-head></thead>
+                                    <tbody data-variant-table-body></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-product-dialog-layer admin-product-dialog-layer-side" data-variant-group-modal hidden>
+                    <button type="button" class="admin-product-dialog-backdrop" data-variant-group-close></button>
+                    <div class="admin-product-dialog admin-variant-group-dialog">
+                        <div class="admin-product-dialog-head">
+                            <div class="admin-variant-group-dialog-copy">
+                                <h3 data-variant-group-modal-title>Varyant Ekle</h3>
+                                <span>Varyant adini, g�sterim stilini ve se�eneklerini ayni panelde hizlica tanimlayin.</span>
+                            </div>
+                            <button type="button" class="admin-icon-button" data-variant-group-close aria-label="Kapat">
+                                <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-                    }
-                </div>
-                <span asp-validation-for="Variants" class="text-danger"></span>
-            </section>
 
-            <section class="admin-editor-card admin-product-merchandising-card">
-                <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Vitrin Kurgusu</span>
-                        <h2>Magaza icin hizli secimler</h2>
-                        <p class="admin-editor-note">One cikan, kampanyali veya yeni urun gibi isaretleri hizli secmek icin bu alan kullanilabilir.</p>
-                    </div>
-                </div>
+                        <div class="admin-variant-group-form">
+                            <section class="admin-variant-group-form-section">
+                                <label class="form-label">Varyant T�r� Adi</label>
+                                <input type="text" class="form-control auth-input" placeholder="�rn. Renk, Boyut" data-variant-group-name />
+                                <div class="admin-variant-preset-list" data-variant-preset-list hidden></div>
+                            </section>
 
-                @if (merchandisingTags.Count > 0)
-                {
-                    <div class="admin-product-merchandising-grid">
-                        @foreach (var tag in merchandisingTags)
-                        {
-                            var isChecked = Model.SelectedTagIds.Contains(tag.Id);
-                            <label class="admin-product-merchandising-toggle @(isChecked ? "is-checked" : null)">
-                                <input type="checkbox"
-                                       name="SelectedTagIds"
-                                       value="@tag.Id"
-                                       data-product-merchandising-tag="true"
-                                       @(isChecked ? "checked" : null) />
-                                <span class="admin-product-merchandising-copy">
-                                    <strong>@tag.Name</strong>
-                                    <small>@(tag.Slug.Replace("-", " "))</small>
-                                </span>
-                                <span class="admin-product-merchandising-switch"></span>
+                            <section class="admin-variant-group-form-section">
+                                <label class="form-label">Se�im Stili</label>
+                                <div class="admin-variant-style-switch">
+                                    <button type="button" class="admin-variant-style-card" data-variant-style-option="list">
+                                        <span class="admin-variant-style-card-title">Liste</span>
+                                        <span class="admin-variant-style-card-preview admin-variant-style-card-preview-list">
+                                            <span>XL</span>
+                                            <span>S</span>
+                                            <span>M</span>
+                                        </span>
+                                    </button>
+                                    <button type="button" class="admin-variant-style-card" data-variant-style-option="visual">
+                                        <span class="admin-variant-style-card-title">Renk / G�rsel</span>
+                                        <span class="admin-variant-style-card-preview admin-variant-style-card-preview-visual">
+                                            <span></span>
+                                            <span></span>
+                                            <span><i class="fa-regular fa-image"></i></span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </section>
+
+                            <section class="admin-variant-group-form-section">
+                                <div class="admin-variant-options-head">
+                                    <label class="form-label">Varyantlar</label>
+                                    <button type="button" class="admin-variant-options-clear" data-variant-option-clear-all hidden>T�m�n� Sil</button>
+                                </div>
+                                <div class="admin-variant-option-entry">
+                                    <input type="text" class="form-control auth-input" placeholder="�rnegin: Kirmizi" data-variant-group-option-entry />
+                                    <button type="button" class="admin-variant-option-enter" data-variant-option-submit hidden>
+                                        <i class="fa-solid fa-turn-down-left"></i>
+                                        <span>Enter</span>
+                                    </button>
+                                </div>
+                                <div class="admin-variant-option-list" data-variant-option-list hidden></div>
+                                <span class="admin-editor-note">Yazmaya baslayin, `Enter` ile satir ekleyin. Virg�l ya da satir sonu i�eren yapistirmalar da ayri �yeler olarak b�l�n�r.</span>
+                            </section>
+
+                            <label class="admin-product-check-row admin-variant-check-row">
+                                <input class="form-check-input" type="checkbox" data-variant-group-show-on-card />
+                                <span>Bu �r�n i�in varyant degerlerini marka ve kategori sayfalarinda ayri g�ster.</span>
                             </label>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="admin-product-merchandising-empty">
-                        <i class="fa-regular fa-star"></i>
-                        <div>
-                            <strong>Hizli vitrin etiketi bulunamadi</strong>
-                            <p>Tag tarafinda `one-cikan`, `kampanyali`, `yeni` gibi kayitlar olusturuldugunda burada hizli secim olarak gorunecek.</p>
+
+                            <label class="admin-product-check-row admin-variant-check-row">
+                                <input class="form-check-input" type="checkbox" data-variant-group-primary />
+                                <span>Bu grubu ana se�enek olarak kullan.</span>
+                            </label>
+                        </div>
+
+                        <div class="admin-product-confirm-actions admin-variant-group-actions">
+                            <button type="button" class="admin-editor-secondary" data-variant-group-close>Vazge�</button>
+                            <button type="button" class="admin-editor-primary" data-variant-group-save>Kaydet</button>
                         </div>
                     </div>
-                }
+                </div>
+
+                <div class="admin-product-dialog-layer admin-product-dialog-layer-wide" data-variant-row-modal hidden>
+                    <button type="button" class="admin-product-dialog-backdrop" data-variant-row-close></button>
+                    <div class="admin-product-dialog admin-variant-row-dialog">
+                        <div class="admin-product-dialog-head">
+                            <div>
+                                <h3 data-variant-row-modal-title>�r�n Varyanti</h3>
+                                <span class="admin-editor-note" data-variant-row-modal-subtitle></span>
+                            </div>
+                            <button type="button" class="admin-icon-button" data-variant-row-close aria-label="Kapat">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="admin-variant-row-tabs">
+                            <button type="button" data-variant-row-tab="media">Medya</button>
+                            <button type="button" data-variant-row-tab="price">Fiyat</button>
+                            <button type="button" data-variant-row-tab="inventory">Envanter</button>
+                            <button type="button" data-variant-row-tab="extra">�zel Alan</button>
+                        </div>
+
+                        <div class="admin-variant-row-panels">
+                            <section class="admin-variant-row-panel" data-variant-row-panel="media">
+                                <h4>Medya</h4>
+                                <div class="admin-variant-media-field">
+                                    <label class="form-label">G�rsel URL</label>
+                                    <input type="text" class="form-control auth-input" placeholder="/img/urun.png" data-variant-row-image />
+                                </div>
+                            </section>
+
+                            <section class="admin-variant-row-panel" data-variant-row-panel="price">
+                                <h4>Fiyat</h4>
+                                <div class="admin-variant-row-grid">
+                                    <div>
+                                        <label class="form-label">Satis Fiyati</label>
+                                        <input type="number" min="0" step="0.01" class="form-control auth-input" data-variant-row-price />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Indirimli Fiyat</label>
+                                        <input type="number" min="0" step="0.01" class="form-control auth-input" data-variant-row-old-price />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Alis Fiyati</label>
+                                        <input type="number" min="0" step="0.01" class="form-control auth-input" data-variant-row-purchase-price />
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="admin-variant-row-panel" data-variant-row-panel="inventory">
+                                <h4>Envanter</h4>
+                                <div class="admin-variant-row-grid">
+                                    <div>
+                                        <label class="form-label">SKU</label>
+                                        <input type="text" class="form-control auth-input" data-variant-row-sku />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Barkod</label>
+                                        <input type="text" class="form-control auth-input" data-variant-row-barcode />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">Stok</label>
+                                        <input type="number" min="0" step="1" class="form-control auth-input" data-variant-row-stock />
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="admin-variant-row-panel" data-variant-row-panel="extra">
+                                <h4>�zel Alan</h4>
+                                <div class="admin-variant-row-grid">
+                                    <div>
+                                        <label class="form-label">Desi</label>
+                                        <input type="number" min="0" step="0.01" class="form-control auth-input" data-variant-row-desi />
+                                    </div>
+                                    <div>
+                                        <label class="form-label">HS Kodu</label>
+                                        <input type="text" class="form-control auth-input" data-variant-row-hscode />
+                                    </div>
+                                    <div class="admin-variant-toggle-wrap">
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" data-variant-row-active />
+                                            <span class="form-check-label">Satisa a�ik</span>
+                                        </label>
+                                        <label class="form-check">
+                                            <input class="form-check-input" type="checkbox" data-variant-row-default />
+                                            <span class="form-check-label">Varsayilan varyant</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="admin-product-confirm-actions">
+                            <button type="button" class="admin-editor-secondary" data-variant-row-close>Vazge�</button>
+                            <button type="button" class="admin-editor-primary" data-variant-row-save>Kaydet</button>
+                        </div>
+                    </div>
+                </div>
             </section>
+        }
+
+        @if (isBundleMode)
+        {
+            <section class="admin-editor-card admin-bundle-items-card" data-bundle-builder data-product-tab-panel="bundle-items">
+                <div class="admin-editor-section-head">
+                    <div class="admin-product-inline-heading" data-inline-info-wrap>
+                        <h2>Paketteki �r�nler</h2>
+                        <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Paketteki urunler aciklamasini goster">
+                            <span>i</span>
+                        </button>
+                        <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                            <strong>Paketteki �r�nler</strong>
+                            <span>Paketinize tekil urun, spesifik varyant veya asorti ekleyebilirsiniz. Min-maks adet ve toplam adet sinirlari da bu alandan yonetilir.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <script type="application/json" data-bundle-products-payload>@Html.Raw(bundleProductsPayload)</script>
+                <script type="application/json" data-bundle-items-payload>@Html.Raw(bundleItemsPayload)</script>
+                <div class="d-none" data-bundle-item-inputs></div>
+
+                <div class="admin-bundle-items-empty" data-bundle-empty @(bundleItems.Count > 0 ? "hidden" : null)>
+                    <div>
+                        <strong>Paketinizde hen�z bir �r�n�n�z yok.</strong>
+                        <p>Paketinize icerik eklemek icin urun ekleyebilirsiniz.</p>
+                    </div>
+                    <button type="button" class="admin-editor-primary admin-bundle-add-button" data-bundle-add>�r�n Ekle</button>
+                </div>
+
+                <div class="admin-bundle-items-content" data-bundle-content @(bundleItems.Count == 0 ? "hidden" : null)>
+                    <div class="admin-product-selection-head">
+                        <h3>Paket I�erigi</h3>
+                        <button type="button" class="admin-editor-ghost" data-bundle-add>�r�n Ekle</button>
+                    </div>
+
+                    <div class="admin-bundle-variant-groups" data-bundle-groups></div>
+
+                    <div class="admin-bundle-total-row">
+                        <strong>Paketteki �r�nlerin Toplam Adedi</strong>
+                        <div class="admin-bundle-total-inline">
+                            <input asp-for="BundleTotalQuantity" class="form-control auth-input" type="number" min="0" step="1" />
+                            <span class="admin-editor-note">Belirle</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-product-dialog-layer" data-bundle-mode-modal hidden>
+                    <button type="button" class="admin-product-dialog-backdrop" data-bundle-mode-close></button>
+                    <div class="admin-product-dialog admin-bundle-dialog">
+                        <div class="admin-product-dialog-head">
+                            <div>
+                                <h3>�r�n Ekle</h3>
+                            </div>
+                            <button type="button" class="admin-icon-button" data-bundle-mode-close aria-label="Kapat">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="admin-bundle-mode-choice-list">
+                            <button type="button" class="admin-bundle-mode-choice" data-bundle-entry-mode="product">
+                                <strong>�r�n Olarak Ekle</strong>
+                                <span>Kullanicilar varyantlar arasinda secim yapabilir.</span>
+                            </button>
+                            <button type="button" class="admin-bundle-mode-choice" data-bundle-entry-mode="assortment">
+                                <strong>Asorti Olarak Ekle</strong>
+                                <span>Belirlediginiz varyantlari paket veya asorti olarak ekleyin.</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-product-dialog-layer" data-bundle-picker-modal hidden>
+                    <button type="button" class="admin-product-dialog-backdrop" data-bundle-picker-close></button>
+                    <div class="admin-product-dialog admin-bundle-picker-dialog">
+                        <div class="admin-product-dialog-head">
+                            <div>
+                                <h3>�r�n Ekle</h3>
+                            </div>
+                            <button type="button" class="admin-icon-button" data-bundle-picker-close aria-label="Kapat">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="admin-bundle-picker-toolbar">
+                            <label class="admin-product-search-field admin-bundle-picker-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="search" placeholder="Tabloda arama yapin" data-bundle-search-input />
+                            </label>
+                        </div>
+
+                        <div class="admin-bundle-picker-list" data-bundle-picker-list></div>
+
+                        <div class="admin-product-confirm-actions admin-bundle-picker-actions">
+                            <button type="button" class="admin-editor-secondary" data-bundle-picker-close>Iptal Et</button>
+                            <button type="button" class="admin-editor-primary" data-bundle-picker-save>Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-product-dialog-layer" data-bundle-settings-modal hidden>
+                    <button type="button" class="admin-product-dialog-backdrop" data-bundle-settings-close></button>
+                    <div class="admin-product-dialog admin-bundle-settings-dialog">
+                        <div class="admin-product-dialog-head">
+                            <div>
+                                <h3>�r�n Ayarlarini �zellestir</h3>
+                            </div>
+                            <button type="button" class="admin-icon-button" data-bundle-settings-close aria-label="Kapat">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="admin-variant-row-grid">
+                            <div>
+                                <label class="form-label">Minimum</label>
+                                <input type="number" min="0" step="1" class="form-control auth-input" data-bundle-settings-min />
+                            </div>
+                            <div>
+                                <label class="form-label">Maksimum</label>
+                                <input type="number" min="0" step="1" class="form-control auth-input" data-bundle-settings-max />
+                            </div>
+                        </div>
+
+                        <div class="admin-product-confirm-actions admin-bundle-picker-actions">
+                            <button type="button" class="admin-editor-secondary" data-bundle-settings-close>Vazge�</button>
+                            <button type="button" class="admin-editor-primary" data-bundle-settings-save>Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-editor-card admin-bundle-price-card" data-product-tab-panel="price">
+                <div class="admin-editor-section-head">
+                    <div class="admin-product-inline-heading" data-inline-info-wrap>
+                        <h2>Fiyat</h2>
+                        <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Fiyat aciklamasini goster">
+                            <span>i</span>
+                        </button>
+                        <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                            <strong>Fiyat</strong>
+                            <span>Paket fiyatini kendiniz belirleyebilir ya da paket icerigindeki urunlerin toplamindan otomatik hesaplatabilirsiniz.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-bundle-price-mode-grid">
+                    <button type="button" class="admin-bundle-price-mode" data-bundle-pricing-mode="manual">
+                        <strong>Paket Fiyatini Kendin Belirle</strong>
+                        <span>Paketin satis ve indirimli fiyatini manuel belirleyin.</span>
+                    </button>
+                    <button type="button" class="admin-bundle-price-mode" data-bundle-pricing-mode="sum">
+                        <strong>�r�nlerin Fiyatini Paket Fiyatina Ekle</strong>
+                        <span>Paket fiyatini icerikteki urunlerin toplamindan hesaplayin.</span>
+                    </button>
+                </div>
+
+                <div class="admin-bundle-price-body">
+                    <div class="admin-product-field-grid admin-product-field-grid-single">
+                        <div>
+                            <label asp-for="Price" class="form-label">Satis Fiyati</label>
+                            <div class="admin-product-input-wrap">
+                                <input asp-for="Price" class="form-control auth-input" type="number" min="0" step="0.01" />
+                                <span>TL</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label asp-for="OldPrice" class="form-label">Indirimli Fiyat</label>
+                            <div class="admin-product-input-wrap">
+                                <input asp-for="OldPrice" class="form-control auth-input" type="number" min="0" step="0.01" />
+                                <span>TL</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Paket Fiyat Ayari</label>
+                            <div class="admin-bundle-adjustment-row">
+                                <select asp-for="BundleAdjustmentType" class="form-select auth-input" data-bundle-adjustment-type-select>
+                                    <option value="none">Yok</option>
+                                    <option value="increase">Ilave Fiyat Ekle</option>
+                                    <option value="discount">�r�nlere Indirim Ekle</option>
+                                </select>
+                                <input asp-for="BundleAdjustmentAmount" class="form-control auth-input" type="number" min="0" step="0.01" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <section class="admin-editor-card admin-product-step-card" data-product-tab-panel="inventory">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>Envanter</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Envanter aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>Envanter</strong>
+                        <span>Satisa kapali yayin durumunda urun adminde kalir, storefrontta gorunmez. Arsiv ise gecmis urun kaydini korur.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-product-field-grid admin-product-field-grid-single admin-product-field-grid-spaced">
+                <div>
+                    <label asp-for="Sku" class="form-label"></label>
+                    <input asp-for="Sku" class="form-control auth-input" placeholder="?r?n SKU" />
+                    <span asp-validation-for="Sku" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Barcode" class="form-label"></label>
+                    <input asp-for="Barcode" class="form-control auth-input" placeholder="Barkod" />
+                    <span asp-validation-for="Barcode" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Desi" class="form-label"></label>
+                    <input asp-for="Desi" class="form-control auth-input" type="number" min="0" step="0.01" />
+                    <span asp-validation-for="Desi" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="HsCode" class="form-label"></label>
+                    <input asp-for="HsCode" class="form-control auth-input" placeholder="HS Kodu" />
+                    <span asp-validation-for="HsCode" class="text-danger"></span>
+                </div>
+
+                <div class="admin-product-field-span">
+                    <label asp-for="Stock" class="form-label">Ana Stok</label>
+                    <input asp-for="Stock" class="form-control auth-input" type="number" min="0" step="1" />
+                    <span asp-validation-for="Stock" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="admin-product-static-table">
+                <div class="admin-product-static-table-head">
+                    <span>Lokasyon</span>
+                    <span>Stok</span>
+                    <span>Gelen Stok</span>
+                </div>
+                <div class="admin-product-static-table-row">
+                    <span>Ana Depo</span>
+                    <strong>@Model.Stock</strong>
+                    <span>-</span>
+                </div>
+            </div>
+
+            <label class="admin-product-check-row">
+                <input asp-for="ContinueSellingWhenOutOfStock" class="form-check-input" type="checkbox" />
+                <span>Stogu tukenince satmaya devam et</span>
+            </label>
+        </section>
+
+        <section class="admin-editor-card admin-product-step-card" data-product-tab-panel="seo">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>SEO</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="SEO aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>SEO</strong>
+                        <span>Slug, SEO basligi ve meta aciklama bu kayitla birlikte saklanir.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-product-field-grid admin-product-field-grid-single">
+                <div>
+                    <label asp-for="Slug" class="form-label"></label>
+                    <input asp-for="Slug" class="form-control auth-input" placeholder="clinique-nemlendirici-50-ml" />
+                    <span asp-validation-for="Slug" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="MetaTitle" class="form-label"></label>
+                    <input asp-for="MetaTitle" class="form-control auth-input" placeholder="Arama sonucunda gorunecek baslik" />
+                    <span asp-validation-for="MetaTitle" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <label asp-for="MetaDescription" class="form-label"></label>
+                    <textarea asp-for="MetaDescription" class="form-control auth-textarea" rows="3" placeholder="Arama sonuclarinda gosterilecek aciklama"></textarea>
+                    <span asp-validation-for="MetaDescription" class="text-danger"></span>
+                </div>
+
+                <div class="admin-product-seo-preview">
+                    <strong>Onizleme</strong>
+                    <span>vitacure.co/@(string.IsNullOrWhiteSpace(Model.Slug) ? "urun-slug" : Model.Slug)</span>
+                    <p>@(string.IsNullOrWhiteSpace(Model.MetaTitle) ? (string.IsNullOrWhiteSpace(Model.Name) ? "SEO basligi urun adindan turetilir." : Model.Name) : Model.MetaTitle)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="features">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>Filtrelenebilir ?zellikler</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Filtrelenebilir ozellikler aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>Filtrelenebilir ?zellikler</strong>
+                        <span>Cilt tipi, urun formu, etken, koruma faktoru ve benzeri filtre gruplarini bu alan uzerinden urune baglayabilirsiniz.</span>
+                    </div>
+                </div>
+                <span class="admin-product-aside-count">@selectedFeatures.Count secili</span>
+            </div>
+
+            <div class="admin-product-feature-panel" data-product-feature-panel>
+                <div class="admin-product-empty-state" data-product-feature-empty @(selectedFeatures.Count > 0 ? "hidden" : null)>
+                    <div>
+                        <strong>Hen?z filtre eklemediniz.</strong>
+                        <p>?r?nlerinizin kategori sayfalarinda filtrelenmesini saglayacak ozellikleri secin.</p>
+                    </div>
+                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-feature-selector-open>Filtre Ekle</button>
+                </div>
+
+                <div class="admin-product-feature-selected" data-product-feature-selected @(selectedFeatures.Count == 0 ? "hidden" : null)>
+                    <div class="admin-product-selection-head">
+                        <h3>Se?ilen Filtreler</h3>
+                        <button type="button" class="admin-editor-ghost" data-feature-selector-open>Filtreleri D?zenle</button>
+                    </div>
+                    <div class="admin-product-selected-list" data-product-selected-feature-list>
+                        @foreach (var item in selectedFeatures)
+                        {
+                            var selectedValue = Model.SelectedFeatureValues.TryGetValue(item.Id, out var featureValue) ? featureValue : string.Empty;
+                            <div class="admin-product-selected-row" data-feature-row="@item.Id">
+                                <div class="admin-product-selected-copy">
+                                    <strong>@item.Name</strong>
+                                    <small>@(string.IsNullOrWhiteSpace(selectedValue) ? item.GroupName : selectedValue)</small>
+                                </div>
+                                <details class="admin-product-item-menu">
+                                    <summary>
+                                        <i class="fa-solid fa-ellipsis"></i>
+                                    </summary>
+                                    <div class="admin-product-item-menu-panel">
+                                        <button type="button" data-feature-action="edit" data-feature-id="@item.Id">D?zenle</button>
+                                        <button type="button" class="is-danger" data-feature-action="remove" data-feature-id="@item.Id">Kaldir</button>
+                                    </div>
+                                </details>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="custom-fields">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>?zel Alanlar</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?zel alanlar aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>?zel Alanlar</strong>
+                        <span>?r?n sayfalarinizda urun aciklamasinin altinda ek bilgi bloklari yayinlayabilir ve kategori sayfalarinda filtrelenebilir alanlar tanimlayabilirsiniz.</span>
+                    </div>
+                </div>
+                <span class="admin-product-aside-count">@selectedCustomFields.Count secili</span>
+            </div>
+
+            <div class="admin-product-feature-panel" data-product-custom-field-panel>
+                <script type="application/json" data-product-custom-field-options>@Html.Raw(customFieldPayload)</script>
+                <div class="admin-product-empty-state" data-product-custom-field-empty @(selectedCustomFields.Count > 0 ? "hidden" : null)>
+                    <div>
+                        <strong>Hen?z ozel alan eklemediniz.</strong>
+                        <p>A?iklama altinda yayinlanacak ek bilgi bloklarini ya da filtre alanlarini secin.</p>
+                    </div>
+                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-custom-field-selector-open>?zel Alan Ekle</button>
+                </div>
+
+                <div class="admin-product-feature-selected" data-product-custom-field-selected @(selectedCustomFields.Count == 0 ? "hidden" : null)>
+                    <div class="admin-product-selection-head">
+                        <h3>?zel Alanlar</h3>
+                        <button type="button" class="admin-editor-ghost" data-custom-field-selector-open>?zel Alanlari D?zenle</button>
+                    </div>
+                    <div class="admin-product-selected-list" data-product-selected-custom-field-list>
+                        @foreach (var item in selectedCustomFields)
+                        {
+                            <div class="admin-product-selected-row">
+                                <div class="admin-product-selected-copy">
+                                    <strong>@item.Name</strong>
+                                    <small>@item.FieldType@(item.IsFilterable ? " � Filtrelenebilir" : string.Empty)</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="d-none" data-product-selected-custom-field-inputs>
+                        @foreach (var fieldId in Model.SelectedCustomFieldIds)
+                        {
+                            <input type="checkbox" name="SelectedCustomFieldIds" value="@fieldId" checked />
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="personalization">
+            <div class="admin-editor-section-head">
+                <div class="admin-product-inline-heading" data-inline-info-wrap>
+                    <h2>?r?n ?zellestirmesi</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?r?n ozellestirmesi aciklamasini goster">
+                        <span>i</span>
+                    </button>
+                    <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
+                        <strong>?r?n ?zellestirmesi</strong>
+                        <span>Metin, secenek veya dosya yukleme gibi kisisellestirme alanlari ekleyerek siparis sirasinda musteriden ek bilgi toplayabilirsiniz.</span>
+                    </div>
+                </div>
+                <span class="admin-product-aside-count">@selectedPersonalizations.Count secili</span>
+            </div>
+
+            <div class="admin-product-feature-panel" data-product-personalization-panel>
+                <script type="application/json" data-product-personalization-options>@Html.Raw(personalizationPayload)</script>
+                <div class="admin-product-empty-state" data-product-personalization-empty @(selectedPersonalizations.Count > 0 ? "hidden" : null)>
+                    <div>
+                        <strong>Hen?z urun ozellestirmesi eklemediniz.</strong>
+                        <p>Hediye notu, paket secimi veya kisiye ozel alanlari buradan secin.</p>
+                    </div>
+                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-personalization-selector-open>?zellestirme Ekle</button>
+                </div>
+
+                <div class="admin-product-feature-selected" data-product-personalization-selected @(selectedPersonalizations.Count == 0 ? "hidden" : null)>
+                    <div class="admin-product-selection-head">
+                        <h3>Se?ilen ?zellestirmeler</h3>
+                        <button type="button" class="admin-editor-ghost" data-personalization-selector-open>?zellestirmeleri D?zenle</button>
+                    </div>
+                    <div class="admin-product-selected-list" data-product-selected-personalization-list>
+                        @foreach (var item in selectedPersonalizations)
+                        {
+                            <div class="admin-product-selected-row">
+                                <div class="admin-product-selected-copy">
+                                    <strong>@item.Name</strong>
+                                    <small>@item.InputType</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="d-none" data-product-selected-personalization-inputs>
+                        @foreach (var personalizationId in Model.SelectedPersonalizationIds)
+                        {
+                            <input type="checkbox" name="SelectedPersonalizationIds" value="@personalizationId" checked />
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="admin-product-dialog-layer" data-custom-field-selector-modal hidden>
+            <button type="button" class="admin-product-dialog-backdrop" data-custom-field-modal-close></button>
+            <div class="admin-product-dialog admin-product-feature-dialog">
+                <div class="admin-product-dialog-head">
+                    <div>
+                        <h3>?zel Alan Ekle</h3>
+                    </div>
+                    <button type="button" class="admin-icon-button" data-custom-field-modal-close aria-label="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="admin-product-category-dialog-toolbar">
+                    <label class="admin-product-search-field">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="search" placeholder="Ara" data-custom-field-search-input />
+                    </label>
+                    <button type="button" class="admin-editor-secondary" data-custom-field-create-open>Yeni Ekle</button>
+                </div>
+
+                <div class="admin-product-feature-groups admin-product-definition-list" data-custom-field-selector-list></div>
+
+                <div class="admin-product-confirm-actions">
+                    <button type="button" class="admin-editor-secondary" data-custom-field-modal-close>Vazgec</button>
+                    <button type="button" class="admin-editor-primary" data-custom-field-modal-save>Kaydet</button>
+                </div>
+            </div>
         </div>
 
-        <aside class="admin-editor-aside admin-product-editor-aside-v2">
-            <section class="admin-editor-card admin-product-publish-card">
-                <div class="admin-editor-actions">
-                    <button type="submit" class="btn admin-editor-primary">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <span>Yayinla</span>
+        <div class="admin-product-dialog-layer" data-personalization-selector-modal hidden>
+            <button type="button" class="admin-product-dialog-backdrop" data-personalization-modal-close></button>
+            <div class="admin-product-dialog admin-product-feature-dialog">
+                <div class="admin-product-dialog-head">
+                    <div>
+                        <h3>?r?n ?zellestirmesi Ekle</h3>
+                    </div>
+                    <button type="button" class="admin-icon-button" data-personalization-modal-close aria-label="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div class="admin-product-publish-fields">
-                    <div class="admin-editor-field">
-                        <span class="admin-editor-field-label">Durum</span>
-                        <select class="form-select auth-input" data-product-status-select>
-                            @if (Model.IsActive)
-                            {
-                                <option value="true" selected>Yayinda</option>
-                                <option value="false">Taslak</option>
-                            }
-                            else
-                            {
-                                <option value="true">Yayinda</option>
-                                <option value="false" selected>Taslak</option>
-                            }
-                        </select>
-                    </div>
-
-                    <div class="admin-product-summary-grid">
-                        <div class="admin-product-summary-item">
-                            <span>Marka</span>
-                            <strong data-product-brand-summary>@selectedBrand</strong>
-                        </div>
-                        <div class="admin-product-summary-item">
-                            <span>Etiket</span>
-                            <strong data-product-tag-summary>@selectedTags.Count secili</strong>
-                        </div>
-                        <div class="admin-product-summary-item">
-                            <span>Ozellik</span>
-                            <strong data-product-feature-summary>@selectedFeatures.Count secili</strong>
-                        </div>
-                        <div class="admin-product-summary-item">
-                            <span>Indirim</span>
-                            <strong>@(hasDiscount ? "Var" : "Yok")</strong>
-                        </div>
-                    </div>
-
-                    <a href="/admin/products" class="admin-editor-secondary">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Listeye Don</span>
-                    </a>
+                <div class="admin-product-category-dialog-toolbar">
+                    <label class="admin-product-search-field">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="search" placeholder="Ara veya yeni ozellestirme yaz" data-personalization-search-input />
+                    </label>
+                    <button type="button" class="admin-editor-secondary" data-personalization-create-open>Yeni Ekle</button>
                 </div>
-            </section>
 
-            <section class="admin-editor-card admin-product-selection-card">
-                <div class="admin-editor-section-head">
+                <div class="admin-product-feature-groups admin-product-definition-list" data-personalization-selector-list></div>
+
+                <div class="admin-product-confirm-actions">
+                    <button type="button" class="admin-editor-secondary" data-personalization-modal-close>Vazgec</button>
+                    <button type="button" class="admin-editor-primary" data-personalization-modal-save>Kaydet</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-product-dialog-layer" data-feature-selector-modal hidden>
+            <button type="button" class="admin-product-dialog-backdrop" data-feature-modal-close></button>
+            <div class="admin-product-dialog admin-product-feature-dialog">
+                <div class="admin-product-dialog-head">
                     <div>
-                        <span class="admin-editor-kicker">Kategoriler</span>
-                        <h2>Kategori ve alt kategori sec</h2>
+                        <h3>Filtre Ekle</h3>
                     </div>
-                </div>
-
-                <div class="admin-product-selection-stack">
-                    <div class="admin-editor-field">
-                        <span class="admin-editor-field-label">Ana Kategori</span>
-                        <select class="form-select auth-input" data-product-parent-category>
-                            <option value="">Seciniz</option>
-                            @foreach (var option in parentCategories)
-                            {
-                                if (option.Id == selectedParentId)
-                                {
-                                    <option value="@option.Id" selected>@option.Name</option>
-                                }
-                                else
-                                {
-                                    <option value="@option.Id">@option.Name</option>
-                                }
-                            }
-                        </select>
-                    </div>
-
-                    <div class="admin-editor-field">
-                        <span class="admin-editor-field-label">Alt Kategori</span>
-                        <select class="form-select auth-input" data-product-child-category>
-                            <option value="">Alt kategori secin</option>
-                            @foreach (var option in allCategories.Where(option => option.ParentId is not null).OrderBy(option => option.Name))
-                            {
-                                if (option.Id == selectedChildId)
-                                {
-                                    <option value="@option.Id" data-parent-id="@option.ParentId" selected>@option.Name</option>
-                                }
-                                else
-                                {
-                                    <option value="@option.Id" data-parent-id="@option.ParentId">@option.Name</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="admin-product-category-tree">
-                    @foreach (var parent in parentCategories)
-                    {
-                        var children = allCategories.Where(option => option.ParentId == parent.Id).OrderBy(option => option.Name).ToList();
-                        var isParentSelected = Model.CategoryId == parent.Id || selectedParentId == parent.Id;
-                        <div class="admin-product-category-node @(isParentSelected ? "is-selected" : null)">
-                            <button type="button" class="admin-product-category-parent" data-category-parent-choice="@parent.Id">
-                                <i class="fa-regular fa-folder-open"></i>
-                                <span>@parent.Name</span>
-                            </button>
-
-                            @if (children.Count > 0)
-                            {
-                                <div class="admin-product-category-children">
-                                    @foreach (var child in children)
-                                    {
-                                        <button type="button"
-                                                class="admin-product-category-child @(Model.CategoryId == child.Id ? "is-selected" : null)"
-                                                data-category-child-choice="@child.Id"
-                                                data-category-parent-link="@parent.Id">
-                                            @child.Name
-                                        </button>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-
-                <div class="admin-editor-field">
-                    <span class="admin-editor-field-label">Ek Kategoriler</span>
-                    <div class="admin-product-tag-cloud">
-                        @foreach (var option in allCategories.OrderBy(option => option.ParentId.HasValue ? 1 : 0).ThenBy(option => option.Name))
-                        {
-                            var isChecked = selectedCategoryIds.Contains(option.Id);
-                            var label = option.ParentId is null
-                                ? option.Name
-                                : $"{parentCategories.FirstOrDefault(parent => parent.Id == option.ParentId)?.Name ?? "Kategori"} / {option.Name}";
-                            <label class="admin-product-choice-pill @(isChecked ? "is-checked" : null)">
-                                <input type="checkbox" name="SelectedCategoryIds" value="@option.Id" @(isChecked ? "checked" : null) />
-                                <span>@label</span>
-                            </label>
-                        }
-                    </div>
-                </div>
-            </section>
-
-            <section class="admin-editor-card admin-product-selection-card">
-                <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Etiketler</span>
-                        <h2>Etiket sec</h2>
-                    </div>
-                </div>
-
-                <div class="admin-product-tag-cloud">
-                    @foreach (var tag in Model.TagOptions)
-                    {
-                        var isChecked = Model.SelectedTagIds.Contains(tag.Id);
-                        <label class="admin-product-choice-pill @(isChecked ? "is-checked" : null)">
-                            <input type="checkbox" name="SelectedTagIds" value="@tag.Id" @(isChecked ? "checked" : null) />
-                            <span>@tag.Name</span>
-                        </label>
-                    }
-                </div>
-            </section>
-
-            <section class="admin-editor-card admin-product-selection-card">
-                <div class="admin-editor-section-head">
-                    <div>
-                        <span class="admin-editor-kicker">Urun Ozellikleri</span>
-                        <h2>Ozellik sec</h2>
-                    </div>
+                    <button type="button" class="admin-icon-button" data-feature-modal-close aria-label="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
 
                 <div class="admin-product-feature-groups">
@@ -506,7 +1440,7 @@
                                 {
                                     var isChecked = Model.SelectedFeatureIds.Contains(feature.Id);
                                     var selectedValue = Model.SelectedFeatureValues.TryGetValue(feature.Id, out var featureValue) ? featureValue : string.Empty;
-                                    <div class="admin-product-feature-choice @(isChecked ? "is-selected" : null)" data-feature-option-group>
+                                    <div class="admin-product-feature-choice @(isChecked ? "is-selected" : null)" data-feature-option-group data-feature-id="@feature.Id" data-feature-group-name="@group.Key" data-feature-name="@feature.Name">
                                         <label class="admin-product-feature-toggle">
                                             <input type="checkbox" name="SelectedFeatureIds" value="@feature.Id" data-feature-checkbox @(isChecked ? "checked" : null) />
                                             <span class="admin-product-feature-copy">
@@ -525,12 +1459,7 @@
                                                 {
                                                     var radioId = $"feature-{feature.Id}-{option.ToLowerInvariant().Replace(" ", "-")}";
                                                     <label class="admin-product-feature-pill">
-                                                        <input type="radio"
-                                                               id="@radioId"
-                                                               name="SelectedFeatureValues[@feature.Id]"
-                                                               value="@option"
-                                                               data-feature-value-option
-                                                               @(string.Equals(selectedValue, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
+                                                        <input type="radio" id="@radioId" name="SelectedFeatureValues[@feature.Id]" value="@option" data-feature-value-option @(string.Equals(selectedValue, option, StringComparison.OrdinalIgnoreCase) ? "checked" : null) />
                                                         <span>@option</span>
                                                     </label>
                                                 }
@@ -542,11 +1471,228 @@
                         </section>
                     }
                 </div>
-                <span asp-validation-for="SelectedFeatureIds" class="text-danger"></span>
-            </section>
-        </aside>
+
+                <div class="admin-product-confirm-actions">
+                    <button type="button" class="admin-editor-secondary" data-feature-modal-cancel>Vazgec</button>
+                    <button type="button" class="admin-editor-primary" data-feature-modal-save>Kaydet</button>
+                </div>
+            </div>
+        </div>
     </div>
 </form>
+
+<div class="admin-product-dialog-layer" data-category-selector-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-category-modal-close></button>
+    <div class="admin-product-dialog admin-product-category-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Kategori Ekle</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-category-modal-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-category-dialog-toolbar">
+            <label class="admin-product-search-field">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Ara" data-category-search-input />
+            </label>
+            <button type="button" class="admin-editor-secondary" data-category-create-open>Yeni Ekle</button>
+        </div>
+
+        <div class="admin-product-category-selector-list" data-category-selector-list></div>
+
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-category-modal-close>Vazgec</button>
+            <button type="button" class="admin-editor-primary" data-category-selector-save>Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-category-create-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-category-create-close></button>
+    <div class="admin-product-dialog admin-product-category-create-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Yeni Kategori Ekle</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-category-create-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-field-grid admin-product-field-grid-single admin-product-category-create-grid">
+            <div>
+                <label class="form-label">Kategori Adi</label>
+                <input type="text" class="form-control auth-input" data-category-create-name />
+                <small class="text-danger" data-category-create-error="Name"></small>
+            </div>
+
+            <div>
+                <label class="form-label">Ebeveyn Kategori</label>
+                <select class="form-select auth-input" data-category-create-parent>
+                    <option value="">Yok</option>
+                    @foreach (var option in allCategories.OrderBy(option => option.Name))
+                    {
+                        <option value="@option.Id">@option.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="admin-product-field-span">
+                <label class="form-label">A?iklama</label>
+                <textarea class="form-control auth-textarea admin-category-create-description"
+                          rows="8"
+                          data-category-create-description
+                          data-admin-richtext="true"
+                          data-richtext-placeholder="Kategori aciklamasini yazin..."></textarea>
+            </div>
+
+            <div class="admin-product-field-span">
+                <label class="form-label">G?rsel</label>
+                <div class="admin-category-image-uploader" data-category-image-upload="true" data-upload-url="/admin/categories/upload-image">
+                    <input type="hidden" data-category-image-input data-category-create-image />
+                    <input type="file" class="d-none" accept="image/png,image/jpeg,image/webp,image/gif" data-category-file-input />
+                    <button type="button" class="admin-category-image-dropzone" data-category-image-trigger>
+                        <img src="" alt="Kategori gorseli" data-category-image-preview hidden />
+                        <span class="admin-category-image-empty" data-category-image-empty>
+                            <i class="fa-regular fa-image"></i>
+                            <strong>G?rsel Ekle</strong>
+                            <small>Maksimum 10 MB boyutunda jpg, jpeg, png, webp ya da gif.</small>
+                        </span>
+                    </button>
+                    <div class="admin-product-media-toolbar">
+                        <button type="button" class="admin-editor-secondary" data-category-image-clear hidden>
+                            <span>G?rseli Kaldir</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="form-label">Siralama ?l??tu</label>
+                <select class="form-select auth-input" data-category-create-sort>
+                    <option value="">Siralama olcutu seciniz</option>
+                    @foreach (var option in new[] { "One Cikanlar", "En Yeniler", "Fiyat Artan", "Fiyat Azalan", "En Cok Satanlar", "Puana Gore" })
+                    {
+                        <option value="@option">@option</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-control auth-input" data-category-create-slug />
+                <small class="text-danger" data-category-create-error="Slug"></small>
+            </div>
+
+            <div>
+                <label class="form-label">Sayfa Basligi</label>
+                <input type="text" class="form-control auth-input" data-category-create-seo-title />
+            </div>
+
+            <div>
+                <label class="form-label">Meta A?iklama</label>
+                <textarea class="form-control auth-textarea" rows="3" data-category-create-meta-description></textarea>
+            </div>
+
+            <div class="admin-product-field-span">
+                <label class="admin-product-check-row">
+                    <input type="checkbox" class="form-check-input" checked data-category-create-active />
+                    <span>Bu sayfayi arama motorlarinin taramasina acik birak</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-category-create-close>Vazgec</button>
+            <button type="button" class="admin-editor-primary" data-category-create-save>Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-custom-field-create-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-custom-field-create-close></button>
+    <div class="admin-product-dialog admin-product-definition-create-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Yeni ?zel Alan Ekle</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-custom-field-create-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-field-grid admin-product-field-grid-single admin-product-category-create-grid">
+            <div>
+                <label class="form-label">?zel Alan Adi</label>
+                <input type="text" class="form-control auth-input" data-custom-field-create-name />
+                <small class="text-danger" data-custom-field-create-error="Name"></small>
+            </div>
+
+            <div>
+                <label class="form-label">Alan Tipi</label>
+                <select class="form-select auth-input" data-custom-field-create-type>
+                    <option value="HTML">HTML</option>
+                    <option value="Text">Metin</option>
+                    <option value="Table">Tablo</option>
+                    <option value="Select">Secim</option>
+                    <option value="MultiSelect">Coklu Secim</option>
+                </select>
+            </div>
+
+            <div class="admin-product-field-span">
+                <label class="admin-product-check-row">
+                    <input type="checkbox" class="form-check-input" data-custom-field-create-filterable />
+                    <span>Bu alan kategori sayfalarinda filtreleme icin de kullanilsin</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-custom-field-create-close>Vazgec</button>
+            <button type="button" class="admin-editor-primary" data-custom-field-create-save>Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-personalization-create-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-personalization-create-close></button>
+    <div class="admin-product-dialog admin-product-definition-create-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Yeni ?r?n ?zellestirmesi Olustur</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-personalization-create-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-field-grid admin-product-field-grid-single admin-product-category-create-grid">
+            <div>
+                <label class="form-label">?zellestirme Adi</label>
+                <input type="text" class="form-control auth-input" data-personalization-create-name />
+                <small class="text-danger" data-personalization-create-error="Name"></small>
+            </div>
+
+            <div>
+                <label class="form-label">Giris Tipi</label>
+                <select class="form-select auth-input" data-personalization-create-type>
+                    <option value="Text">Metin</option>
+                    <option value="Select">Se?enek</option>
+                    <option value="File">Dosya Yukleme</option>
+                    <option value="Date">Tarih</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-personalization-create-close>Vazgec</button>
+            <button type="button" class="admin-editor-primary" data-personalization-create-save>Kaydet</button>
+        </div>
+    </div>
+</div>
 
 <div class="admin-product-media-modal" data-gallery-modal hidden>
     <button type="button" class="admin-product-media-modal-backdrop" data-gallery-modal-close aria-label="Kapat"></button>
@@ -554,7 +1700,7 @@
         <button type="button" class="admin-icon-button admin-product-media-modal-dismiss" data-gallery-modal-close aria-label="Kapat">
             <i class="fa-solid fa-xmark"></i>
         </button>
-        <img src="" alt="Urun gorsel onizleme" data-gallery-modal-image />
+        <img src="" alt="?r?n gorsel onizleme" data-gallery-modal-image />
     </div>
 </div>
 
@@ -574,51 +1720,3 @@
     </div>
 </div>
 
-<template data-variant-template>
-    <div class="admin-variant-row" data-variant-row>
-        <input type="hidden" name="Variants[__index__].Id" value="" />
-
-        <div class="admin-variant-grid">
-            <div>
-                <label class="form-label">Varyasyon Ekseni</label>
-                <input class="form-control auth-input" name="Variants[__index__].GroupName" value="" placeholder="Orn. Boyut" />
-            </div>
-            <div>
-                <label class="form-label">Secenek</label>
-                <input class="form-control auth-input" name="Variants[__index__].OptionName" value="" placeholder="Orn. 60 Tablet" />
-            </div>
-            <div>
-                <label class="form-label">SKU</label>
-                <input class="form-control auth-input" name="Variants[__index__].Sku" value="" placeholder="VT-60TB" />
-            </div>
-            <div>
-                <label class="form-label">Fiyat</label>
-                <input class="form-control auth-input" type="number" min="0.01" step="0.01" name="Variants[__index__].Price" value="" />
-            </div>
-            <div>
-                <label class="form-label">Eski Fiyat</label>
-                <input class="form-control auth-input" type="number" min="0" step="0.01" name="Variants[__index__].OldPrice" value="" />
-            </div>
-            <div>
-                <label class="form-label">Stok</label>
-                <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[__index__].Stock" value="0" />
-            </div>
-            <div>
-                <label class="form-label">Sira</label>
-                <input class="form-control auth-input" type="number" min="0" step="1" name="Variants[__index__].SortOrder" value="0" />
-            </div>
-            <div class="admin-variant-toggle-wrap">
-                <label class="form-check">
-                    <input class="form-check-input" type="checkbox" name="Variants[__index__].IsActive" value="true" checked />
-                    <input type="hidden" name="Variants[__index__].IsActive" value="false" />
-                    <span class="form-check-label">Aktif</span>
-                </label>
-            </div>
-        </div>
-
-        <button type="button" class="admin-variant-remove" data-variant-remove>
-            <i class="fa-solid fa-trash"></i>
-            <span>Kaldir</span>
-        </button>
-    </div>
-</template>

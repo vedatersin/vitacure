@@ -58,14 +58,14 @@ public class AuthController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (!_accountAccessService.CanAccessBackOffice(user))
         {
-            ModelState.AddModelError(string.Empty, "Geçerli bir yönetim hesabı bulunamadı.");
+            ModelState.AddModelError(string.Empty, "Ge�erli bir y�netim hesabi bulunamadi.");
             return View(model);
         }
 
         var result = await _signInManager.PasswordSignInAsync(user!, model.Password, model.RememberMe, lockoutOnFailure: false);
         if (!result.Succeeded)
         {
-            ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
+            ModelState.AddModelError(string.Empty, "E-posta veya sifre hatali.");
             return View(model);
         }
 

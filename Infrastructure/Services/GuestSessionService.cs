@@ -155,7 +155,7 @@ public class GuestSessionService : IGuestSessionService
         {
             return new CartMutationResultViewModel
             {
-                Message = "Urun bulunamadi."
+                Message = "Ürün bulunamadi."
             };
         }
 
@@ -184,7 +184,7 @@ public class GuestSessionService : IGuestSessionService
             $"{BuildProductDisplayName(product.Name, variant)} urunu misafir sepetine eklendi.",
             $"{BuildProductDisplayName(product.Name, variant)} urunu misafir oturumdaki sepete {normalizedQuantity} adet eklendi.",
             cancellationToken);
-        return await BuildCartMutationResultAsync(items, existingItem.Quantity, "Urun sepete eklendi.", cancellationToken);
+        return await BuildCartMutationResultAsync(items, existingItem.Quantity, "Ürün sepete eklendi.", cancellationToken);
     }
 
     public async Task<CartMutationResultViewModel> UpdateCartQuantityAsync(string productSlug, int quantity, int? variantId = null, CancellationToken cancellationToken = default)
@@ -203,7 +203,7 @@ public class GuestSessionService : IGuestSessionService
         {
             items.Remove(existingItem);
             WriteCartItems(items);
-            return await BuildCartMutationResultAsync(items, 0, "Urun sepetten cikarildi.", cancellationToken);
+            return await BuildCartMutationResultAsync(items, 0, "Ürün sepetten cikarildi.", cancellationToken);
         }
 
         var product = await _dbContext.Products
@@ -237,7 +237,7 @@ public class GuestSessionService : IGuestSessionService
 
         items.Remove(existingItem);
         WriteCartItems(items);
-        return await BuildCartMutationResultAsync(items, 0, "Urun sepetten cikarildi.", cancellationToken);
+        return await BuildCartMutationResultAsync(items, 0, "Ürün sepetten cikarildi.", cancellationToken);
     }
 
     public async Task<bool> MergeIntoCustomerAccountAsync(int userId, CancellationToken cancellationToken = default)

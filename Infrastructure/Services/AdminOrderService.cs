@@ -48,9 +48,9 @@ public class AdminOrderService : IAdminOrderService
         return status switch
         {
             OrderStatus.Pending => "Beklemede",
-            OrderStatus.Preparing => "Hazırlanıyor",
-            OrderStatus.Completed => "Tamamlandı",
-            OrderStatus.Cancelled => "İptal",
+            OrderStatus.Preparing => "Hazirlaniyor",
+            OrderStatus.Completed => "Tamamlandi",
+            OrderStatus.Cancelled => "Iptal",
             _ => "Bilinmiyor"
         };
     }

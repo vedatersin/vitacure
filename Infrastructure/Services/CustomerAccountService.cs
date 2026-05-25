@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using vitacure.Application.Abstractions;
 using vitacure.Domain.Entities;
 using vitacure.Infrastructure.Persistence;
@@ -128,13 +128,13 @@ public class CustomerAccountService : ICustomerAccountService
 
             await _adminNotificationService.CreateAsync(new AdminNotificationCreateRequest
             {
-                Title = "Urun favorilere eklendi",
+                Title = "�r�n favorilere eklendi",
                 Summary = $"{product.Name} favori listesine eklendi.",
                 Body = $"{actor ?? "Musteri"} kullanicisi {product.Name} urununu favorilerine ekledi. Bu aksiyon segmentasyon ve retargeting senaryolari icin kullanilabilir.",
                 Actor = actor ?? "Musteri",
                 Source = "Storefront",
                 CategoryKey = "favorites",
-                TargetLabel = "Urunlere git",
+                TargetLabel = "�r�nlere git",
                 TargetUrl = "/admin/products"
             }, cancellationToken);
         }
@@ -305,7 +305,7 @@ public class CustomerAccountService : ICustomerAccountService
             RatingWidth = $"{Math.Round(product.Rating / 5m * 100m, MidpointRounding.AwayFromZero)}%",
             Description = product.Description ?? string.Empty,
             Href = $"/{product.Slug}",
-            AddToCartLabel = primaryVariant is not null ? "Urunu Incele" : "Sepete Ekle",
+            AddToCartLabel = primaryVariant is not null ? "�r�n� Incele" : "Sepete Ekle",
             HasVariants = primaryVariant is not null,
             CartProductSlug = product.Slug
         };
@@ -327,18 +327,18 @@ public class CustomerAccountService : ICustomerAccountService
             "C Vitamini Complex" => "20 efervesan tablet",
             "Kolajen Peptit" => "300 gr toz",
             "B12 Vitamini" => "30 ml sprey",
-            "Çinko Pikolinat" => "90 kapsul",
+            "�inko Pikolinat" => "90 kapsul",
             "Probiyotik 10B" => "30 kapsul",
             "Demir + C Vitamini" => "30 kapsul",
             "Kalsiyum Kompleks" => "60 tablet",
             "B12 Vitamini Sprey" => "20 ml sprey",
-            "Vitamin D3 - 3 Al 2 Öde" => "3 x 30 ml",
+            "Vitamin D3 - 3 Al 2 �de" => "3 x 30 ml",
             "Omega 3 Aile Paketi" => "2 x 60 softgel",
             "C Vitamini Seti" => "3 x 20 tablet",
             "Magnezyum Enerji Kofre" => "2 x 60 kapsul",
-            "Daily Multivitamin Büyük Boy" => "180 kapsul",
-            "Kolajen ve C Vitamini" => "14 saşe",
-            "Çinko Kompleks" => "60 tablet",
+            "Daily Multivitamin B�y�k Boy" => "180 kapsul",
+            "Kolajen ve C Vitamini" => "14 sase",
+            "�inko Kompleks" => "60 tablet",
             "Probiyotik Bakteri" => "20 kapsul",
             "Demir Takviyesi" => "30 kapsul",
             _ => "60 kapsul"

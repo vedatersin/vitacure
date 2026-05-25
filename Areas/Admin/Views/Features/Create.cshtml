@@ -1,16 +1,16 @@
 @model vitacure.Models.ViewModels.Admin.FeatureFormViewModel
 
 @{
-    ViewData["Title"] = "Yeni Ozellik";
+    ViewData["Title"] = "Yeni �zellik";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
         Eyebrow = "Katalog Genisleme",
-        Title = "Yeni ozellik olustur",
-        Description = "Urun filtreleri, detay bloklari ve ileride varyant kurallari icin kullanilacak ozellik katmani burada yonetilir.",
+        Title = "Yeni �zellik olustur",
+        Description = "�r�n filtreleri, detay bloklari ve ileride varyant kurallari i�in kullanilacak �zellik katmani burada y�netilir.",
         IconClass = "fa-solid fa-sliders",
         AsideTitle = "Form akis notu",
-        AsideText = "Grup ve secenek alanlari ne kadar tutarli olursa urun formundaki secim deneyimi o kadar guclu olur.",
+        AsideText = "Grup ve se�enek alanlari ne kadar tutarli olursa �r�n formundaki se�im deneyimi o kadar g��l� olur.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Mod", Value = "Yeni" },
@@ -19,7 +19,7 @@
         Breadcrumbs = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Ozellikler", Url = "/admin/features" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "�zellikler", Url = "/admin/features" },
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Yeni", IsActive = true }
         }
     };

@@ -5,10 +5,10 @@
     {
         Eyebrow = "Katalog Genisleme",
         Title = "Koleksiyon listesi",
-        Description = "Tema, kampanya ve editor secimi tabanli urun gruplarini bu panelde yonet.",
+        Description = "Tema, kampanya ve editor seçimi tabanli ürün gruplarini bu panelde yönet.",
         IconClass = "fa-solid fa-box-archive",
-        AsideTitle = "Koleksiyon Ozeti",
-        AsideText = "Koleksiyonlar vitrinden ayridir; daha uzun omurlu merchandising ve filtreleme bloklari icin kullanilir.",
+        AsideTitle = "Koleksiyon Özeti",
+        AsideText = "Koleksiyonlar vitrinden ayridir; daha uzun omurlu merchandising ve filtreleme bloklari için kullanilir.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -25,7 +25,7 @@
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/collections",
-        SearchPlaceholder = "Koleksiyon ara, slug veya aciklamayi kontrol et...",
+        SearchPlaceholder = "Koleksiyon ara, slug veya açıklamayi kontrol et...",
         SearchValue = Model.SearchTerm,
         PrimaryActionLabel = "Yeni Koleksiyon",
         PrimaryActionUrl = "/admin/collections/create",
@@ -38,7 +38,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum kayitlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm kayitlar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
                 }
@@ -50,7 +50,7 @@
                 Value = Model.HomeFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum gorunumler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm görünümler" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "home", Label = "Anasayfada" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "hidden", Label = "Sadece panelde" }
                 }
@@ -71,7 +71,7 @@
                     <th>ID</th>
                     <th>Ad</th>
                     <th>Slug</th>
-                    <th>Urun</th>
+                    <th>Ürün</th>
                     <th>Durum</th>
                     <th>Anasayfa</th>
                     <th>Sira</th>
@@ -93,10 +93,10 @@
                         <td>@collection.Slug</td>
                         <td>@collection.ProductCount</td>
                         <td>@(collection.IsActive ? "Aktif" : "Pasif")</td>
-                        <td>@(collection.ShowOnHome ? "Acik" : "Kapali")</td>
+                        <td>@(collection.ShowOnHome ? "Açık" : "Kapalı")</td>
                         <td>@collection.SortOrder</td>
                         <td class="text-end">
-                            <a href="/admin/collections/edit/@collection.Id" class="btn auth-table-link">Duzenle</a>
+                            <a href="/admin/collections/edit/@collection.Id" class="btn auth-table-link">D�zenle</a>
                         </td>
                     </tr>
                 }

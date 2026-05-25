@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using vitacure.Application;
@@ -12,11 +13,13 @@ namespace vitacure.Areas.Admin.Controllers;
 public class CategoriesController : AdminControllerBase
 {
     private readonly IAdminCategoryService _adminCategoryService;
+    private readonly IAdminMediaLibraryService _adminMediaLibraryService;
     private readonly ILogger<CategoriesController> _logger;
 
-    public CategoriesController(IAdminCategoryService adminCategoryService, ILogger<CategoriesController> logger)
+    public CategoriesController(IAdminCategoryService adminCategoryService, IAdminMediaLibraryService adminMediaLibraryService, ILogger<CategoriesController> logger)
     {
         _adminCategoryService = adminCategoryService;
+        _adminMediaLibraryService = adminMediaLibraryService;
         _logger = logger;
     }
 
@@ -133,6 +136,70 @@ public class CategoriesController : AdminControllerBase
 
         SetRedirectToast("success", "Kayit basariyla guncellendi", "Kategori kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost("/admin/categories/quick-create")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> QuickCreate([FromBody] CategoryFormViewModel model, CancellationToken cancellationToken)
+    {
+        if (!TryValidateModel(model))
+        {
+            return BadRequest(new
+            {
+                errors = ModelState
+                    .Where(entry => entry.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        entry => entry.Key,
+                        entry => entry.Value!.Errors.Select(error => string.IsNullOrWhiteSpace(error.ErrorMessage) ? "Gecersiz alan." : error.ErrorMessage).ToArray())
+            });
+        }
+
+        try
+        {
+            var categoryId = await _adminCategoryService.CreateAsync(model, cancellationToken);
+            var created = await _adminCategoryService.GetEditModelAsync(categoryId, cancellationToken);
+            return Json(new
+            {
+                category = new
+                {
+                    Id = categoryId,
+                    Name = created?.Name ?? model.Name,
+                    ParentId = created?.ParentId,
+                    ImageUrl = created?.ImageUrl,
+                    ProductSortType = created?.ProductSortType
+                }
+            });
+        }
+        catch (SlugConflictException ex)
+        {
+            return BadRequest(new
+            {
+                errors = new Dictionary<string, string[]>
+                {
+                    [nameof(model.Slug)] = new[] { ex.Message }
+                }
+            });
+        }
+    }
+
+    [HttpPost("/admin/categories/upload-image")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] string? slug, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var item = await _adminMediaLibraryService.UploadAsync(file, slug, cancellationToken);
+            return Json(new { url = item.Url, id = item.Id, name = item.OriginalFileName });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Kategori gorseli yuklenirken beklenmedik hata.");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Görsel yuklenemedi." });
+        }
     }
 
     private static CategoryListViewModel ApplyFilters(CategoryListViewModel model, string? q, string? status, string? structure)

@@ -13,13 +13,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.querySelector("[data-showcase-image-modal]");
     const modalImage = document.querySelector("[data-showcase-image-modal-image]");
     const modalCloseButtons = Array.from(document.querySelectorAll("[data-showcase-image-modal-close]"));
-    const tagsHiddenInput = form.querySelector("[data-showcase-tags-hidden]");
-    const tagsList = form.querySelector("[data-showcase-tags-list]");
-    const tagsInput = form.querySelector("[data-showcase-tags-input]");
     const descriptionInput = form.querySelector("[data-showcase-description-input]");
+    const descriptionCounter = form.querySelector("[data-showcase-description-counter]");
     const iconInput = form.querySelector('input[name="IconClass"]');
+    const iconColorInput = form.querySelector('input[name="IconColor"]');
     const iconPreview = form.querySelector("[data-showcase-icon-preview]");
-    const categoryOptions = Array.from(form.querySelectorAll("[data-showcase-category-option]"));
+    const tabButtons = Array.from(form.querySelectorAll("[data-showcase-tab]"));
+    const tabPanels = Array.from(form.querySelectorAll("[data-showcase-tab-panel]"));
+    const promptsTextarea = form.querySelector("[data-showcase-prompts-textarea]");
+    const promptsList = form.querySelector("[data-showcase-prompts-list]");
+    const promptsEmpty = form.querySelector("[data-showcase-prompts-empty]");
+    const addPromptButton = form.querySelector("[data-showcase-add-prompt]");
+    const primaryCategorySelect = form.querySelector('select[name="PrimaryCategoryId"]');
+    const categoryPoolList = form.querySelector("[data-showcase-category-pool-list]");
+    const categoryPoolEmpty = form.querySelector("[data-showcase-category-pool-empty]");
+    const categorySummary = form.querySelector("[data-showcase-category-summary]");
+    const selectedCategoriesContainer = form.querySelector("[data-showcase-selected-categories]");
+    const categoryOptionElements = Array.from(form.querySelectorAll("[data-showcase-category-option]"));
     const slotElements = Array.from(form.querySelectorAll("[data-showcase-slot]"));
     const selectedInputsContainer = form.querySelector("[data-showcase-selected-inputs]");
     const pickerBackdrop = document.querySelector("[data-showcase-picker]");
@@ -27,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const pickerItems = Array.from(document.querySelectorAll("[data-showcase-picker-item]"));
     const pickerSearch = document.querySelector("[data-showcase-product-search]");
     const pickerCategoryFilter = document.querySelector("[data-showcase-product-category-filter]");
-    const pickerTagFilter = document.querySelector("[data-showcase-product-tag-filter]");
     const pickerEmpty = document.querySelector("[data-showcase-picker-empty]");
     const themeOptions = Array.from(form.querySelectorAll("[data-showcase-theme-option]"));
     const themeCards = Array.from(form.querySelectorAll("[data-showcase-theme-card]"));
@@ -51,36 +60,38 @@ document.addEventListener("DOMContentLoaded", () => {
         ])
     );
 
+    const categoryLookup = categoryOptionElements
+        .map((item) => ({
+            id: Number.parseInt(item.dataset.categoryId || "0", 10),
+            rawName: item.dataset.categoryName || "",
+            name: (item.dataset.categoryName || "").split("/").pop()?.trim() || item.dataset.categoryName || "",
+            parentId: item.dataset.categoryParentId ? Number.parseInt(item.dataset.categoryParentId, 10) : null,
+            slug: item.dataset.categorySlug || ""
+        }))
+        .filter((item) => item.id > 0);
+
     let selectedSlotIndex = 0;
     let selectedPickerProductId = 0;
+    let draggedCategoryId = 0;
     let featuredProductIds = slotElements
         .map((slot) => Number.parseInt(slot.dataset.productId || "0", 10))
         .map((value) => (value > 0 ? value : 0));
     let currentPreviewUrl = hiddenInput?.value?.trim() || "";
     let uploadedPreviewUrl = "";
-    let tags = parseTags(tagsHiddenInput?.value || "");
+    let draggedPromptIndex = -1;
+    let activeTab = tabButtons[0]?.getAttribute("data-showcase-tab") || "info";
+    let selectedCategoryIds = Array.from(selectedCategoriesContainer?.querySelectorAll('input[name="SelectedCategoryIds"]') || [])
+        .map((input) => Number.parseInt(input.value || "0", 10))
+        .filter((value) => value > 0);
 
     function normalizeText(value) {
         return (value || "")
             .toLocaleLowerCase("tr-TR")
-            .replaceAll("ı", "i")
-            .replaceAll("İ", "i")
+            .replaceAll("i", "i")
+            .replaceAll("I", "i")
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .trim();
-    }
-
-    function parseTags(value) {
-        return value
-            .split(/[\r\n,]+/)
-            .map((item) => item.trim())
-            .filter(Boolean);
-    }
-
-    function getShowcaseTags() {
-        return parseTags(tagsHiddenInput?.value || "")
-            .map(normalizeText)
-            .filter(Boolean);
     }
 
     function getFeaturedProducts() {
@@ -89,46 +100,27 @@ document.addEventListener("DOMContentLoaded", () => {
             .filter(Boolean);
     }
 
-    function syncTags() {
-        if (tagsHiddenInput) {
-            tagsHiddenInput.value = tags.join(", ");
-        }
+    function getPrimaryCategoryId() {
+        return Number.parseInt(primaryCategorySelect?.value || "0", 10);
     }
 
-    function renderTags() {
-        if (!tagsList) {
-            return;
+    function getDescendantCategories(primaryCategoryId) {
+        if (primaryCategoryId <= 0) {
+            return [];
         }
 
-        tagsList.innerHTML = tags
-            .map((tag, index) => `
-                <span class="admin-showcase-tag-pill">
-                    <span>${tag}</span>
-                    <button type="button" class="admin-showcase-tag-pill-remove" data-tag-remove="${index}" aria-label="${tag} etiketini sil">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </span>
-            `)
-            .join("");
-
-        syncTags();
-        renderPickerFilters();
-        filterPickerItems();
-    }
-
-    function addTagsFromText(value) {
-        const nextTags = parseTags(value);
-        if (nextTags.length === 0) {
-            return;
+        const descendants = [];
+        const queue = [primaryCategoryId];
+        while (queue.length > 0) {
+            const currentId = queue.shift();
+            const children = categoryLookup.filter((category) => category.parentId === currentId);
+            children.forEach((child) => {
+                descendants.push(child);
+                queue.push(child.id);
+            });
         }
 
-        nextTags.forEach((tag) => {
-            if (!tags.some((item) => normalizeText(item) === normalizeText(tag))) {
-                tags.push(tag);
-            }
-        });
-
-        renderTags();
+        return descendants;
     }
 
     function setPreviewState(url) {
@@ -192,8 +184,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return true;
         }
 
+        if (descriptionCounter) {
+            descriptionCounter.textContent = `${descriptionInput.value.length} / ${descriptionLimit}`;
+        }
+
         const isValid = descriptionInput.value.length <= descriptionLimit;
-        setDescriptionValidationMessage(isValid ? "" : `Aciklama en fazla ${descriptionLimit} karakter olabilir.`);
+        setDescriptionValidationMessage(isValid ? "" : `A�iklama en fazla ${descriptionLimit} karakter olabilir.`);
         return isValid;
     }
 
@@ -202,6 +198,52 @@ document.addEventListener("DOMContentLoaded", () => {
             const option = card.querySelector("[data-showcase-theme-option]");
             card.classList.toggle("is-selected", Boolean(option?.checked));
         });
+    }
+
+    function syncTabState(tab) {
+        activeTab = tab;
+        tabButtons.forEach((button) => {
+            button.classList.toggle("is-active", button.getAttribute("data-showcase-tab") === tab);
+        });
+    }
+
+    function scrollToTab(tab, smooth = true) {
+        const target = tabPanels.find((panel) => panel.getAttribute("data-showcase-tab-panel") === tab);
+        if (!target) {
+            return;
+        }
+
+        target.scrollIntoView({
+            behavior: smooth ? "smooth" : "auto",
+            block: "start"
+        });
+
+        syncTabState(tab);
+    }
+
+    function syncActiveTabFromScroll() {
+        if (!tabPanels.length) {
+            return;
+        }
+
+        const navHeight = form.querySelector(".admin-showcase-tab-nav")?.getBoundingClientRect().height ?? 0;
+        const offset = navHeight + 148;
+        const candidates = tabPanels
+            .map((panel) => ({
+                key: panel.getAttribute("data-showcase-tab-panel"),
+                distance: Math.abs(panel.getBoundingClientRect().top - offset)
+            }))
+            .filter((item) => item.key);
+
+        if (!candidates.length) {
+            return;
+        }
+
+        candidates.sort((left, right) => left.distance - right.distance);
+        const nextTab = candidates[0].key;
+        if (nextTab && nextTab !== activeTab) {
+            syncTabState(nextTab);
+        }
     }
 
     function resetImageSelection() {
@@ -251,18 +293,208 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("");
     }
 
+    function syncSelectedCategories() {
+        if (!selectedCategoriesContainer) {
+            return;
+        }
+
+        const primaryCategoryId = getPrimaryCategoryId();
+        const normalizedIds = [...new Set(selectedCategoryIds.filter((id) => id > 0))];
+        const finalIds = primaryCategoryId > 0
+            ? [primaryCategoryId, ...normalizedIds.filter((id) => id !== primaryCategoryId)]
+            : normalizedIds;
+
+        selectedCategoriesContainer.innerHTML = finalIds
+            .map((id) => `<input type="hidden" name="SelectedCategoryIds" value="${id}" />`)
+            .join("");
+
+        if (categorySummary) {
+            categorySummary.textContent = `${normalizedIds.length} alt kategori se�ildi`;
+        }
+    }
+
+    function getPromptValues() {
+        return (promptsTextarea?.value || "")
+            .split(/\r?\n/)
+            .map((value) => value.trim())
+            .filter(Boolean);
+    }
+
+    function syncPromptsTextarea(values) {
+        if (promptsTextarea) {
+            promptsTextarea.value = values.join("\n");
+        }
+    }
+
+    function renderPromptList() {
+        if (!promptsList || !promptsEmpty) {
+            return;
+        }
+
+        const values = getPromptValues();
+        promptsList.innerHTML = values
+            .map((value, index) => `
+                <div class="admin-showcase-prompt-item" draggable="true" data-showcase-prompt-item data-prompt-index="${index}">
+                    <button type="button" class="admin-showcase-prompt-grip" data-showcase-prompt-grip aria-label="Sirayi degistir">
+                        <i class="fa-solid fa-grip-lines"></i>
+                    </button>
+                    <input type="text"
+                           class="form-control auth-input"
+                           value="${value.replaceAll("\"", "&quot;")}"
+                           data-showcase-prompt-input
+                           data-prompt-index="${index}" />
+                    <button type="button" class="admin-showcase-prompt-remove" data-showcase-prompt-remove aria-label="Cumleyi sil">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `)
+            .join("");
+
+        promptsEmpty.hidden = values.length > 0;
+    }
+
+    function addPrompt(value = "") {
+        const values = getPromptValues();
+        values.push(value.trim());
+        syncPromptsTextarea(values.filter(Boolean));
+        renderPromptList();
+    }
+
+    function updatePrompt(index, value) {
+        const values = getPromptValues();
+        values[index] = value;
+        syncPromptsTextarea(values.filter((item) => item.trim().length > 0));
+        renderPromptList();
+    }
+
+    function removePrompt(index) {
+        const values = getPromptValues();
+        values.splice(index, 1);
+        syncPromptsTextarea(values);
+        renderPromptList();
+    }
+
+    function movePrompt(fromIndex, toIndex) {
+        if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0) {
+            return;
+        }
+
+        const values = getPromptValues();
+        const [moved] = values.splice(fromIndex, 1);
+        values.splice(toIndex, 0, moved);
+        syncPromptsTextarea(values);
+        renderPromptList();
+    }
+
+    function moveSelectedCategory(categoryId, targetId) {
+        if (!categoryId || !targetId || categoryId === targetId) {
+            return;
+        }
+
+        const fromIndex = selectedCategoryIds.indexOf(categoryId);
+        const toIndex = selectedCategoryIds.indexOf(targetId);
+        if (fromIndex < 0 || toIndex < 0) {
+            return;
+        }
+
+        const next = [...selectedCategoryIds];
+        const [moved] = next.splice(fromIndex, 1);
+        next.splice(toIndex, 0, moved);
+        selectedCategoryIds = next;
+    }
+
+    function buildCategoryPillMarkup(category, options) {
+        const { isSelected, isLocked, isDraggable } = options;
+        const stateClass = isSelected ? "is-selected" : "is-available";
+        const lockedClass = isLocked ? " is-locked" : "";
+        const iconClass = isSelected
+            ? (isLocked ? "fa-grip-lines" : "fa-xmark")
+            : "fa-plus";
+        const srLabel = isSelected
+            ? (isLocked ? "Havuzda sabit alt kategori" : "Alt kategoriyi havuzdan cikar")
+            : "Alt kategoriyi havuza geri ekle";
+
+        return `
+            <button type="button"
+                    class="admin-showcase-category-pill ${stateClass}${lockedClass}"
+                    data-showcase-category-pill="${category.id}"
+                    draggable="${isDraggable ? "true" : "false"}"
+                    aria-label="${srLabel}">
+                <span>${category.name}</span>
+                <i class="fa-solid ${iconClass}" aria-hidden="true"></i>
+            </button>
+        `;
+    }
+
+    function renderCategoryPool() {
+        if (!categoryPoolList || !categoryPoolEmpty) {
+            return;
+        }
+
+        const primaryCategoryId = getPrimaryCategoryId();
+        const descendants = getDescendantCategories(primaryCategoryId);
+
+        if (primaryCategoryId <= 0) {
+            categoryPoolList.innerHTML = "";
+            categoryPoolEmpty.hidden = false;
+            categoryPoolEmpty.textContent = "Ana kategori se�ildiginde alt kategoriler burada g�r�necek.";
+            selectedCategoryIds = [];
+            syncSelectedCategories();
+            renderPickerFilters();
+            filterPickerItems();
+            return;
+        }
+
+        if (descendants.length === 0) {
+            categoryPoolList.innerHTML = "";
+            categoryPoolEmpty.hidden = false;
+            categoryPoolEmpty.textContent = "Bu ana kategori i�in alt kategori bulunmuyor. Havuz ana kategori ile calisacak.";
+            selectedCategoryIds = [];
+            syncSelectedCategories();
+            renderPickerFilters();
+            filterPickerItems();
+            return;
+        }
+
+        if (selectedCategoryIds.length === 0) {
+            selectedCategoryIds = descendants.map((category) => category.id);
+        } else {
+            selectedCategoryIds = selectedCategoryIds.filter((id) => descendants.some((category) => category.id === id));
+        }
+
+        const selectedCategories = selectedCategoryIds
+            .map((id) => descendants.find((category) => category.id === id))
+            .filter(Boolean);
+        const unselectedCategories = descendants.filter((category) => !selectedCategoryIds.includes(category.id));
+        const canRemove = selectedCategoryIds.length > 1;
+
+        categoryPoolList.innerHTML = [
+            ...selectedCategories.map((category) => buildCategoryPillMarkup(category, {
+                isSelected: true,
+                isLocked: !canRemove,
+                isDraggable: canRemove
+            })),
+            ...unselectedCategories.map((category) => buildCategoryPillMarkup(category, {
+                isSelected: false,
+                isLocked: false,
+                isDraggable: false
+            }))
+        ].join("");
+
+        categoryPoolEmpty.hidden = true;
+        syncSelectedCategories();
+        renderPickerFilters();
+        filterPickerItems();
+    }
+
     function getScopedProducts() {
-        const selectedCategoryIds = categoryOptions
-            .filter((option) => option.checked)
-            .map((option) => Number.parseInt(option.value, 10))
-            .filter((value) => value > 0);
-        const showcaseTags = getShowcaseTags();
+        const primaryCategoryId = getPrimaryCategoryId();
+        const normalizedSelectedCategoryIds = [...new Set([
+            ...selectedCategoryIds,
+            ...(primaryCategoryId > 0 ? [primaryCategoryId] : [])
+        ])];
         const allProducts = Array.from(productLookup.values());
-        const scopedProducts = allProducts.filter((product) => {
-            const matchesCategory = selectedCategoryIds.includes(product.categoryId);
-            const matchesTag = product.tagNames.some((tag) => showcaseTags.includes(normalizeText(tag)));
-            return matchesCategory || matchesTag;
-        });
+        const scopedProducts = allProducts.filter((product) => normalizedSelectedCategoryIds.includes(product.categoryId));
 
         if (scopedProducts.length > 0) {
             return scopedProducts;
@@ -274,13 +506,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const fallbackCategoryIds = [...new Set(featuredProducts.map((product) => product.categoryId).filter((value) => value > 0))];
-        const fallbackTags = [...new Set(featuredProducts.flatMap((product) => product.tagNames.map(normalizeText)).filter(Boolean))];
-
         return allProducts.filter((product) => {
             const matchesFallbackCategory = fallbackCategoryIds.includes(product.categoryId);
-            const matchesFallbackTag = product.tagNames.some((tag) => fallbackTags.includes(normalizeText(tag)));
             const isCurrentFeatured = featuredProductIds.includes(product.id);
-            return matchesFallbackCategory || matchesFallbackTag || isCurrentFeatured;
+            return matchesFallbackCategory || isCurrentFeatured;
         });
     }
 
@@ -314,16 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }))
             .sort((left, right) => left.label.localeCompare(right.label, "tr"));
 
-        const tagFilterOptions = scopedProducts
-            .flatMap((product) => product.tagNames)
-            .map((tag) => ({
-                value: normalizeText(tag),
-                label: tag
-            }))
-            .sort((left, right) => left.label.localeCompare(right.label, "tr"));
-
-        fillSelectOptions(pickerCategoryFilter, categoryFilterOptions, "Tum kategoriler");
-        fillSelectOptions(pickerTagFilter, tagFilterOptions, "Tum etiketler");
+        fillSelectOptions(pickerCategoryFilter, categoryFilterOptions, "T�m kategoriler");
     }
 
     function filterPickerItems() {
@@ -331,7 +551,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const scopedProductIds = new Set(scopedProducts.map((product) => product.id));
         const searchTerm = normalizeText(pickerSearch?.value || "");
         const selectedCategoryFilter = pickerCategoryFilter?.value || "";
-        const selectedTagFilter = pickerTagFilter?.value || "";
         const currentSlotProductId = featuredProductIds[selectedSlotIndex] || 0;
 
         let visibleCount = 0;
@@ -346,11 +565,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const matchesScope = scopedProductIds.has(productId);
             const matchesCategoryFilter = selectedCategoryFilter.length === 0 || String(product.categoryId) === selectedCategoryFilter;
-            const matchesTagFilter = selectedTagFilter.length === 0
-                || product.tagNames.some((tag) => normalizeText(tag) === selectedTagFilter);
             const searchableContent = normalizeText(`${product.name} ${product.categoryName} ${product.tagNames.join(" ")}`);
             const matchesSearch = searchTerm.length === 0 || searchableContent.includes(searchTerm);
-            const isVisible = matchesScope && matchesCategoryFilter && matchesTagFilter && matchesSearch;
+            const isVisible = matchesScope && matchesCategoryFilter && matchesSearch;
 
             item.hidden = !isVisible;
             item.classList.toggle("is-selected", isVisible && productId === selectedPickerProductId);
@@ -405,7 +622,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${product ? `<img src="${product.imageUrl}" alt="${product.name}" />
                         <strong>${product.name}</strong>
                         <small>${product.categoryName}</small>`
-                    : `<strong>Urun Sec</strong><small>Bu slot icin vitrin urunu ekle</small>`}
+                    : `<strong>�r�n Se�</strong><small>Bu slot i�in vitrin �r�n� ekle</small>`}
                 </div>
             `;
         });
@@ -451,9 +668,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setPreviewState(currentPreviewUrl);
-    renderTags();
     validateDescription();
     syncThemeCards();
+    renderPromptList();
+    renderCategoryPool();
 
     previewButton?.addEventListener("click", () => {
         if (!currentPreviewUrl) {
@@ -468,6 +686,10 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
         event.stopPropagation();
         resetImageSelection();
+        fileInput?.click();
+    });
+
+    form.querySelector("[data-showcase-background-trigger]")?.addEventListener("click", () => {
         fileInput?.click();
     });
 
@@ -501,55 +723,119 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    tagsInput?.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === ",") {
-            event.preventDefault();
-            addTagsFromText(tagsInput.value);
-            tagsInput.value = "";
-            return;
-        }
+    descriptionInput?.addEventListener("input", () => {
+        validateDescription();
+    });
 
-        if (event.key === "Backspace" && tagsInput.value.length === 0 && tags.length > 0) {
-            tags = tags.slice(0, -1);
-            renderTags();
+    addPromptButton?.addEventListener("click", () => {
+        addPrompt("");
+        const lastInput = promptsList?.querySelector('[data-showcase-prompt-input][data-prompt-index]:last-of-type');
+        if (lastInput instanceof HTMLInputElement) {
+            lastInput.focus();
         }
     });
 
-    tagsInput?.addEventListener("blur", () => {
-        addTagsFromText(tagsInput.value);
-        tagsInput.value = "";
-    });
-
-    tagsInput?.addEventListener("paste", (event) => {
-        const pastedText = event.clipboardData?.getData("text");
-        if (!pastedText || !/[,\n\r]/.test(pastedText)) {
-            return;
-        }
-
-        event.preventDefault();
-        addTagsFromText(pastedText);
-    });
-
-    tagsList?.addEventListener("click", (event) => {
-        const target = event.target instanceof HTMLElement
-            ? event.target.closest("[data-tag-remove]")
+    promptsList?.addEventListener("input", (event) => {
+        const target = event.target instanceof HTMLInputElement
+            ? event.target.closest("[data-showcase-prompt-input]")
             : null;
-
-        if (!target) {
+        if (!(target instanceof HTMLInputElement)) {
             return;
         }
 
-        const index = Number.parseInt(target.getAttribute("data-tag-remove") || "-1", 10);
+        const index = Number.parseInt(target.dataset.promptIndex || "-1", 10);
         if (index < 0) {
             return;
         }
 
-        tags.splice(index, 1);
-        renderTags();
+        const values = getPromptValues();
+        values[index] = target.value;
+        if (promptsTextarea) {
+            promptsTextarea.value = values.join("\n");
+        }
     });
 
-    descriptionInput?.addEventListener("input", () => {
-        validateDescription();
+    promptsList?.addEventListener("change", (event) => {
+        const target = event.target instanceof HTMLInputElement
+            ? event.target.closest("[data-showcase-prompt-input]")
+            : null;
+        if (!(target instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const index = Number.parseInt(target.dataset.promptIndex || "-1", 10);
+        if (index < 0) {
+            return;
+        }
+
+        updatePrompt(index, target.value.trim());
+    });
+
+    promptsList?.addEventListener("click", (event) => {
+        const removeTarget = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-prompt-remove]")
+            : null;
+        if (!removeTarget) {
+            return;
+        }
+
+        const item = removeTarget.closest("[data-showcase-prompt-item]");
+        const index = Number.parseInt(item?.getAttribute("data-prompt-index") || "-1", 10);
+        if (index < 0) {
+            return;
+        }
+
+        removePrompt(index);
+    });
+
+    promptsList?.addEventListener("dragstart", (event) => {
+        const item = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-prompt-item]")
+            : null;
+        if (!item) {
+            return;
+        }
+
+        draggedPromptIndex = Number.parseInt(item.getAttribute("data-prompt-index") || "-1", 10);
+        item.classList.add("is-dragging");
+        event.dataTransfer?.setData("text/plain", String(draggedPromptIndex));
+    });
+
+    promptsList?.addEventListener("dragend", (event) => {
+        const item = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-prompt-item]")
+            : null;
+        item?.classList.remove("is-dragging");
+        promptsList.querySelectorAll(".is-drop-target").forEach((node) => node.classList.remove("is-drop-target"));
+        draggedPromptIndex = -1;
+    });
+
+    promptsList?.addEventListener("dragover", (event) => {
+        const item = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-prompt-item]")
+            : null;
+        if (!item) {
+            return;
+        }
+
+        event.preventDefault();
+        promptsList.querySelectorAll(".is-drop-target").forEach((node) => node.classList.remove("is-drop-target"));
+        item.classList.add("is-drop-target");
+    });
+
+    promptsList?.addEventListener("drop", (event) => {
+        const item = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-prompt-item]")
+            : null;
+        if (!item) {
+            return;
+        }
+
+        event.preventDefault();
+        item.classList.remove("is-drop-target");
+        const toIndex = Number.parseInt(item.getAttribute("data-prompt-index") || "-1", 10);
+        const fromIndex = Number.parseInt(event.dataTransfer?.getData("text/plain") || String(draggedPromptIndex), 10);
+        movePrompt(fromIndex, toIndex);
     });
 
     themeCards.forEach((card) => {
@@ -569,13 +855,19 @@ document.addEventListener("DOMContentLoaded", () => {
         option.addEventListener("change", syncThemeCards);
     });
 
-    form.addEventListener("submit", (event) => {
-        if (tagsInput?.value) {
-            addTagsFromText(tagsInput.value);
-            tagsInput.value = "";
-        }
+    tabButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const tab = button.getAttribute("data-showcase-tab");
+            if (tab) {
+                scrollToTab(tab);
+            }
+        });
+    });
 
-        syncTags();
+    window.addEventListener("scroll", syncActiveTabFromScroll, { passive: true });
+
+    form.addEventListener("submit", (event) => {
+        syncSelectedCategories();
 
         if (!validateDescription()) {
             event.preventDefault();
@@ -588,11 +880,104 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    categoryOptions.forEach((option) => {
-        option.addEventListener("change", () => {
-            renderPickerFilters();
-            filterPickerItems();
-        });
+    iconColorInput?.addEventListener("input", () => {
+        if (iconPreview) {
+            iconPreview.style.color = iconColorInput.value.trim() || "";
+        }
+    });
+
+    primaryCategorySelect?.addEventListener("change", () => {
+        selectedCategoryIds = [];
+        renderCategoryPool();
+    });
+
+    categoryPoolList?.addEventListener("click", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+
+        if (!target) {
+            return;
+        }
+
+        const categoryId = Number.parseInt(target.getAttribute("data-showcase-category-pill") || "0", 10);
+        if (categoryId <= 0) {
+            return;
+        }
+
+        const canRemove = selectedCategoryIds.length > 1;
+        if (selectedCategoryIds.includes(categoryId) && canRemove) {
+            selectedCategoryIds = selectedCategoryIds.filter((id) => id !== categoryId);
+        } else if (!selectedCategoryIds.includes(categoryId)) {
+            selectedCategoryIds.push(categoryId);
+        }
+
+        renderCategoryPool();
+    });
+
+    categoryPoolList?.addEventListener("dragstart", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+
+        if (!target) {
+            return;
+        }
+
+        const categoryId = Number.parseInt(target.getAttribute("data-showcase-category-pill") || "0", 10);
+        if (!selectedCategoryIds.includes(categoryId)) {
+            event.preventDefault();
+            return;
+        }
+
+        draggedCategoryId = categoryId;
+        target.classList.add("is-dragging");
+        event.dataTransfer?.setData("text/plain", String(categoryId));
+    });
+
+    categoryPoolList?.addEventListener("dragend", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+        target?.classList.remove("is-dragging");
+        draggedCategoryId = 0;
+    });
+
+    categoryPoolList?.addEventListener("dragover", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+
+        if (!target) {
+            return;
+        }
+
+        event.preventDefault();
+        target.classList.add("is-drop-target");
+    });
+
+    categoryPoolList?.addEventListener("dragleave", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+        target?.classList.remove("is-drop-target");
+    });
+
+    categoryPoolList?.addEventListener("drop", (event) => {
+        const target = event.target instanceof HTMLElement
+            ? event.target.closest("[data-showcase-category-pill]")
+            : null;
+
+        if (!target) {
+            return;
+        }
+
+        event.preventDefault();
+        target.classList.remove("is-drop-target");
+        const targetId = Number.parseInt(target.getAttribute("data-showcase-category-pill") || "0", 10);
+        const sourceId = Number.parseInt(event.dataTransfer?.getData("text/plain") || String(draggedCategoryId), 10);
+        moveSelectedCategory(sourceId, targetId);
+        renderCategoryPool();
     });
 
     slotElements.forEach((slot) => {
@@ -647,7 +1032,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const isAlreadyInAnotherSlot = featuredProductIds.some((id, index) => index !== selectedSlotIndex && id === productId);
             if (isAlreadyInAnotherSlot) {
-                window.alert("Bu urun zaten vitrinde var.");
+                window.alert("Bu �r�n zaten vitrinde var.");
                 return;
             }
 
@@ -662,7 +1047,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     pickerSearch?.addEventListener("input", filterPickerItems);
     pickerCategoryFilter?.addEventListener("change", filterPickerItems);
-    pickerTagFilter?.addEventListener("change", filterPickerItems);
 
+    syncTabState(activeTab);
+    syncActiveTabFromScroll();
     renderSlots();
 });

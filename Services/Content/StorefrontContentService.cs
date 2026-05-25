@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using vitacure.Application.Abstractions;
 using vitacure.Application.Utilities;
 using vitacure.Domain.Entities;
+using vitacure.Domain.Enums;
 using vitacure.Infrastructure.Persistence;
 using vitacure.Infrastructure.Services;
 using vitacure.Models.ViewModels;
@@ -74,11 +75,14 @@ public class StorefrontContentService : IStorefrontContentService
         var document = _document.Value;
         var showcase = await _dbContext.Showcases
             .AsNoTracking()
+            .Include(x => x.PrimaryCategory)
             .Include(x => x.ShowcaseCategories)
             .ThenInclude(x => x.Category)
             .Include(x => x.FeaturedProducts)
             .ThenInclude(x => x.Product)
             .ThenInclude(x => x!.Category)
+            .Include(x => x.Prompts)
+            .Include(x => x.Tags)
             .FirstOrDefaultAsync(x => x.IsActive && x.Slug == slug, cancellationToken);
 
         if (showcase is null)
@@ -87,7 +91,9 @@ public class StorefrontContentService : IStorefrontContentService
         }
 
         var categories = await BuildCategoriesAsync(cancellationToken);
-        var selectedCategoryIds = showcase.ShowcaseCategories
+        var selectedCategoryIds = showcase.PrimaryCategoryId.HasValue
+            ? new[] { showcase.PrimaryCategoryId.Value }
+            : showcase.ShowcaseCategories
             .Select(x => x.CategoryId)
             .Distinct()
             .ToArray();
@@ -104,7 +110,9 @@ public class StorefrontContentService : IStorefrontContentService
                     .ToArrayAsync(cancellationToken);
             }
         }
-        var selectedCategories = showcase.ShowcaseCategories
+        var selectedCategories = showcase.PrimaryCategory is not null
+            ? new List<Category> { showcase.PrimaryCategory }
+            : showcase.ShowcaseCategories
             .Where(x => x.Category is not null && x.Category.IsActive)
             .Select(x => x.Category!)
             .DistinctBy(x => x.Id)
@@ -129,10 +137,10 @@ public class StorefrontContentService : IStorefrontContentService
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.ProductCategories)
-            .Where(x => x.IsActive && selectedCategoryIds.Contains(x.CategoryId));
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen && x.CategoryId.HasValue && selectedCategoryIds.Contains(x.CategoryId.Value));
 
         productQuery = productQuery
-            .Where(x => selectedCategoryIds.Contains(x.CategoryId) || x.ProductCategories.Any(pc => selectedCategoryIds.Contains(pc.CategoryId)));
+            .Where(x => (x.CategoryId.HasValue && selectedCategoryIds.Contains(x.CategoryId.Value)) || x.ProductCategories.Any(pc => selectedCategoryIds.Contains(pc.CategoryId)));
 
         if (!string.IsNullOrWhiteSpace(categorySlug))
         {
@@ -145,7 +153,7 @@ public class StorefrontContentService : IStorefrontContentService
             .ToListAsync(cancellationToken);
 
         var featuredProducts = showcase.FeaturedProducts
-            .Where(x => x.Product is not null && x.Product.IsActive)
+            .Where(x => x.Product is not null && x.Product.Status == ProductPublishingStatus.PublishedOpen)
             .OrderBy(x => x.SortOrder)
             .Select(x => x.Product!)
             .ToList();
@@ -176,13 +184,12 @@ public class StorefrontContentService : IStorefrontContentService
             IsActive = string.IsNullOrWhiteSpace(categorySlug)
         });
 
-        var showcaseTags = showcase.TagsContent
-            .Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Distinct(StringComparer.CurrentCultureIgnoreCase)
+        var showcaseTags = showcase.Tags
+            .OrderBy(x => x.SortOrder)
             .Select(tag => new CategoryTagViewModel
             {
-                Label = tag,
-                Slug = tag,
+                Label = tag.Name,
+                Slug = tag.Slug,
                 Url = "#product-grid",
                 IsActive = false
             })
@@ -253,7 +260,7 @@ public class StorefrontContentService : IStorefrontContentService
             .Include(x => x.ProductCategories)
             .Include(x => x.ProductTags)
             .ThenInclude(x => x.Tag)
-            .Where(x => x.IsActive && (categoryIds.Contains(x.CategoryId) || x.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))));
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen && (categoryIds.Contains(x.CategoryId ?? 0) || x.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))));
 
         if (!string.IsNullOrWhiteSpace(tagSlug))
         {
@@ -268,7 +275,7 @@ public class StorefrontContentService : IStorefrontContentService
 
         var fallbackProducts = await _dbContext.Products
             .AsNoTracking()
-            .Where(x => x.IsActive)
+            .Where(x => x.Status == ProductPublishingStatus.PublishedOpen)
             .OrderByDescending(x => x.Rating)
             .ThenBy(x => x.Name)
             .Take(12)
@@ -324,12 +331,14 @@ public class StorefrontContentService : IStorefrontContentService
             return null;
         }
 
-        var relatedProducts = await _productService.GetRelatedProductsAsync(product.CategoryId, product.Id, cancellationToken: cancellationToken);
+        var relatedProducts = await _productService.GetRelatedProductsAsync(product.CategoryId ?? 0, product.Id, cancellationToken: cancellationToken);
 
         return new ProductDetailViewModel
         {
-            Title = $"{product.Name} | VitaCure",
-            MetaDescription = string.IsNullOrWhiteSpace(product.Description) ? $"{product.Name} detay sayfasi." : HtmlContentSanitizer.StripHtml(product.Description),
+            Title = string.IsNullOrWhiteSpace(product.MetaTitle) ? $"{product.Name} | VitaCure" : product.MetaTitle,
+            MetaDescription = string.IsNullOrWhiteSpace(product.MetaDescription)
+                ? (string.IsNullOrWhiteSpace(product.Description) ? $"{product.Name} detay sayfasi." : HtmlContentSanitizer.StripHtml(product.Description))
+                : product.MetaDescription,
             CanonicalPath = $"/{product.Slug}",
             Name = product.Name,
             Slug = product.Slug,
@@ -356,6 +365,7 @@ public class StorefrontContentService : IStorefrontContentService
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(x => x)
                 .ToArray(),
+            TechnicalDetails = BuildTechnicalDetails(product),
             Breadcrumbs = new[]
             {
                 new BreadcrumbItemViewModel { Label = "Ana Sayfa", Url = "/", IsActive = false },
@@ -364,6 +374,32 @@ public class StorefrontContentService : IStorefrontContentService
             },
             RelatedProducts = BuildProductCards(relatedProducts)
         };
+    }
+
+    private static IReadOnlyList<ProductDetailTechnicalItemViewModel> BuildTechnicalDetails(Product product)
+    {
+        var items = new List<ProductDetailTechnicalItemViewModel>();
+
+        if (product.Brand is not null)
+        {
+            items.Add(new ProductDetailTechnicalItemViewModel
+            {
+                Label = "Marka",
+                Value = product.Brand.Name
+            });
+        }
+
+        items.AddRange(product.ProductFeatures
+            .Where(x => x.Feature is not null && !string.IsNullOrWhiteSpace(x.Value))
+            .OrderBy(x => x.Feature!.GroupName)
+            .ThenBy(x => x.Feature!.Name)
+            .Select(x => new ProductDetailTechnicalItemViewModel
+            {
+                Label = x.Feature!.Name,
+                Value = x.Value!
+            }));
+
+        return items;
     }
 
     private static IReadOnlyList<string> BuildGalleryImages(Product product)
@@ -435,8 +471,8 @@ public class StorefrontContentService : IStorefrontContentService
     {
         var tagItems = await _dbContext.ProductTags
             .AsNoTracking()
-            .Where(x => x.Product != null && x.Tag != null && x.Product.IsActive &&
-                        (categoryIds.Contains(x.Product.CategoryId) ||
+            .Where(x => x.Product != null && x.Tag != null && x.Product.Status == ProductPublishingStatus.PublishedOpen &&
+                        (x.Product.CategoryId.HasValue && categoryIds.Contains(x.Product.CategoryId.Value) ||
                          x.Product.ProductCategories.Any(pc => categoryIds.Contains(pc.CategoryId))))
             .Select(x => new
             {
@@ -518,7 +554,7 @@ public class StorefrontContentService : IStorefrontContentService
                 Name = category.Name,
                 DisplayName = chatMeta.DisplayName ?? category.Name,
                 Slug = category.Slug,
-                IconClass = sourceCategory?.Icon ?? string.Empty,
+                IconClass = ResolveCategoryIconClass(category, sourceCategory?.Icon),
                 PillCssClass = background.Pill,
                 Description = category.Description,
                 DescriptionHtml = descriptionHtml.TryGetValue(category.Slug, out var htmlDescription) ? htmlDescription : category.Description,
@@ -530,35 +566,123 @@ public class StorefrontContentService : IStorefrontContentService
         }).ToList();
     }
 
+    private static string ResolveCategoryIconClass(Category category, string? sourceIcon)
+    {
+        if (!string.IsNullOrWhiteSpace(sourceIcon))
+        {
+            return sourceIcon;
+        }
+
+        var normalized = $"{category.Slug} {category.Name}".ToLowerInvariant();
+
+        if (ContainsAny(normalized, "uyku", "melatonin"))
+        {
+            return "fa-solid fa-moon";
+        }
+
+        if (ContainsAny(normalized, "bagisiklik", "bağışıklık", "immun", "immune", "koruma"))
+        {
+            return "fa-solid fa-shield-heart";
+        }
+
+        if (ContainsAny(normalized, "zihin", "hafiza", "hafıza", "odak", "beyin", "brain", "omega"))
+        {
+            return "fa-solid fa-brain";
+        }
+
+        if (ContainsAny(normalized, "multivitamin", "vitamin", "mineral", "enerji", "demir", "magnezyum"))
+        {
+            return "fa-solid fa-capsules";
+        }
+
+        if (ContainsAny(normalized, "kas", "iskelet", "kemik", "eklem", "kolajen", "collagen"))
+        {
+            return "fa-solid fa-bone";
+        }
+
+        if (ContainsAny(normalized, "cocuk", "çocuk", "bebek", "baby"))
+        {
+            return "fa-solid fa-baby";
+        }
+
+        if (ContainsAny(normalized, "cilt", "saç", "sac", "tırnak", "tirnak", "guzellik", "güzellik"))
+        {
+            return "fa-solid fa-spa";
+        }
+
+        if (ContainsAny(normalized, "spor", "fitness", "protein", "antrenman"))
+        {
+            return "fa-solid fa-dumbbell";
+        }
+
+        if (ContainsAny(normalized, "zayif", "zayıf", "kilo", "metabolizma", "detoks"))
+        {
+            return "fa-solid fa-person-running";
+        }
+
+        if (ContainsAny(normalized, "sindirim", "probiyotik", "prebiyotik", "bagirsak", "bağırsak"))
+        {
+            return "fa-solid fa-seedling";
+        }
+
+        if (ContainsAny(normalized, "kalp", "tansiyon", "damar"))
+        {
+            return "fa-solid fa-heart-pulse";
+        }
+
+        return "fa-solid fa-capsules";
+    }
+
+    private static bool ContainsAny(string value, params string[] keywords)
+    {
+        return keywords.Any(keyword => value.Contains(keyword, StringComparison.Ordinal));
+    }
+
     private async Task<IReadOnlyList<ShowcaseSummaryViewModel>> BuildHomeShowcasesAsync(CancellationToken cancellationToken)
     {
-        return await _dbContext.Showcases
+        var rawShowcases = await _dbContext.Showcases
             .AsNoTracking()
+            .Include(x => x.PrimaryCategory)
             .Include(x => x.ShowcaseCategories)
+            .ThenInclude(x => x.Category)
+            .Include(x => x.Prompts)
             .Where(x => x.IsActive && x.ShowOnHome)
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Name)
             .Take(6)
-            .Select(x => new ShowcaseSummaryViewModel
-            {
-                Name = x.Name,
-                Title = x.Title,
-                Slug = x.Slug,
-                CategorySlug = x.ShowcaseCategories
-                    .OrderBy(sc => sc.CategoryId)
-                    .Select(sc => sc.Category != null ? sc.Category.Slug : string.Empty)
-                    .FirstOrDefault() ?? string.Empty,
-                IconClass = x.IconClass,
-                PillCssClass = ResolveShowcasePillClass(
-                    x.ShowcaseCategories
-                        .OrderBy(sc => sc.CategoryId)
-                        .Select(sc => sc.Category != null ? sc.Category.Slug : string.Empty)
-                        .FirstOrDefault(),
-                    x.Slug),
-                BackgroundImageUrl = ResolveShowcaseBackgroundImage(x.Slug, x.BackgroundImageUrl),
-                IsDark = x.IsDark
-            })
             .ToListAsync(cancellationToken);
+
+        return rawShowcases
+            .Select(x =>
+            {
+                var relatedCategorySlug = x.PrimaryCategory?.Slug ?? x.ShowcaseCategories
+                    .Where(sc => sc.Category is not null && sc.Category.IsActive)
+                    .OrderBy(sc => sc.CategoryId)
+                    .Select(sc => sc.Category!.Slug)
+                    .FirstOrDefault();
+
+                var categorySlug = relatedCategorySlug;
+                if (string.IsNullOrWhiteSpace(categorySlug))
+                {
+                    categorySlug = ResolveShowcaseCategorySlug(x.Slug);
+                }
+
+                return new ShowcaseSummaryViewModel
+                {
+                    Name = x.Name,
+                    Title = x.Title,
+                    Slug = x.Slug,
+                    PromptKey = x.Slug,
+                    CategorySlug = categorySlug ?? string.Empty,
+                    IconClass = x.IconClass,
+                    IconColor = string.IsNullOrWhiteSpace(x.IconColor) ? ResolveShowcaseIconColor(categorySlug, x.Slug) : x.IconColor,
+                    ExamplePromptsContent = string.Join(Environment.NewLine, x.Prompts.OrderBy(p => p.SortOrder).Select(p => p.Text)),
+                    PillCssClass = ResolveShowcasePillClass(categorySlug, x.Slug),
+                    BackgroundImageUrl = ResolveShowcaseBackgroundImage(x.Slug, x.BackgroundImageUrl),
+                    IsDark = x.IsDark
+                };
+            })
+            .ToList();
     }
 
     private static string ResolveShowcaseBackgroundImage(string? slug, string? currentValue)
@@ -600,6 +724,22 @@ public class StorefrontContentService : IStorefrontContentService
         };
     }
 
+    private static string ResolveShowcaseIconColor(string? categorySlug, string? showcaseSlug)
+    {
+        var normalizedSlug = !string.IsNullOrWhiteSpace(categorySlug) ? categorySlug : showcaseSlug;
+
+        return normalizedSlug?.Trim().ToLowerInvariant() switch
+        {
+            "uyku-sagligi" or "uyku-rutini" => "#4b63d3",
+            "multivitamin-enerji" or "multivitamin-enerji-plani" => "#d6a11d",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "#d4569a",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "#35a966",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "#d94b57",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "#e07a2f",
+            _ => "#4b63d3"
+        };
+    }
+
     private static string ResolveShowcaseCategorySlug(string? showcaseSlug)
     {
         return showcaseSlug?.Trim().ToLowerInvariant() switch
@@ -628,6 +768,7 @@ public class StorefrontContentService : IStorefrontContentService
             : data.ExamplePrompts.ByCategory.TryGetValue(category.Slug, out var categoryPrompts)
                 ? categoryPrompts
                 : Array.Empty<string>();
+        var promptPool = BuildPromptPool(data, showcases, variant);
 
         return new ChatWidgetViewModel
         {
@@ -655,11 +796,54 @@ public class StorefrontContentService : IStorefrontContentService
             Showcases = showcases,
             Categories = categories,
             ExamplePrompts = prompts,
-            PromptPoolByCategory = data.ExamplePrompts.ByCategory.ToDictionary(x => x.Key, x => (IReadOnlyList<string>)x.Value),
+            PromptPoolByCategory = promptPool,
             TagButtonsByCategory = data.ChatWidget.ByCategory.ToDictionary(
                 x => x.Key,
                 x => (IReadOnlyList<string>)(x.Value.TagButtons ?? Array.Empty<string>()))
         };
+    }
+
+    private static IDictionary<string, IReadOnlyList<string>> BuildPromptPool(
+        StorefrontUiDocument data,
+        IReadOnlyList<ShowcaseSummaryViewModel> showcases,
+        string variant)
+    {
+        if (!string.Equals(variant, "home", StringComparison.OrdinalIgnoreCase))
+        {
+            return data.ExamplePrompts.ByCategory.ToDictionary(x => x.Key, x => (IReadOnlyList<string>)x.Value);
+        }
+
+        var promptPool = data.ExamplePrompts.ByCategory.ToDictionary(x => x.Key, x => (IReadOnlyList<string>)x.Value);
+        foreach (var showcase in showcases)
+        {
+            if (string.IsNullOrWhiteSpace(showcase.PromptKey))
+            {
+                continue;
+            }
+
+            var prompts = SplitMultilineContent(showcase.ExamplePromptsContent);
+            if (prompts.Count == 0)
+            {
+                continue;
+            }
+
+            promptPool[showcase.PromptKey] = prompts;
+        }
+
+        return promptPool;
+    }
+
+    private static IReadOnlyList<string> SplitMultilineContent(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Array.Empty<string>();
+        }
+
+        return value
+            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .ToArray();
     }
 
     private static IReadOnlyList<ProductCardViewModel> BuildProductCards(IReadOnlyList<Product> items)

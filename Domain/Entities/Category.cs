@@ -8,6 +8,8 @@ public class Category
     public string Description { get; set; } = string.Empty;
     public int? ParentId { get; set; }
     public bool IsActive { get; set; } = true;
+    public string? ImageUrl { get; set; }
+    public string? ProductSortType { get; set; }
     public string? SeoTitle { get; set; }
     public string? MetaDescription { get; set; }
 
@@ -16,4 +18,5 @@ public class Category
     public ICollection<Product> Products { get; set; } = new List<Product>();
     public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
     public ICollection<ShowcaseCategory> ShowcaseCategories { get; set; } = new List<ShowcaseCategory>();
+    public ICollection<Showcase> PrimaryShowcases { get; set; } = new List<Showcase>();
 }

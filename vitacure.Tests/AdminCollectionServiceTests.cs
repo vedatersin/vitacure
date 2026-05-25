@@ -29,7 +29,7 @@ public class AdminCollectionServiceTests
         dbContext.Products.Add(new Product
         {
             Id = 10,
-            Name = "Urun",
+            Name = "Ürün",
             Slug = "urun",
             Description = "A",
             Price = 100m,
@@ -73,7 +73,7 @@ public class AdminCollectionServiceTests
         dbContext.Products.Add(new Product
         {
             Id = 10,
-            Name = "Urun",
+            Name = "Ürün",
             Slug = "urun",
             Description = "A",
             Price = 100m,

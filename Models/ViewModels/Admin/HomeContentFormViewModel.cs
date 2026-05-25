@@ -6,15 +6,15 @@ public class HomeContentFormViewModel
 {
     public int? Id { get; set; }
 
-    [Display(Name = "Meta Açıklama")]
+    [Display(Name = "Meta A�iklama")]
     public string? MetaDescription { get; set; }
 
     [Required]
-    [Display(Name = "Hero Başlığı")]
+    [Display(Name = "Hero Basligi")]
     public string HeroTitle { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Hero Alt Başlığı")]
+    [Display(Name = "Hero Alt Basligi")]
     public string HeroSubtitle { get; set; } = string.Empty;
 
     [Required]
@@ -30,35 +30,35 @@ public class HomeContentFormViewModel
     public string SearchPlaceholderLocked { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Öne Çıkan Başlık")]
+    [Display(Name = "�ne �ikan Baslik")]
     public string FeaturedTitle { get; set; } = string.Empty;
 
-    [Display(Name = "Öne Çıkan CTA Metni")]
+    [Display(Name = "�ne �ikan CTA Metni")]
     public string? FeaturedActionLabel { get; set; }
 
-    [Display(Name = "Öne Çıkan CTA Linki")]
+    [Display(Name = "�ne �ikan CTA Linki")]
     public string? FeaturedActionUrl { get; set; }
 
     [Required]
-    [Display(Name = "Popüler Takviyeler Başlığı")]
+    [Display(Name = "Pop�ler Takviyeler Basligi")]
     public string PopularTitle { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Kampanyalar Başlığı")]
+    [Display(Name = "Kampanyalar Basligi")]
     public string CampaignsTitle { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Fırsat Ürünleri Başlığı")]
+    [Display(Name = "Firsat �r�nleri Basligi")]
     public string DealsTitle { get; set; } = string.Empty;
 
-    [Display(Name = "Fırsat CTA Metni")]
+    [Display(Name = "Firsat CTA Metni")]
     public string? DealsActionLabel { get; set; }
 
-    [Display(Name = "Fırsat CTA Linki")]
+    [Display(Name = "Firsat CTA Linki")]
     public string? DealsActionUrl { get; set; }
 
     [Required]
-    [Display(Name = "Banner Adı")]
+    [Display(Name = "Banner Adi")]
     public string FeaturedBannerName { get; set; } = string.Empty;
 
     [Required]
@@ -66,16 +66,16 @@ public class HomeContentFormViewModel
     public string FeaturedBannerAltText { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "Banner Görsel URL")]
+    [Display(Name = "Banner G�rsel URL")]
     public string FeaturedBannerImageUrl { get; set; } = string.Empty;
 
     [Required]
     [Display(Name = "Banner Hedef Linki")]
     public string FeaturedBannerTargetUrl { get; set; } = string.Empty;
 
-    [Display(Name = "Popüler Takviyeler")]
+    [Display(Name = "Pop�ler Takviyeler")]
     public string PopularSupplementsContent { get; set; } = string.Empty;
 
-    [Display(Name = "Kampanya Bannerları")]
+    [Display(Name = "Kampanya Bannerlari")]
     public string CampaignBannersContent { get; set; } = string.Empty;
 }

@@ -59,7 +59,7 @@ public class SlugServiceTests
         dbContext.Features.Add(new Feature
         {
             Id = 1,
-            Name = "Urun Formu",
+            Name = "Ürün Formu",
             Slug = "urun-formu",
             GroupName = "Form",
             IsActive = true

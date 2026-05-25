@@ -1,16 +1,16 @@
 @model vitacure.Models.ViewModels.Admin.FeatureFormViewModel
 
 @{
-    ViewData["Title"] = "Ozellik Duzenle";
+    ViewData["Title"] = "Özellik D�zenle";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
         Eyebrow = "Katalog Genisleme",
-        Title = "Ozelligi duzenle",
-        Description = "Ozellik degisiklikleri urun secim bloklarina ve gelecekteki varyant eksenlerine dogrudan yansir.",
+        Title = "Özelligi duzenle",
+        Description = "Özellik değişiklikleri ürün seçim bloklarina ve gelecekteki varyant eksenlerine dogrudan yansir.",
         IconClass = "fa-solid fa-sliders",
         AsideTitle = "Form akis notu",
-        AsideText = "Slug, grup ve secenek seti birlikte dusunulmeli; bu ekran katalog modelinin tekrar kullanilabilir parcasini yonetiyor.",
+        AsideText = "Slug, grup ve seçenek seti birlikte dusunulmeli; bu ekran katalog modelinin tekrar kullanilabilir parcasini yönetiyor.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
@@ -19,8 +19,8 @@
         Breadcrumbs = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Ozellikler", Url = "/admin/features" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Özellikler", Url = "/admin/features" },
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "D�zenle", IsActive = true }
         }
     };
 }

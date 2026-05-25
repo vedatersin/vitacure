@@ -33,8 +33,8 @@ public class RedisConnectionStatusService : IRedisConnectionStatusService
             {
                 IsConfigured = true,
                 IsConnected = true,
-                StatusLabel = "Bağlandı",
-                Detail = $"Redis erişilebilir. Ping: {Math.Round(ping.TotalMilliseconds)} ms."
+                StatusLabel = "Baglandi",
+                Detail = $"Redis erisilebilir. Ping: {Math.Round(ping.TotalMilliseconds)} ms."
             };
         }
         catch (Exception ex)
@@ -43,8 +43,8 @@ public class RedisConnectionStatusService : IRedisConnectionStatusService
             {
                 IsConfigured = true,
                 IsConnected = false,
-                StatusLabel = "Bağlanamadı",
-                Detail = $"Bağlantı denemesi başarısız: {ex.Message}"
+                StatusLabel = "Baglanamadi",
+                Detail = $"Baglanti denemesi basarisiz: {ex.Message}"
             };
         }
     }

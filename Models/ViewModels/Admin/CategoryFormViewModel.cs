@@ -20,6 +20,12 @@ public class CategoryFormViewModel
     [Display(Name = "Üst Kategori")]
     public int? ParentId { get; set; }
 
+    [Display(Name = "Görsel URL")]
+    public string? ImageUrl { get; set; }
+
+    [Display(Name = "Sıralama Ölçütü")]
+    public string? ProductSortType { get; set; }
+
     [Display(Name = "SEO Başlığı")]
     public string? SeoTitle { get; set; }
 
@@ -30,6 +36,15 @@ public class CategoryFormViewModel
     public bool IsActive { get; set; } = true;
 
     public IReadOnlyList<CategoryOptionViewModel> ParentOptions { get; set; } = Array.Empty<CategoryOptionViewModel>();
+    public IReadOnlyList<string> SortOptions { get; set; } = new[]
+    {
+        "One Cikanlar",
+        "En Yeniler",
+        "Fiyat Artan",
+        "Fiyat Azalan",
+        "En Cok Satanlar",
+        "Puana Gore"
+    };
 }
 
 public class CategoryOptionViewModel

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 using vitacure.Application;
 using vitacure.Application.Abstractions;
 using vitacure.Models.ViewModels.Admin;
@@ -126,6 +129,53 @@ public class TagsController : AdminControllerBase
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost("/admin/tags/quick-create")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> QuickCreate([FromBody] QuickCreateTagRequest request, CancellationToken cancellationToken)
+    {
+        var name = request.Name?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return BadRequest(new
+            {
+                errors = new Dictionary<string, string[]>
+                {
+                    [nameof(request.Name)] = new[] { "Etiket adi zorunludur." }
+                }
+            });
+        }
+
+        var model = new TagFormViewModel
+        {
+            Name = name,
+            Slug = BuildSlug(name)
+        };
+
+        try
+        {
+            var tagId = await _adminTagService.CreateAsync(model, cancellationToken);
+            return Json(new
+            {
+                tag = new
+                {
+                    Id = tagId,
+                    Name = model.Name,
+                    Slug = model.Slug
+                }
+            });
+        }
+        catch (SlugConflictException ex)
+        {
+            return BadRequest(new
+            {
+                errors = new Dictionary<string, string[]>
+                {
+                    [nameof(request.Name)] = new[] { ex.Message }
+                }
+            });
+        }
+    }
+
     private static TagListViewModel ApplyFilters(TagListViewModel model, string? q, string? usage)
     {
         var search = q?.Trim();
@@ -159,6 +209,40 @@ public class TagsController : AdminControllerBase
         };
     }
 
+    private static string BuildSlug(string value)
+    {
+        var normalized = value.Trim().ToLowerInvariant().Normalize(NormalizationForm.FormD);
+        var builder = new StringBuilder(normalized.Length);
+
+        foreach (var character in normalized)
+        {
+            var category = CharUnicodeInfo.GetUnicodeCategory(character);
+            if (category == UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            builder.Append(character switch
+            {
+                'ı' => 'i',
+                'ş' => 's',
+                'ğ' => 'g',
+                'ü' => 'u',
+                'ö' => 'o',
+                'ç' => 'c',
+                _ => character
+            });
+        }
+
+        var slug = Regex.Replace(builder.ToString().Normalize(NormalizationForm.FormC), @"[^a-z0-9]+", "-").Trim('-');
+        return string.IsNullOrWhiteSpace(slug) ? "etiket" : slug;
+    }
+
     private bool IsAjaxRequest()
         => string.Equals(Request.Headers["X-Requested-With"].ToString(), "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+    public sealed class QuickCreateTagRequest
+    {
+        public string? Name { get; set; }
+    }
 }

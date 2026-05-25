@@ -217,7 +217,6 @@ public class HomeContentConfigurationService : IHomeContentConfigurationService
             .ToList();
     }
 
-
     private static IReadOnlyList<BannerViewModel> ParseCampaignBanners(string? content)
     {
         if (string.IsNullOrWhiteSpace(content))

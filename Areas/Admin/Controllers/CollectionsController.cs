@@ -110,7 +110,7 @@ public class CollectionsController : AdminControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Koleksiyon duzenleme formu yuklenirken beklenmedik hata olustu. CollectionId: {CollectionId}", id);
-            SetRedirectToast("error", "Koleksiyon formu acilamadi", "Duzenleme ekrani yuklenemedi.", new[] { ex.Message.Trim() });
+            SetRedirectToast("error", "Koleksiyon formu acilamadi", "Düzenleme ekrani yuklenemedi.", new[] { ex.Message.Trim() });
             return RedirectToAction(nameof(Index));
         }
     }

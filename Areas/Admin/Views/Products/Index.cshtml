@@ -1,7 +1,7 @@
 @model vitacure.Models.ViewModels.Admin.ProductListViewModel
 
 @{
-    ViewData["Title"] = "Urunler";
+    ViewData["Title"] = "Ürünler";
 }
 
 <div class="admin-page-grid" data-admin-async-root="true" data-admin-async-endpoint="/admin/products">
@@ -10,4 +10,5 @@
 
 @section Scripts {
     <script src="~/js/pages/admin-async-panel.js" asp-append-version="true"></script>
+    <script src="~/js/pages/admin-products-index.js" asp-append-version="true"></script>
 }

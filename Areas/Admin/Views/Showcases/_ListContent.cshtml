@@ -5,10 +5,10 @@
     {
         Eyebrow = "Storefront Kurgusu",
         Title = "Vitrin listesi",
-        Description = "Kategorilerden ayri olarak yonetilen vitrinler, landing deneyimi ve ana sayfa kurgusunu besler.",
+        Description = "Kategorilerden ayri olarak yönetilen vitrinler, landing deneyimi ve ana sayfa kurgusunu besler.",
         IconClass = "fa-solid fa-panorama",
         AsideTitle = "Vitrin akis notu",
-        AsideText = "Buradaki vitrinler kategori taksonomisinden ayri calisir. Arkaplan, etiket, secili kategoriler ve one cikan urunler burada yonetilir.",
+        AsideText = "Buradaki vitrinler kategori taksonomisinden ayri calışir. Arkaplan, etiket, seçili kategoriler ve öne çıkan ürünler burada yönetilir.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -25,7 +25,7 @@
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/showcases",
-        SearchPlaceholder = "Vitrin ara, slug kontrol et, home gorunurlugu incele...",
+        SearchPlaceholder = "Vitrin ara, slug kontrol et, home görünürlugu incele...",
         SearchValue = Model.SearchTerm,
         PrimaryActionLabel = "Yeni Vitrin",
         PrimaryActionUrl = "/admin/showcases/create",
@@ -38,7 +38,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm durumlar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
                 }
@@ -50,8 +50,8 @@
                 Value = Model.HomeFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum vitriler" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "home", Label = "Home'da gosterilen" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm vitriler" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "home", Label = "Home'da gösterilen" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "hidden", Label = "Home'da gizli" }
                 }
             }
@@ -99,7 +99,7 @@
                         <td>@showcase.FeaturedProductCount</td>
                         <td>
                             <span class="auth-status-badge @(showcase.ShowOnHome ? "is-active" : "is-passive")">
-                                @(showcase.ShowOnHome ? "Yayinda" : "Gizli")
+                                @(showcase.ShowOnHome ? "Yayında" : "Gizli")
                             </span>
                         </td>
                         <td>
@@ -108,7 +108,7 @@
                             </span>
                         </td>
                         <td class="text-end">
-                            <a href="/admin/showcases/edit/@showcase.Id" class="btn auth-table-link">Duzenle</a>
+                            <a href="/admin/showcases/edit/@showcase.Id" class="btn auth-table-link">D�zenle</a>
                         </td>
                     </tr>
                 }

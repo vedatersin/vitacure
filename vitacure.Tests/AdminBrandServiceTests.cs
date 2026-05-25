@@ -29,7 +29,7 @@ public class AdminBrandServiceTests
         dbContext.Products.Add(new Product
         {
             Id = 10,
-            Name = "Urun",
+            Name = "Ürün",
             Slug = "urun",
             Description = "A",
             Price = 100m,

@@ -5,7 +5,7 @@
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
-        Eyebrow = "Katalog Yonetimi",
+        Eyebrow = "Katalog Y�netimi",
         Title = "Yeni kategori olustur",
         Description = "Kategori eklendiginde storefront tarafinda dinamik route ile erisilebilir hale gelir.",
         IconClass = "fa-solid fa-folder-plus",
@@ -34,4 +34,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/pages/admin-category-form.js" asp-append-version="true"></script>
+    <script src="~/js/pages/admin-richtext.js" asp-append-version="true"></script>
 }

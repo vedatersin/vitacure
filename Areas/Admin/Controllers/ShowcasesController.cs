@@ -50,6 +50,7 @@ public class ShowcasesController : AdminControllerBase
                 model.BackgroundImageUrl = refill.BackgroundImageUrl;
             }
             model.CategoryOptions = refill.CategoryOptions;
+            model.TagSuggestions = refill.TagSuggestions;
             model.ProductOptions = refill.ProductOptions;
             SetValidationToast("Vitrin kaydi guncellenemedi");
             return View(model);
@@ -70,6 +71,7 @@ public class ShowcasesController : AdminControllerBase
                 model.BackgroundImageUrl = refill.BackgroundImageUrl;
             }
             model.CategoryOptions = refill.CategoryOptions;
+            model.TagSuggestions = refill.TagSuggestions;
             model.ProductOptions = refill.ProductOptions;
             SetValidationToast("Vitrin kaydi guncellenemedi");
             return View(model);
@@ -84,6 +86,7 @@ public class ShowcasesController : AdminControllerBase
                 model.BackgroundImageUrl = refill.BackgroundImageUrl;
             }
             model.CategoryOptions = refill.CategoryOptions;
+            model.TagSuggestions = refill.TagSuggestions;
             model.ProductOptions = refill.ProductOptions;
             SetUnexpectedErrorToast("Vitrin kaydi guncellenemedi", ex);
             return View(model);
@@ -120,6 +123,7 @@ public class ShowcasesController : AdminControllerBase
             var refill = await _adminShowcaseService.GetEditModelAsync(id, cancellationToken);
             model.BackgroundOptions = refill?.BackgroundOptions ?? Array.Empty<ShowcaseBackgroundOptionViewModel>();
             model.CategoryOptions = refill?.CategoryOptions ?? Array.Empty<ShowcaseCategoryOptionViewModel>();
+            model.TagSuggestions = refill?.TagSuggestions ?? Array.Empty<string>();
             model.ProductOptions = refill?.ProductOptions ?? Array.Empty<ShowcaseProductOptionViewModel>();
             SetValidationToast("Vitrin kaydi guncellenemedi");
             return View(model);
@@ -136,6 +140,7 @@ public class ShowcasesController : AdminControllerBase
             var refill = await _adminShowcaseService.GetEditModelAsync(id, cancellationToken);
             model.BackgroundOptions = refill?.BackgroundOptions ?? Array.Empty<ShowcaseBackgroundOptionViewModel>();
             model.CategoryOptions = refill?.CategoryOptions ?? Array.Empty<ShowcaseCategoryOptionViewModel>();
+            model.TagSuggestions = refill?.TagSuggestions ?? Array.Empty<string>();
             model.ProductOptions = refill?.ProductOptions ?? Array.Empty<ShowcaseProductOptionViewModel>();
             SetValidationToast("Vitrin kaydi guncellenemedi");
             return View(model);
@@ -146,6 +151,7 @@ public class ShowcasesController : AdminControllerBase
             var refill = await _adminShowcaseService.GetEditModelAsync(id, cancellationToken);
             model.BackgroundOptions = refill?.BackgroundOptions ?? Array.Empty<ShowcaseBackgroundOptionViewModel>();
             model.CategoryOptions = refill?.CategoryOptions ?? Array.Empty<ShowcaseCategoryOptionViewModel>();
+            model.TagSuggestions = refill?.TagSuggestions ?? Array.Empty<string>();
             model.ProductOptions = refill?.ProductOptions ?? Array.Empty<ShowcaseProductOptionViewModel>();
             SetUnexpectedErrorToast("Vitrin kaydi guncellenemedi", ex);
             return View(model);

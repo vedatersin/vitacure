@@ -81,7 +81,7 @@ public class CartService : ICartService
         {
             return new CartMutationResultViewModel
             {
-                Message = "Urun bulunamadi."
+                Message = "Ürün bulunamadi."
             };
         }
 
@@ -120,7 +120,7 @@ public class CartService : ICartService
             $"{BuildProductDisplayName(product.Name, variant)} urunu musterinin sepetine {normalizedQuantity} adet eklendi.",
             cancellationToken);
 
-        return await BuildMutationResultAsync(userId, cartItem.Quantity, "Urun sepete eklendi.", cancellationToken);
+        return await BuildMutationResultAsync(userId, cartItem.Quantity, "Ürün sepete eklendi.", cancellationToken);
     }
 
     public async Task<CartMutationResultViewModel> UpdateQuantityAsync(int userId, string productSlug, int quantity, int? variantId = null, CancellationToken cancellationToken = default)
@@ -142,7 +142,7 @@ public class CartService : ICartService
         {
             _dbContext.CustomerCartItems.Remove(cartItem);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return await BuildMutationResultAsync(userId, 0, "Urun sepetten cikarildi.", cancellationToken);
+            return await BuildMutationResultAsync(userId, 0, "Ürün sepetten cikarildi.", cancellationToken);
         }
 
         cartItem.Quantity = quantity;
@@ -176,7 +176,7 @@ public class CartService : ICartService
 
         _dbContext.CustomerCartItems.Remove(cartItem);
         await _dbContext.SaveChangesAsync(cancellationToken);
-        return await BuildMutationResultAsync(userId, 0, "Urun sepetten cikarildi.", cancellationToken);
+        return await BuildMutationResultAsync(userId, 0, "Ürün sepetten cikarildi.", cancellationToken);
     }
 
     private async Task<CartMutationResultViewModel> BuildMutationResultAsync(int userId, int itemQuantity, string message, CancellationToken cancellationToken)

@@ -144,7 +144,7 @@
                 cartButton.dataset.hasVariants = hasVariants ? "true" : "false";
 
                 if (cartButtonLabel) {
-                    cartButtonLabel.textContent = activeProduct.addToCartLabel || activeProduct.AddToCartLabel || (hasVariants ? "Urunu Incele" : "Sepete Ekle");
+                    cartButtonLabel.textContent = activeProduct.addToCartLabel || activeProduct.AddToCartLabel || (hasVariants ? "Ürünü Incele" : "Sepete Ekle");
                 }
             }
 

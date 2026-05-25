@@ -5,10 +5,10 @@
     {
         Eyebrow = "Katalog Genisleme",
         Title = "Marka listesi",
-        Description = "Urunleri marka bazli duzenlemek ve gelecekteki filtre bloklarini beslemek icin bu alan kullanilir.",
+        Description = "Ürünleri marka bazli duzenlemek ve gelecekteki filtre bloklarini beslemek için bu alan kullanilir.",
         IconClass = "fa-solid fa-award",
-        AsideTitle = "Marka ozeti",
-        AsideText = "Aktiflik ve kullanim dagilimi, katalogta hangi markalarin urune baglandigini hizli gormeni saglar.",
+        AsideTitle = "Marka özeti",
+        AsideText = "Aktiflik ve kullanim dagilimi, katalogta hangi markalarin ürüne baglandigini hizli gormeni sağlar.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -25,7 +25,7 @@
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/brands",
-        SearchPlaceholder = "Marka ara, slug incele, urun baglantisini kontrol et...",
+        SearchPlaceholder = "Marka ara, slug incele, ürün baglantisini kontrol et...",
         SearchValue = Model.SearchTerm,
         PrimaryActionLabel = "Yeni Marka",
         PrimaryActionUrl = "/admin/brands/create",
@@ -38,7 +38,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum markalar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tüm markalar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
                 }
@@ -59,8 +59,8 @@
                     <th>ID</th>
                     <th>Marka</th>
                     <th>Slug</th>
-                    <th>Aciklama</th>
-                    <th>Urun Sayisi</th>
+                    <th>Açıklama</th>
+                    <th>Ürün Sayısı</th>
                     <th>Durum</th>
                     <th></th>
                 </tr>
@@ -80,7 +80,7 @@
                             </span>
                         </td>
                         <td class="text-end">
-                            <a href="/admin/brands/edit/@brand.Id" class="btn auth-table-link">Duzenle</a>
+                            <a href="/admin/brands/edit/@brand.Id" class="btn auth-table-link">D�zenle</a>
                         </td>
                     </tr>
                 }

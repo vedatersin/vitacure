@@ -15,12 +15,12 @@ public class ResetPasswordViewModel
     [Required]
     [DataType(DataType.Password)]
     [MinLength(6)]
-    [Display(Name = "Yeni Şifre")]
+    [Display(Name = "Yeni Sifre")]
     public string Password { get; set; } = string.Empty;
 
     [Required]
     [DataType(DataType.Password)]
     [Compare(nameof(Password))]
-    [Display(Name = "Yeni Şifre Tekrar")]
+    [Display(Name = "Yeni Sifre Tekrar")]
     public string ConfirmPassword { get; set; } = string.Empty;
 }

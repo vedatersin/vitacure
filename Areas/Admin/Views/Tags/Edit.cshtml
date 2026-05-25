@@ -1,16 +1,16 @@
 @model vitacure.Models.ViewModels.Admin.TagFormViewModel
 
 @{
-    ViewData["Title"] = "Etiket Duzenle";
+    ViewData["Title"] = "Etiket D�zenle";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
         Eyebrow = "Segmentasyon",
         Title = "Etiketi duzenle",
-        Description = "Urunlerle iliskili etiketi guncellediginde admin secim listesi de buna gore yenilenir.",
+        Description = "Ürünlerle ilişkili etiketi güncellediginde admin seçim listesi de buna göre yenilenir.",
         IconClass = "fa-solid fa-tags",
         AsideTitle = "Form akis notu",
-        AsideText = "Etiket adi ve slug degisiklikleri urun secim ekranlarinda gorecegin listeyi etkiler. Kisa, net ve tutarli bir isim yapisi koru.",
+        AsideText = "Etiket adi ve slug değişiklikleri ürün seçim ekranlarinda görecegin listeyi etkiler. Kısa, net ve tutarli bir isim yapisi koru.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
@@ -20,7 +20,7 @@
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Etiketler", Url = "/admin/tags" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "D�zenle", IsActive = true }
         }
     };
 }

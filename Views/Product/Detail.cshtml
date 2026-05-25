@@ -109,6 +109,22 @@
 
                         <div class="product-detail-description">@Html.Raw(Model.Description)</div>
 
+                        @if (Model.TechnicalDetails.Count > 0)
+                        {
+                            <div class="product-detail-technical">
+                                <h2 class="product-detail-technical-title">Teknik Detaylar</h2>
+                                <div class="product-detail-technical-grid">
+                                    @foreach (var item in Model.TechnicalDetails)
+                                    {
+                                        <div class="product-detail-technical-row">
+                                            <span>@item.Label</span>
+                                            <strong>@item.Value</strong>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
                         <div class="product-detail-actions">
                             <button class="pc-add-btn product-detail-cart-btn"
                                     type="button"

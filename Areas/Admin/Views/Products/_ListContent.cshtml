@@ -1,125 +1,531 @@
 @model vitacure.Models.ViewModels.Admin.ProductListViewModel
+@using System.Text.Json
 
 @{
-    var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
+    var catalogPayload = new
     {
-        Eyebrow = "Katalog Yonetimi",
-        Title = "Urun listesi",
-        Description = "Storefront kartlari ve urun detay sayfalari bu veri setinden besleniyor.",
-        IconClass = "fa-solid fa-capsules",
-        AsideTitle = "Katalog ozeti",
-        AsideText = "Aktif urun dagilimi ve stok sinyalleri bu alan uzerinden hizli okunur.",
-        Stats = new[]
+        products = Model.Products.Select(product => new
         {
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveCount.ToString() },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Stok Yok", Value = Model.OutOfStockCount.ToString() }
+            id = product.Id,
+            imageUrl = product.ImageUrl,
+            name = product.Name,
+            slug = product.Slug,
+            brandName = product.BrandName,
+            categoryName = product.CategoryName,
+            tagNames = product.TagNames,
+            salesChannels = product.SalesChannels,
+            price = product.Price,
+            oldPrice = product.OldPrice,
+            stock = product.Stock,
+            stockSummary = product.StockSummary,
+            isActive = product.IsActive,
+            status = product.Status.ToString(),
+            createdAt = product.CreatedAt,
+            updatedAt = product.UpdatedAt,
+            featureCount = product.FeatureCount,
+            tagCount = product.TagCount,
+            variantCount = product.VariantCount,
+            variantSummary = product.VariantSummary
+        }),
+        filters = new
+        {
+            brands = Model.BrandOptions,
+            categories = Model.CategoryOptions,
+            tags = Model.TagOptions,
+            salesChannels = Model.SalesChannelOptions
         },
-        Breadcrumbs = new[]
+        savedFilters = Model.SavedFilters.Select(filter => new
         {
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Urunler", IsActive = true }
-        }
-    };
-
-    var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
-    {
-        ActionUrl = "/admin/products",
-        SearchPlaceholder = "Urun ara, kategori eslestir, stok kontrol et...",
-        SearchValue = Model.SearchTerm,
-        PrimaryActionLabel = "Yeni Urun",
-        PrimaryActionUrl = "/admin/products/create",
-        Selects = new[]
-        {
-            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
+            id = filter.Id,
+            name = filter.Name,
+            sortOrder = filter.SortOrder,
+            filters = filter.Filters.Select(rule => new
             {
-                Name = "status",
-                Label = "Durum",
-                Value = Model.StatusFilter,
-                Options = new[]
-                {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
-                }
-            },
-            new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
-            {
-                Name = "stock",
-                Label = "Stok",
-                Value = Model.StockFilter,
-                Options = new[]
-                {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum stoklar" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "instock", Label = "Stokta var" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "outofstock", Label = "Stok yok" }
-                }
-            }
-        }
+                field = rule.Field,
+                @operator = rule.Operator,
+                values = rule.Values,
+                value = rule.Value
+            })
+        })
     };
 }
 
-@await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminPageHero.cshtml", hero)
+<div class="admin-page-grid admin-product-page-shell">
+    <header class="admin-product-page-head">
+        <div class="admin-product-page-title-wrap">
+            <h1 class="admin-product-page-title">Ürünler</h1>
+            <span class="admin-product-page-title-icon" aria-hidden="true">
+                <i class="fa-solid fa-circle-info"></i>
+            </span>
+        </div>
 
-<section class="admin-section-card">
-    @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_AdminFilterBar.cshtml", filterBar)
+        <div class="admin-product-primary-actions">
+            <button type="button" class="admin-product-toolbar-button" data-product-export-open>
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                <span>Dışa Aktar</span>
+            </button>
+            <button type="button" class="admin-product-toolbar-button" data-product-import-open>
+                <i class="fa-solid fa-arrow-down-to-bracket"></i>
+                <span>İçe Aktar</span>
+            </button>
+            <button type="button" class="admin-editor-primary admin-product-create-button" data-product-create-open>
+                <span>Ürün Ekle</span>
+            </button>
+        </div>
+    </header>
 
-    <div class="admin-table-wrap">
-        <table class="table auth-table">
-            <thead>
-                <tr>
-                    <th>Gorsel</th>
-                    <th>ID</th>
-                    <th>Ad</th>
-                    <th>Marka</th>
-                    <th>Kategori</th>
-                    <th>Slug</th>
-                    <th>Fiyat</th>
-                    <th>Stok</th>
-                    <th>Variant</th>
-                    <th>Ozellik</th>
-                    <th>Etiket</th>
-                    <th>Durum</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model.Products)
-                {
-                    <tr>
-                        <td>
-                            <img src="@product.ImageUrl" alt="@product.Name" class="admin-product-thumb" loading="lazy" />
-                        </td>
-                        <td>@product.Id</td>
-                        <td>@product.Name</td>
-                        <td>@product.BrandName</td>
-                        <td>@product.CategoryName</td>
-                        <td>@product.Slug</td>
-                        <td>@product.Price.ToString("0.00") TL</td>
-                        <td>
-                            <strong>@product.Stock</strong>
-                            <div class="text-muted small">@product.StockSummary</div>
-                        </td>
-                        <td>
-                            <strong>@(product.VariantCount > 0 ? product.VariantCount.ToString() : "-")</strong>
-                            @if (!string.IsNullOrWhiteSpace(product.VariantSummary) && product.VariantSummary != "-")
-                            {
-                                <div class="text-muted small">@product.VariantSummary</div>
-                            }
-                        </td>
-                        <td>@product.FeatureCount</td>
-                        <td>@product.TagCount</td>
-                        <td>
-                            <span class="auth-status-badge @(product.IsActive ? "is-active" : "is-passive")">
-                                @(product.IsActive ? "Aktif" : "Pasif")
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <a href="/admin/products/edit/@product.Id" class="btn auth-table-link">Duzenle</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <section class="admin-section-card admin-product-catalog-shell" data-product-catalog="true">
+        <script type="application/json" data-product-catalog-data>@Html.Raw(JsonSerializer.Serialize(catalogPayload))</script>
+        @Html.AntiForgeryToken()
+
+        <div class="admin-product-bulk-bar" data-product-bulk-bar hidden>
+            <div class="admin-product-bulk-meta">
+                <strong data-product-selection-count>0 ürün seçildi</strong>
+            </div>
+            <div class="admin-product-bulk-actions">
+                <button type="button" class="admin-product-bulk-button" data-product-bulk-edit disabled>D�zenle</button>
+                <button type="button" class="admin-product-bulk-button is-danger" data-product-bulk-delete disabled>Sil</button>
+            </div>
+        </div>
+
+        <div class="admin-product-toolbar">
+            <form method="get" action="/admin/products" class="admin-product-toolbar-search" data-admin-async-form="true" novalidate>
+                <div class="admin-product-toolbar-main">
+                    <div class="admin-product-toolbar-search-cluster">
+                        <div class="admin-product-saved-filter-tabs" data-product-saved-filter-tabs hidden></div>
+
+                        <div class="admin-product-toolbar-search-wrap">
+                            <label class="admin-product-search-field">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="search" name="q" value="@Model.SearchTerm" placeholder="Tabloda arama yapin" autocomplete="off" data-product-search-input />
+                                <button type="button" class="admin-product-search-clear" data-product-search-clear aria-label="Aramayi temizle" hidden>
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </button>
+                            </label>
+                        </div>
+
+                        <label class="admin-product-quick-filter">
+                            <span>Durum</span>
+                            <select name="status" class="form-select auth-input" onchange="this.form.requestSubmit()">
+                                @if (Model.StatusFilter == "all")
+                                {
+                                    <option value="all" selected>Tum Durumlar</option>
+                                }
+                                else
+                                {
+                                    <option value="all">Tum Durumlar</option>
+                                }
+                                @if (Model.StatusFilter == "publishedopen")
+                                {
+                                    <option value="publishedopen" selected>Satisa A�ik Yayin</option>
+                                }
+                                else
+                                {
+                                    <option value="publishedopen">Satisa A�ik Yayin</option>
+                                }
+                                @if (Model.StatusFilter == "publishedclosed")
+                                {
+                                    <option value="publishedclosed" selected>Satisa Kapali Yayin</option>
+                                }
+                                else
+                                {
+                                    <option value="publishedclosed">Satisa Kapali Yayin</option>
+                                }
+                                @if (Model.StatusFilter == "archived")
+                                {
+                                    <option value="archived" selected>Arsiv</option>
+                                }
+                                else
+                                {
+                                    <option value="archived">Arsiv</option>
+                                }
+                                @if (Model.StatusFilter == "draft")
+                                {
+                                    <option value="draft" selected>Taslak</option>
+                                }
+                                else
+                                {
+                                    <option value="draft">Taslak</option>
+                                }
+                            </select>
+                        </label>
+
+                        <button type="button" class="admin-product-toolbar-button" data-product-filter-toggle aria-expanded="false">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Filtre</span>
+                        </button>
+
+                        <button type="button" class="admin-product-toolbar-button" data-product-filter-save hidden disabled>
+                            <span>Kaydet</span>
+                        </button>
+
+                        <button type="button" class="admin-product-toolbar-button" data-product-filter-save-changes hidden disabled>
+                            <span>Değişiklikleri Kaydet</span>
+                        </button>
+
+                        <div class="admin-product-filter-builder" data-product-filter-builder hidden>
+                            <div class="admin-product-filter-builder-empty" data-product-filter-empty>
+                                <span>Henüz filtre eklemediniz.</span>
+                            </div>
+
+                            <div class="admin-product-filter-rows" data-product-filter-rows></div>
+
+                            <div class="admin-product-filter-builder-actions">
+                                <button type="button" class="admin-product-link-button" data-product-filter-add>
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Filtre Ekle</span>
+                                </button>
+                                <button type="button" class="admin-editor-primary" data-product-filter-apply disabled>Uygula</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-product-toolbar-actions">
+                        <div class="admin-product-toolbar-view-actions">
+                            <button type="button" class="admin-product-icon-button" data-product-context-toggle aria-label="Gorunume göre araclar" aria-expanded="false">
+                                <i class="fa-solid fa-arrow-down-wide-short" data-product-context-icon></i>
+                            </button>
+                            <button type="button" class="admin-product-icon-button" data-product-view-button="table" aria-label="Liste görünümü">
+                                <i class="fa-solid fa-table-list"></i>
+                            </button>
+                            <button type="button" class="admin-product-icon-button" data-product-view-button="grid" aria-label="Doseme görünümü">
+                                <i class="fa-solid fa-table-cells-large"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-product-applied-filters" data-product-applied-filters hidden></div>
+            </form>
+        </div>
+
+        <div class="admin-product-context-menu" data-product-column-menu hidden>
+            <div class="admin-product-column-menu-head">
+                <strong data-product-context-title>Kolonlar</strong>
+                <span data-product-context-copy>Tablo görünümünu özellestir</span>
+            </div>
+
+            <div data-product-context-panel="columns">
+                <label class="admin-product-column-option">
+                    <span>Ürün</span>
+                    <input type="checkbox" data-product-column-option="product" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Satış Fiyatı</span>
+                    <input type="checkbox" data-product-column-option="price" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Eski Fiyat</span>
+                    <input type="checkbox" data-product-column-option="old-price" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Envanter</span>
+                    <input type="checkbox" data-product-column-option="stock" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Marka</span>
+                    <input type="checkbox" data-product-column-option="brand" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Kategori</span>
+                    <input type="checkbox" data-product-column-option="category" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Etiketler</span>
+                    <input type="checkbox" data-product-column-option="tags" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Oluştürülma Tarihi</span>
+                    <input type="checkbox" data-product-column-option="created-at" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Güncellenme Tarihi</span>
+                    <input type="checkbox" data-product-column-option="updated-at" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+                <label class="admin-product-column-option">
+                    <span>Durum</span>
+                    <input type="checkbox" data-product-column-option="status" checked />
+                    <span class="admin-product-switch" aria-hidden="true"></span>
+                </label>
+            </div>
+
+            <div data-product-context-panel="sort" hidden>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="name:asc">Ürün Adi (A-Z)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="name:desc">Ürün Adi (Z-A)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="createdAt:asc">Oluşturma Tarihi (Eskiden Yeniye)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="createdAt:desc">Oluşturma Tarihi (Yeniden Eskiye)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="updatedAt:asc">Güncelleme Tarihi (Eskiden Yeniye)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="updatedAt:desc">Güncelleme Tarihi (Yeniden Eskiye)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="stock:asc">Stok (Azdan Çoka)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="stock:desc">Stok (Çoktan Aza)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="price:asc">Fiyat (Dusukten Yuksege)</button>
+                <button type="button" class="admin-product-sort-option" data-product-sort-option="price:desc">Fiyat (Yuksekten Dusuge)</button>
+            </div>
+        </div>
+
+        <div class="admin-product-view-stack">
+            <div class="admin-product-grid" data-product-view-target="grid"></div>
+
+            <div class="admin-table-wrap admin-product-table-shell" data-product-view-target="table" hidden>
+                <table class="table auth-table admin-product-table">
+                    <thead>
+                        <tr>
+                            <th class="admin-product-table-check">
+                                <input type="checkbox" aria-label="Tümunu seç" data-product-select-all />
+                            </th>
+                            <th data-product-column="product">
+                                <button type="button" class="admin-product-sort-header" data-product-sort-header="name">
+                                    <span>Ürün</span>
+                                    <i class="fa-solid fa-arrow-up-a-z"></i>
+                                </button>
+                            </th>
+                            <th data-product-column="price">
+                                <button type="button" class="admin-product-sort-header" data-product-sort-header="price">
+                                    <span>Satış Fiyatı</span>
+                                    <i class="fa-solid fa-arrow-up-wide-short"></i>
+                                </button>
+                            </th>
+                            <th data-product-column="old-price">Eski Fiyat</th>
+                            <th data-product-column="stock">
+                                <button type="button" class="admin-product-sort-header" data-product-sort-header="stock">
+                                    <span>Envanter</span>
+                                    <i class="fa-solid fa-arrow-up-1-9"></i>
+                                </button>
+                            </th>
+                            <th data-product-column="brand">Marka</th>
+                            <th data-product-column="category">Kategori</th>
+                            <th data-product-column="tags">Etiketler</th>
+                            <th data-product-column="created-at">
+                                <button type="button" class="admin-product-sort-header" data-product-sort-header="createdAt">
+                                    <span>Oluştürülma Tarihi</span>
+                                    <i class="fa-solid fa-arrow-up-wide-short"></i>
+                                </button>
+                            </th>
+                            <th data-product-column="updated-at">
+                                <button type="button" class="admin-product-sort-header" data-product-sort-header="updatedAt">
+                                    <span>Güncellenme Tarihi</span>
+                                    <i class="fa-solid fa-arrow-up-wide-short"></i>
+                                </button>
+                            </th>
+                            <th data-product-column="status">Durum</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-product-table-body></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="admin-product-empty-state" data-product-empty-state @(Model.Products.Count > 0 ? "hidden" : null)>
+            <div class="admin-product-empty-illustration">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <strong>Ürünler Bulunamadi</strong>
+            <span>Filtreleri veya arama terimini değiştirmeyi deneyin</span>
+        </div>
+
+        <footer class="admin-product-pagination" data-product-pagination>
+            <div class="admin-product-pagination-meta">
+                <label class="admin-product-page-size">
+                    <span>Satir Adedi:</span>
+                    <select data-product-page-size>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                    </select>
+                </label>
+                <span data-product-page-summary>0 - 0 / 0 ürün</span>
+            </div>
+            <div class="admin-product-pagination-actions">
+                <button type="button" class="admin-product-page-button" data-product-page-prev>Onceki</button>
+                <div class="admin-product-page-numbers" data-product-page-numbers></div>
+                <button type="button" class="admin-product-page-button" data-product-page-next>Sonraki</button>
+            </div>
+        </footer>
+    </section>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-filter-delete-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-filter-modal-close></button>
+    <div class="admin-product-dialog admin-product-mini-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Bu filtreyi silmek istediğinize emin misiniz?</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-filter-modal-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-product-filter-modal-close>Vazgeç</button>
+            <button type="button" class="admin-editor-danger" data-product-filter-delete-confirm>Sil</button>
+        </div>
     </div>
-</section>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-filter-rename-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-filter-modal-close></button>
+    <div class="admin-product-dialog admin-product-mini-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Filtrenize isim veriniz</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-filter-modal-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <label class="admin-product-rename-field">
+            <input type="text" maxlength="120" data-product-filter-rename-input />
+        </label>
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-product-filter-modal-close>İptal Et</button>
+            <button type="button" class="admin-editor-primary" data-product-filter-rename-confirm>Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-filter-sort-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-filter-modal-close></button>
+    <div class="admin-product-dialog admin-product-sort-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Filtre Sıralama</h3>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-filter-modal-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="admin-product-sort-list" data-product-filter-sort-list></div>
+        <div class="admin-product-confirm-actions">
+            <button type="button" class="admin-editor-secondary" data-product-filter-modal-close>İptal Et</button>
+            <button type="button" class="admin-editor-primary" data-product-filter-sort-confirm>Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-create-modal hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-dialog-close></button>
+    <div class="admin-product-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3>Ürün Ekle</h3>
+                <span>Oluşturmak istedigin ürün tipini seç</span>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-dialog-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="admin-product-create-options">
+            <a href="/admin/products/create?mode=simple" class="admin-product-create-option">
+                <i class="fa-regular fa-cube"></i>
+                <span>
+                    <strong>Basit Ürün</strong>
+                    <small>Tek parca olarak bir ürün ekleyin</small>
+                </span>
+            </a>
+            <a href="/admin/products/create?mode=variant" class="admin-product-create-option">
+                <i class="fa-regular fa-layer-group"></i>
+                <span>
+                    <strong>Varyantlı Ürün</strong>
+                    <small>Beden, form veya paket seçenekleri ile ürün olustürün</small>
+                </span>
+            </a>
+            <a href="/admin/products/create?mode=bundle" class="admin-product-create-option">
+                <i class="fa-regular fa-gift"></i>
+                <span>
+                    <strong>Paket Ürün</strong>
+                    <small>Birden fazla ürünü tek paket ya da varyantlı set olarak oluşturun</small>
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-transfer-step-one hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-dialog-close></button>
+    <div class="admin-product-dialog admin-product-transfer-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3 data-product-transfer-title>Ürünleri Dışa Aktar</h3>
+                <span>Hangi akisi kullanmak istedigini seç</span>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-dialog-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-transfer-group">
+            <strong>Dosya tipi</strong>
+            <label class="admin-product-transfer-option"><input type="radio" name="transferFileType" value="csv" checked /> <span><strong>.csv dosyasi</strong><small>Hizli ve duz veri aktarimi için uygun.</small></span></label>
+            <label class="admin-product-transfer-option"><input type="radio" name="transferFileType" value="xlsx" /> <span><strong>.xlsx dosyasi</strong><small>Excel tabanli duzenleme akışlarına daha uygun.</small></span></label>
+        </div>
+
+        <div class="admin-product-transfer-group">
+            <strong>Kapsam</strong>
+            <label class="admin-product-transfer-option"><input type="radio" name="transferScope" value="products" checked /> <span><strong>Ürünler</strong><small>Ana katalog alanlarini taşır.</small></span></label>
+            <label class="admin-product-transfer-option"><input type="radio" name="transferScope" value="variants" /> <span><strong>Özel Alanlar (Varyant)</strong><small>Varyant tarafinda genisleme için rezerve.</small></span></label>
+            <label class="admin-product-transfer-option"><input type="radio" name="transferScope" value="details" /> <span><strong>Özel Alanlar (Ürün)</strong><small>Ürün bazli genis alanlar için rezerve.</small></span></label>
+        </div>
+
+        <div class="admin-product-transfer-actions">
+            <button type="button" class="admin-editor-secondary" data-product-dialog-close>Kapat</button>
+            <button type="button" class="admin-editor-primary" data-product-transfer-continue>Devam Et</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-product-dialog-layer" data-product-transfer-step-two hidden>
+    <button type="button" class="admin-product-dialog-backdrop" data-product-dialog-close></button>
+    <div class="admin-product-dialog admin-product-transfer-dialog">
+        <div class="admin-product-dialog-head">
+            <div>
+                <h3 data-product-transfer-step-two-title>Ürünleri İçe Aktar</h3>
+                <span data-product-transfer-step-two-subtitle>Hangi alanlar kullanilsin?</span>
+            </div>
+            <button type="button" class="admin-icon-button" data-product-dialog-close aria-label="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="admin-product-transfer-selection-head">
+            <strong>Alanlar</strong>
+            <button type="button" class="admin-product-link-button" data-product-transfer-clear>Seçimleri kaldir</button>
+        </div>
+
+        <div class="admin-product-transfer-summary">
+            <strong data-product-transfer-summary-title>Ice aktarim alanlari</strong>
+            <small data-product-transfer-summary-copy>Seçili alanlar ikinci adimda kullanilacak katalog sutunlarini belirler.</small>
+        </div>
+
+        <div class="admin-product-transfer-check-grid">
+            @{
+                var fieldOptions = new[]
+                {
+                    "Ad", "Açıklama", "Satış Fiyatı", "İndirimli Fiyat", "Marka", "Kategoriler",
+                    "Etiketler", "Slug", "Stok", "Görsel URL", "Varyantlar", "SKU", "Durum"
+                };
+            }
+            @foreach (var field in fieldOptions)
+            {
+                <label class="admin-product-transfer-check">
+                    <input type="checkbox" checked />
+                    <span>@field</span>
+                </label>
+            }
+        </div>
+
+        <div class="admin-product-transfer-actions">
+            <button type="button" class="admin-editor-secondary" data-product-dialog-close>Kapat</button>
+            <button type="button" class="admin-editor-primary" data-product-transfer-submit data-transfer-submit-label>İçe Aktar</button>
+        </div>
+    </div>
+</div>

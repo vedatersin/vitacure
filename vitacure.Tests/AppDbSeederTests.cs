@@ -23,13 +23,13 @@ public class AppDbSeederTests
                 Id = 99,
                 Name = "Uyku Sagligi",
                 Slug = "uyku-sagligi",
-                Title = "Ozel Vitrin Basligi",
-                Description = "Ozel vitrin aciklamasi",
-                TagsContent = "Ozel, Etiket",
+                Title = "Özel Vitrin Basligi",
+                Description = "Özel vitrin aciklamasi",
+                TagsContent = "Özel, Etiket",
                 BackgroundImageUrl = "/img/showcases/custom-sleep.png",
                 IconClass = "fa-solid fa-moon",
-                SeoTitle = "Ozel SEO",
-                MetaDescription = "Ozel meta",
+                SeoTitle = "Özel SEO",
+                MetaDescription = "Özel meta",
                 IsActive = true,
                 ShowOnHome = false,
                 SortOrder = 9,
@@ -55,12 +55,12 @@ public class AppDbSeederTests
                 .Include(x => x.FeaturedProducts)
                 .SingleAsync(x => x.Id == 99);
 
-            Assert.Equal("Ozel Vitrin Basligi", showcase.Title);
-            Assert.Equal("Ozel vitrin aciklamasi", showcase.Description);
-            Assert.Equal("Ozel, Etiket", showcase.TagsContent);
+            Assert.Equal("Özel Vitrin Basligi", showcase.Title);
+            Assert.Equal("Özel vitrin aciklamasi", showcase.Description);
+            Assert.Equal("Özel, Etiket", showcase.TagsContent);
             Assert.Equal("/img/showcases/custom-sleep.png", showcase.BackgroundImageUrl);
-            Assert.Equal("Ozel SEO", showcase.SeoTitle);
-            Assert.Equal("Ozel meta", showcase.MetaDescription);
+            Assert.Equal("Özel SEO", showcase.SeoTitle);
+            Assert.Equal("Özel meta", showcase.MetaDescription);
             Assert.False(showcase.ShowOnHome);
             Assert.Equal(9, showcase.SortOrder);
             Assert.Single(showcase.ShowcaseCategories);

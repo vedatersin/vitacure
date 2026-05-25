@@ -5,7 +5,7 @@ namespace vitacure.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Admin,Editor")]
-public class AgentsController : Controller
+public class AgentsController : AdminControllerBase
 {
     [HttpGet("/admin/agents")]
     public IActionResult Index()

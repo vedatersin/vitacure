@@ -1,32 +1,18 @@
 @model vitacure.Models.ViewModels.Admin.MediaLibraryViewModel
 
 @{
-    ViewData["Title"] = "Medya Kutuphanesi";
+    ViewData["Title"] = "Medya K�t�phanesi";
 }
 
 <section class="admin-page-grid">
-    <div class="admin-editor-card">
-        <div class="admin-editor-section-head">
-            <div>
-                <span class="admin-editor-kicker">Katalog Medya</span>
-                <h2>Medya kutuphanesi</h2>
-                <p class="admin-editor-note">Urun formlarinda tekrar kullanabilecegin gorseller burada tutulur.</p>
-            </div>
-            <div class="admin-product-summary-grid">
-                <div class="admin-product-summary-item">
-                    <span>Toplam</span>
-                    <strong>@Model.TotalCount kayit</strong>
-                </div>
-                <div class="admin-product-summary-item">
-                    <span>Boyut</span>
-                    <strong>@($"{Model.TotalSizeBytes / 1024d / 1024d:0.#} MB")</strong>
-                </div>
-            </div>
-        </div>
+    <section class="admin-page-header-simple admin-page-header-simple-title-only">
+        <h1 class="admin-page-header-simple-title">Medya k�t�phanesi</h1>
+    </section>
 
+    <div class="admin-editor-card">
         @if (Model.Items.Count == 0)
         {
-            <div class="admin-media-library-empty">Kutuphane henuz bos.</div>
+            <div class="admin-media-library-empty">K�t�phane hen�z bos.</div>
         }
         else
         {

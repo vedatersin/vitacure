@@ -350,6 +350,10 @@ namespace vitacure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -364,6 +368,10 @@ namespace vitacure.Migrations
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ProductSortType")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("SeoTitle")
                         .HasMaxLength(300)
@@ -427,6 +435,43 @@ namespace vitacure.Migrations
                         .IsUnique();
 
                     b.ToTable("Collections", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.CustomFieldDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FieldType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFilterable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("CustomFieldDefinitions", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.CustomerAddress", b =>
@@ -576,6 +621,43 @@ namespace vitacure.Migrations
                         .IsUnique();
 
                     b.ToTable("Features", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.GoogleProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("GoogleProductCategories", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.HomeContentSettings", b =>
@@ -868,6 +950,40 @@ namespace vitacure.Migrations
                     b.ToTable("OrderItems", (string)null);
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.PersonalizationDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("InputType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("PersonalizationDefinitions", (string)null);
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -876,11 +992,36 @@ namespace vitacure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<int?>("BrandId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<decimal?>("BundleAdjustmentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("BundleAdjustmentType")
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<string>("BundleMode")
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<string>("BundlePricingMode")
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<int?>("BundleTotalQuantity")
                         .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ContinueSellingWhenOutOfStock")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -889,8 +1030,18 @@ namespace vitacure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal?>("Desi")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<string>("GalleryImageUrls")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GoogleProductCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HsCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -899,6 +1050,14 @@ namespace vitacure.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<string>("MetaDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("MetaTitle")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -911,16 +1070,66 @@ namespace vitacure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ProductKind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)")
+                        .HasDefaultValue("Physical");
+
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("Rating")
                         .HasColumnType("decimal(3,2)");
+
+                    b.Property<int>("ReviewCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<bool>("ShowUnitPrice")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Sku")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)")
+                        .HasDefaultValue("PublishedOpen");
+
                     b.Property<int>("Stock")
                         .HasColumnType("int");
+
+                    b.Property<string>("SupplierName")
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<decimal?>("UnitComparisonAmount")
+                        .HasColumnType("decimal(12,4)");
+
+                    b.Property<string>("UnitComparisonType")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<decimal?>("UnitContentAmount")
+                        .HasColumnType("decimal(12,4)");
+
+                    b.Property<string>("UnitContentType")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("VariantFieldVisibilityJson")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -928,10 +1137,68 @@ namespace vitacure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("GoogleProductCategoryId");
+
                     b.HasIndex("Slug")
                         .IsUnique();
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductBundleItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChildProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ChildProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EntryMode")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
+                    b.Property<int?>("MaxQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChildProductId");
+
+                    b.HasIndex("ChildProductVariantId");
+
+                    b.HasIndex("ProductVariantId");
+
+                    b.HasIndex("ProductId", "ProductVariantId", "SortOrder");
+
+                    b.ToTable("ProductBundleItems", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.ProductCategory", b =>
@@ -962,6 +1229,21 @@ namespace vitacure.Migrations
                     b.HasIndex("CollectionId");
 
                     b.ToTable("ProductCollections", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductCustomField", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomFieldDefinitionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "CustomFieldDefinitionId");
+
+                    b.HasIndex("CustomFieldDefinitionId");
+
+                    b.ToTable("ProductCustomFields", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.ProductFeature", b =>
@@ -1027,6 +1309,57 @@ namespace vitacure.Migrations
                     b.ToTable("ProductMedias", (string)null);
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductPersonalization", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonalizationDefinitionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "PersonalizationDefinitionId");
+
+                    b.HasIndex("PersonalizationDefinitionId");
+
+                    b.ToTable("ProductPersonalizations", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductSavedFilter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FiltersJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "SortOrder");
+
+                    b.ToTable("ProductSavedFilters", (string)null);
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.ProductTag", b =>
                 {
                     b.Property<int>("ProductId")
@@ -1050,15 +1383,38 @@ namespace vitacure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Desi")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(240)
+                        .HasColumnType("nvarchar(240)");
 
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("HsCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("OldPrice")
@@ -1074,6 +1430,9 @@ namespace vitacure.Migrations
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("PurchasePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Sku")
                         .HasMaxLength(100)
@@ -1093,6 +1452,104 @@ namespace vitacure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductVariants", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SelectionStyle")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("ShowOnCard")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductVariantGroups", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("ProductVariantGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SwatchImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductVariantGroupId");
+
+                    b.ToTable("ProductVariantOptions", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantSelection", b =>
+                {
+                    b.Property<int>("ProductVariantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductVariantOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductVariantId", "ProductVariantOptionId");
+
+                    b.HasIndex("ProductVariantOptionId");
+
+                    b.ToTable("ProductVariantSelections", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Showcase", b =>
@@ -1115,10 +1572,19 @@ namespace vitacure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ExamplePromptsContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("IconClass")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("IconColor")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -1136,6 +1602,9 @@ namespace vitacure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("PrimaryCategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SeoTitle")
                         .HasMaxLength(300)
@@ -1165,6 +1634,8 @@ namespace vitacure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PrimaryCategoryId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -1203,6 +1674,63 @@ namespace vitacure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ShowcaseFeaturedProducts", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcasePrompt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ShowcaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShowcaseId", "SortOrder");
+
+                    b.ToTable("ShowcasePrompts", (string)null);
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("ShowcaseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("nvarchar(180)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShowcaseId", "SortOrder");
+
+                    b.ToTable("ShowcaseTags", (string)null);
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.StorageSettings", b =>
@@ -1403,6 +1931,16 @@ namespace vitacure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.GoogleProductCategory", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.GoogleProductCategory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Order", b =>
                 {
                     b.HasOne("vitacure.Domain.Entities.AppUser", "AppUser")
@@ -1449,12 +1987,50 @@ namespace vitacure.Migrations
                     b.HasOne("vitacure.Domain.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("vitacure.Domain.Entities.GoogleProductCategory", "GoogleProductCategory")
+                        .WithMany("Products")
+                        .HasForeignKey("GoogleProductCategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Brand");
 
                     b.Navigation("Category");
+
+                    b.Navigation("GoogleProductCategory");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductBundleItem", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Product", "ChildProduct")
+                        .WithMany()
+                        .HasForeignKey("ChildProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.ProductVariant", "ChildProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ChildProductVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("vitacure.Domain.Entities.Product", "Product")
+                        .WithMany("ProductBundleItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.ProductVariant", "ProductVariant")
+                        .WithMany()
+                        .HasForeignKey("ProductVariantId");
+
+                    b.Navigation("ChildProduct");
+
+                    b.Navigation("ChildProductVariant");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductVariant");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.ProductCategory", b =>
@@ -1491,6 +2067,25 @@ namespace vitacure.Migrations
                         .IsRequired();
 
                     b.Navigation("Collection");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductCustomField", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.CustomFieldDefinition", "CustomFieldDefinition")
+                        .WithMany("ProductCustomFields")
+                        .HasForeignKey("CustomFieldDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.Product", "Product")
+                        .WithMany("ProductCustomFields")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomFieldDefinition");
 
                     b.Navigation("Product");
                 });
@@ -1532,6 +2127,36 @@ namespace vitacure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductPersonalization", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.PersonalizationDefinition", "PersonalizationDefinition")
+                        .WithMany("ProductPersonalizations")
+                        .HasForeignKey("PersonalizationDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.Product", "Product")
+                        .WithMany("ProductPersonalizations")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PersonalizationDefinition");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductSavedFilter", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.AppUser", "User")
+                        .WithMany("ProductSavedFilters")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.ProductTag", b =>
                 {
                     b.HasOne("vitacure.Domain.Entities.Product", "Product")
@@ -1560,6 +2185,57 @@ namespace vitacure.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantGroup", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Product", "Product")
+                        .WithMany("ProductVariantGroups")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantOption", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.ProductVariantGroup", "ProductVariantGroup")
+                        .WithMany("Options")
+                        .HasForeignKey("ProductVariantGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductVariantGroup");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantSelection", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.ProductVariant", "ProductVariant")
+                        .WithMany("Selections")
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("vitacure.Domain.Entities.ProductVariantOption", "ProductVariantOption")
+                        .WithMany("VariantSelections")
+                        .HasForeignKey("ProductVariantOptionId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductVariant");
+
+                    b.Navigation("ProductVariantOption");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.Showcase", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Category", "PrimaryCategory")
+                        .WithMany("PrimaryShowcases")
+                        .HasForeignKey("PrimaryCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PrimaryCategory");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseCategory", b =>
@@ -1600,6 +2276,28 @@ namespace vitacure.Migrations
                     b.Navigation("Showcase");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcasePrompt", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Showcase", "Showcase")
+                        .WithMany("Prompts")
+                        .HasForeignKey("ShowcaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Showcase");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ShowcaseTag", b =>
+                {
+                    b.HasOne("vitacure.Domain.Entities.Showcase", "Showcase")
+                        .WithMany("Tags")
+                        .HasForeignKey("ShowcaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Showcase");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.AppUser", b =>
                 {
                     b.Navigation("Addresses");
@@ -1609,6 +2307,8 @@ namespace vitacure.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("ProductSavedFilters");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Brand", b =>
@@ -1619,6 +2319,8 @@ namespace vitacure.Migrations
             modelBuilder.Entity("vitacure.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Children");
+
+                    b.Navigation("PrimaryShowcases");
 
                     b.Navigation("ProductCategories");
 
@@ -1632,9 +2334,21 @@ namespace vitacure.Migrations
                     b.Navigation("ProductCollections");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.CustomFieldDefinition", b =>
+                {
+                    b.Navigation("ProductCustomFields");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Feature", b =>
                 {
                     b.Navigation("ProductFeatures");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.GoogleProductCategory", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Order", b =>
@@ -1642,28 +2356,60 @@ namespace vitacure.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.PersonalizationDefinition", b =>
+                {
+                    b.Navigation("ProductPersonalizations");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Product", b =>
                 {
+                    b.Navigation("ProductBundleItems");
+
                     b.Navigation("ProductCategories");
 
                     b.Navigation("ProductCollections");
+
+                    b.Navigation("ProductCustomFields");
 
                     b.Navigation("ProductFeatures");
 
                     b.Navigation("ProductMedias");
 
+                    b.Navigation("ProductPersonalizations");
+
                     b.Navigation("ProductTags");
+
+                    b.Navigation("ProductVariantGroups");
 
                     b.Navigation("ProductVariants");
 
                     b.Navigation("ShowcaseFeaturedProducts");
                 });
 
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariant", b =>
+                {
+                    b.Navigation("Selections");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantGroup", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("vitacure.Domain.Entities.ProductVariantOption", b =>
+                {
+                    b.Navigation("VariantSelections");
+                });
+
             modelBuilder.Entity("vitacure.Domain.Entities.Showcase", b =>
                 {
                     b.Navigation("FeaturedProducts");
 
+                    b.Navigation("Prompts");
+
                     b.Navigation("ShowcaseCategories");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("vitacure.Domain.Entities.Tag", b =>

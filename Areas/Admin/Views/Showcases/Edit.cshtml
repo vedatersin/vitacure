@@ -1,26 +1,26 @@
 @model vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel
 
 @{
-    ViewData["Title"] = "Vitrin Duzenle";
+    ViewData["Title"] = "Vitrin D�zenle";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
         Eyebrow = "Storefront Kurgusu",
         Title = "Vitrin duzenle",
-        Description = "Bu ekran vitrin landing sayfasi ve home vitrin yayini icin temel kaynaktir.",
+        Description = "Bu ekran vitrin landing sayfasi ve home vitrin yayıni için temel kaynaktir.",
         IconClass = "fa-solid fa-pen-to-square",
         AsideTitle = "Form akis notu",
-        AsideText = "Secili kategoriler urun havuzunu belirler; one cikan urunler ise vitrin sahnesini besler.",
+        AsideText = "Seçili kategoriler ürün havuzunu belirler; öne çıkan ürünler ise vitrin sahnesini besler.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Kayit", Value = Model.Id?.ToString() ?? "-" },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Home", Value = Model.ShowOnHome ? "Acik" : "Kapali" }
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Home", Value = Model.ShowOnHome ? "Açık" : "Kapalı" }
         },
         Breadcrumbs = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Vitrinler", Url = "/admin/showcases" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Duzenle", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "D�zenle", IsActive = true }
         }
     };
 }

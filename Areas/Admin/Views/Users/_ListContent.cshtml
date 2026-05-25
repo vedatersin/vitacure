@@ -3,17 +3,17 @@
 @{
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
-        Eyebrow = "Erisim Yonetimi",
+        Eyebrow = "Erisim Y�netimi",
         Title = "Kullanici listesi",
-        Description = "Musteri ve backoffice hesaplari ayrik hesap tipleriyle tek ekranda izleniyor.",
+        Description = "M�steri ve backoffice hesaplari ayrik hesap tipleriyle tek ekranda izleniyor.",
         IconClass = "fa-solid fa-users",
-        AsideTitle = "Hesap ozeti",
-        AsideText = "Musteri ve yonetim hesap dagilimi bu bolumde ust seviye bir kontrol noktasi olarak gorunur.",
+        AsideTitle = "Hesap �zeti",
+        AsideText = "M�steri ve y�netim hesap dagilimi bu bolumde ust seviye bir kontrol noktasi olarak g�r�n�r.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Musteri", Value = Model.CustomerCount.ToString() },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Yonetim", Value = Model.BackOfficeCount.ToString() }
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "M�steri", Value = Model.CustomerCount.ToString() },
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Y�netim", Value = Model.BackOfficeCount.ToString() }
         },
         Breadcrumbs = new[]
         {
@@ -25,7 +25,7 @@
     var filterBar = new vitacure.Models.ViewModels.Admin.AdminFilterBarViewModel
     {
         ActionUrl = "/admin/users",
-        SearchPlaceholder = "Kullanici ara, rol filtrele, durum sec...",
+        SearchPlaceholder = "Kullanici ara, rol filtrele, durum se�...",
         SearchValue = Model.SearchTerm,
         Selects = new[]
         {
@@ -36,9 +36,9 @@
                 Value = Model.AccountTypeFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum hesaplar" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "customer", Label = "Musteri" },
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "backoffice", Label = "Yonetim" }
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "T�m hesaplar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "customer", Label = "M�steri" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "backoffice", Label = "Y�netim" }
                 }
             },
             new vitacure.Models.ViewModels.Admin.AdminFilterSelectViewModel
@@ -48,7 +48,7 @@
                 Value = Model.StatusFilter,
                 Options = new[]
                 {
-                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "Tum durumlar" },
+                    new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "all", Label = "T�m durumlar" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "active", Label = "Aktif" },
                     new vitacure.Models.ViewModels.Admin.AdminFilterOptionViewModel { Value = "passive", Label = "Pasif" }
                 }
@@ -72,7 +72,7 @@
                     <th>Hesap Tipi</th>
                     <th>Rol</th>
                     <th>Durum</th>
-                    <th>Olusturulma</th>
+                    <th>Olust�r�lma</th>
                 </tr>
             </thead>
             <tbody>

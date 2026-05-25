@@ -14,7 +14,7 @@ public class AdminFeatureServiceTests
         await using var dbContext = CreateDbContext();
 
         dbContext.Features.AddRange(
-            new Feature { Id = 1, Name = "Urun Formu", Slug = "urun-formu", GroupName = "Form", IsActive = true },
+            new Feature { Id = 1, Name = "Ürün Formu", Slug = "urun-formu", GroupName = "Form", IsActive = true },
             new Feature { Id = 2, Name = "Hedef Destek", Slug = "hedef-destek", GroupName = "Hedef", IsActive = false });
 
         dbContext.Categories.Add(new Category
@@ -29,7 +29,7 @@ public class AdminFeatureServiceTests
         dbContext.Products.Add(new Product
         {
             Id = 10,
-            Name = "Urun",
+            Name = "Ürün",
             Slug = "urun",
             Description = "A",
             Price = 100m,
@@ -66,17 +66,17 @@ public class AdminFeatureServiceTests
 
         var id = await service.CreateAsync(new FeatureFormViewModel
         {
-            Name = "Icerik Tipi",
+            Name = "İçerik Tipi",
             Slug = "icerik-tipi",
-            GroupName = "Icerik",
+            GroupName = "İçerik",
             OptionsContent = "Vitamin\nMineral",
             IsActive = true
         });
 
         var created = await dbContext.Features.FirstOrDefaultAsync(x => x.Id == id);
         Assert.NotNull(created);
-        Assert.Equal("Icerik Tipi", created!.Name);
-        Assert.Equal("Icerik", created.GroupName);
+        Assert.Equal("İçerik Tipi", created!.Name);
+        Assert.Equal("İçerik", created.GroupName);
         Assert.Equal(1, cacheInvalidation.CategoryInvalidationCount);
     }
 

@@ -13,4 +13,5 @@ public class AppUser : IdentityUser<int>
     public ICollection<CustomerAddress> Addresses { get; set; } = new List<CustomerAddress>();
     public ICollection<CustomerCartItem> CartItems { get; set; } = new List<CustomerCartItem>();
     public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public ICollection<ProductSavedFilter> ProductSavedFilters { get; set; } = new List<ProductSavedFilter>();
 }

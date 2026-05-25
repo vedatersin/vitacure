@@ -40,6 +40,8 @@ public class AdminShowcaseService : IAdminShowcaseService
             .AsNoTracking()
             .Include(x => x.ShowcaseCategories)
             .Include(x => x.FeaturedProducts)
+            .Include(x => x.PrimaryCategory)
+            .Include(x => x.Prompts)
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Name)
             .ToListAsync(cancellationToken);
@@ -74,10 +76,12 @@ public class AdminShowcaseService : IAdminShowcaseService
         return new ShowcaseFormViewModel
         {
             IconClass = "fa-solid fa-sparkles",
+            IconColor = GetDefaultIconColor(null),
             IsDark = true,
             BackgroundImageUrl = GetRecommendedBackgroundImageUrl(null, null),
             BackgroundOptions = GetBackgroundOptions(null, null),
             CategoryOptions = await GetCategoryOptionsAsync(cancellationToken),
+            TagSuggestions = await GetTagSuggestionsAsync(cancellationToken),
             ProductOptions = productOptions,
             SelectedFeaturedProductIds = BuildInitialFeaturedProductIds(productOptions)
         };
@@ -89,6 +93,8 @@ public class AdminShowcaseService : IAdminShowcaseService
             .AsNoTracking()
             .Include(x => x.ShowcaseCategories)
             .Include(x => x.FeaturedProducts)
+            .Include(x => x.Prompts.OrderBy(p => p.SortOrder))
+            .Include(x => x.Tags.OrderBy(t => t.SortOrder))
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (showcase is null)
@@ -102,9 +108,11 @@ public class AdminShowcaseService : IAdminShowcaseService
             Name = showcase.Name,
             Slug = showcase.Slug,
             IconClass = string.IsNullOrWhiteSpace(showcase.IconClass) ? "fa-solid fa-sparkles" : showcase.IconClass,
+            IconColor = string.IsNullOrWhiteSpace(showcase.IconColor) ? GetDefaultIconColor(showcase.Slug) : showcase.IconColor,
             Title = showcase.Title,
             Description = showcase.Description,
-            TagsContent = showcase.TagsContent,
+            TagsContent = string.Join(Environment.NewLine, showcase.Tags.OrderBy(x => x.SortOrder).Select(x => x.Name)),
+            ExamplePromptsContent = string.Join(Environment.NewLine, showcase.Prompts.OrderBy(x => x.SortOrder).Select(x => x.Text)),
             BackgroundImageUrl = showcase.BackgroundImageUrl,
             IsDark = showcase.IsDark,
             SeoTitle = showcase.SeoTitle,
@@ -112,10 +120,12 @@ public class AdminShowcaseService : IAdminShowcaseService
             ShowOnHome = showcase.ShowOnHome,
             IsActive = showcase.IsActive,
             SortOrder = showcase.SortOrder,
+            PrimaryCategoryId = showcase.PrimaryCategoryId ?? showcase.ShowcaseCategories.Select(x => x.CategoryId).FirstOrDefault(),
             BackgroundOptions = GetBackgroundOptions(showcase.Name, showcase.Slug),
             SelectedCategoryIds = showcase.ShowcaseCategories.Select(x => x.CategoryId).ToList(),
             SelectedFeaturedProductIds = showcase.FeaturedProducts.OrderBy(x => x.SortOrder).Select(x => x.ProductId).ToList(),
             CategoryOptions = await GetCategoryOptionsAsync(cancellationToken),
+            TagSuggestions = await GetTagSuggestionsAsync(cancellationToken),
             ProductOptions = await GetProductOptionsAsync(cancellationToken)
         };
     }
@@ -130,10 +140,13 @@ public class AdminShowcaseService : IAdminShowcaseService
             Name = model.Name.Trim(),
             Slug = normalizedSlug,
             IconClass = CleanIconClass(model.IconClass),
+            IconColor = CleanIconColor(model.IconColor, normalizedSlug),
             Title = model.Title.Trim(),
             Description = model.Description.Trim(),
             TagsContent = NormalizeMultiline(model.TagsContent),
+            ExamplePromptsContent = NormalizeMultiline(model.ExamplePromptsContent),
             BackgroundImageUrl = await ResolveBackgroundImageAsync(model, cancellationToken),
+            PrimaryCategoryId = ResolvePrimaryCategoryId(model),
             IsDark = model.IsDark,
             SeoTitle = Clean(model.SeoTitle),
             MetaDescription = Clean(model.MetaDescription),
@@ -150,6 +163,9 @@ public class AdminShowcaseService : IAdminShowcaseService
                 CategoryId = categoryId
             })
             .ToList();
+
+        entity.Tags = BuildTags(model.TagsContent);
+        entity.Prompts = BuildPrompts(model.ExamplePromptsContent);
 
         entity.FeaturedProducts = model.SelectedFeaturedProductIds
             .Take(7)
@@ -178,6 +194,8 @@ public class AdminShowcaseService : IAdminShowcaseService
         var entity = await _dbContext.Showcases
             .Include(x => x.ShowcaseCategories)
             .Include(x => x.FeaturedProducts)
+            .Include(x => x.Prompts)
+            .Include(x => x.Tags)
             .FirstOrDefaultAsync(x => x.Id == model.Id.Value, cancellationToken);
 
         if (entity is null)
@@ -191,10 +209,13 @@ public class AdminShowcaseService : IAdminShowcaseService
         entity.Name = model.Name.Trim();
         entity.Slug = normalizedSlug;
         entity.IconClass = CleanIconClass(model.IconClass);
+        entity.IconColor = CleanIconColor(model.IconColor, normalizedSlug);
         entity.Title = model.Title.Trim();
         entity.Description = model.Description.Trim();
         entity.TagsContent = NormalizeMultiline(model.TagsContent);
+        entity.ExamplePromptsContent = NormalizeMultiline(model.ExamplePromptsContent);
         entity.BackgroundImageUrl = await ResolveBackgroundImageAsync(model, cancellationToken);
+        entity.PrimaryCategoryId = ResolvePrimaryCategoryId(model, entity.PrimaryCategoryId);
         entity.IsDark = model.IsDark;
         entity.SeoTitle = Clean(model.SeoTitle);
         entity.MetaDescription = Clean(model.MetaDescription);
@@ -236,6 +257,18 @@ public class AdminShowcaseService : IAdminShowcaseService
             });
         }
 
+        entity.Prompts.Clear();
+        foreach (var prompt in BuildPrompts(model.ExamplePromptsContent))
+        {
+            entity.Prompts.Add(prompt);
+        }
+
+        entity.Tags.Clear();
+        foreach (var tag in BuildTags(model.TagsContent))
+        {
+            entity.Tags.Add(tag);
+        }
+
         entity.FeaturedProducts.Clear();
         foreach (var item in selectedFeaturedProductIds.Select((productId, index) => new { productId, index }))
         {
@@ -258,6 +291,7 @@ public class AdminShowcaseService : IAdminShowcaseService
         var categories = await _dbContext.Categories
             .AsNoTracking()
             .Include(x => x.Parent)
+            .Where(x => x.IsActive)
             .OrderBy(x => x.ParentId.HasValue)
             .ThenBy(x => x.Name)
             .ToListAsync(cancellationToken);
@@ -265,8 +299,19 @@ public class AdminShowcaseService : IAdminShowcaseService
         return categories.Select(category => new ShowcaseCategoryOptionViewModel
         {
             Id = category.Id,
-            Name = category.Parent is null ? category.Name : $"{category.Parent.Name} / {category.Name}"
+            Name = category.Parent is null ? category.Name : $"{category.Parent.Name} / {category.Name}",
+            ParentId = category.ParentId,
+            Slug = category.Slug
         }).ToList();
+    }
+
+    private async Task<IReadOnlyList<string>> GetTagSuggestionsAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Tags
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .Select(x => x.Name)
+            .ToListAsync(cancellationToken);
     }
 
     private async Task<IReadOnlyList<ShowcaseProductOptionViewModel>> GetProductOptionsAsync(CancellationToken cancellationToken)
@@ -284,7 +329,7 @@ public class AdminShowcaseService : IAdminShowcaseService
                 Name = x.Name,
                 CategoryName = x.Category != null ? x.Category.Name : "-",
                 CategorySlug = x.Category != null ? x.Category.Slug : string.Empty,
-                CategoryId = x.CategoryId,
+                CategoryId = x.CategoryId ?? 0,
                 ImageUrl = x.ImageUrl,
                 TagNames = x.ProductTags
                     .Where(tag => tag.Tag != null)
@@ -311,9 +356,106 @@ public class AdminShowcaseService : IAdminShowcaseService
     private static string CleanIconClass(string? value)
         => string.IsNullOrWhiteSpace(value) ? "fa-solid fa-sparkles" : value.Trim();
 
+    private static string CleanIconColor(string? value, string? slug)
+    {
+        var normalized = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return GetDefaultIconColor(slug);
+        }
+
+        if (!normalized.StartsWith('#'))
+        {
+            normalized = $"#{normalized}";
+        }
+
+        return normalized.Length switch
+        {
+            4 or 7 or 9 => normalized,
+            _ => GetDefaultIconColor(slug)
+        };
+    }
+
     private static string NormalizeMultiline(string value)
         => string.Join(Environment.NewLine, value
             .Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
+    private static List<ShowcasePrompt> BuildPrompts(string? value)
+    {
+        return (value ?? string.Empty)
+            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .Select((item, index) => new ShowcasePrompt
+            {
+                Text = item.Trim(),
+                SortOrder = index
+            })
+            .ToList();
+    }
+
+    private static List<ShowcaseTag> BuildTags(string? value)
+    {
+        return (value ?? string.Empty)
+            .Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select((item, index) => new ShowcaseTag
+            {
+                Name = item.Trim(),
+                Slug = SlugifyTag(item),
+                SortOrder = index
+            })
+            .ToList();
+    }
+
+    private static string SlugifyTag(string value)
+    {
+        return value.Trim().ToLowerInvariant()
+            .Replace("i", "i")
+            .Replace("I", "i")
+            .Replace("g", "g")
+            .Replace("�", "u")
+            .Replace("s", "s")
+            .Replace("�", "o")
+            .Replace("�", "c")
+            .Replace("&", string.Empty)
+            .Replace("  ", " ")
+            .Replace(" ", "-");
+    }
+
+    private static int? ResolvePrimaryCategoryId(ShowcaseFormViewModel model, int? fallbackCategoryId = null)
+    {
+        if (model.PrimaryCategoryId.HasValue && model.PrimaryCategoryId.Value > 0)
+        {
+            return model.PrimaryCategoryId.Value;
+        }
+
+        var selectedCategoryId = model.SelectedCategoryIds
+            .Where(x => x > 0)
+            .Distinct()
+            .FirstOrDefault();
+
+        if (selectedCategoryId > 0)
+        {
+            return selectedCategoryId;
+        }
+
+        return fallbackCategoryId;
+    }
+
+    private static string GetDefaultIconColor(string? slug)
+    {
+        return slug?.Trim().ToLowerInvariant() switch
+        {
+            "uyku-sagligi" or "uyku-rutini" => "#4b63d3",
+            "multivitamin-enerji" or "multivitamin-enerji-plani" => "#d6a11d",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "#d4569a",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "#35a966",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "#d94b57",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "#e07a2f",
+            _ => "#4b63d3"
+        };
+    }
 
     private async Task<string> ResolveBackgroundImageAsync(ShowcaseFormViewModel model, CancellationToken cancellationToken)
     {
@@ -431,10 +573,10 @@ public class AdminShowcaseService : IAdminShowcaseService
         {
             "uyku-sagligi" or "uyku-rutini" => "/img/uykuBg.png",
             "multivitamin-enerji" or "multivitamin-enerji-plani" => "/img/multivitaminBg.png",
-            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "/img/zekaHafızaBg.png",
-            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "/img/hastalıkKorumaBg.png",
-            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "/img/kasİskeletBg.png",
-            "zayiflama-destegi" or "zayiflama-rotasi" => "/img/zayıflamaBg.png",
+            "zihin-hafiza-guclendirme" or "zihin-hafiza-rotasi" => "/img/zekaHafizaBg.png",
+            "hastaliklara-karsi-koruma" or "bagisiklik-koruma-plani" => "/img/hastalikKorumaBg.png",
+            "kas-ve-iskelet-sagligi" or "kas-iskelet-destegi" => "/img/kasIskeletBg.png",
+            "zayiflama-destegi" or "zayiflama-rotasi" => "/img/zayiflamaBg.png",
             _ => string.Empty
         };
     }
@@ -481,13 +623,13 @@ public class AdminShowcaseService : IAdminShowcaseService
         }
 
         return value.Trim().ToLowerInvariant()
-            .Replace("ı", "i")
-            .Replace("İ", "i")
-            .Replace("ğ", "g")
-            .Replace("ü", "u")
-            .Replace("ş", "s")
-            .Replace("ö", "o")
-            .Replace("ç", "c")
+            .Replace("i", "i")
+            .Replace("I", "i")
+            .Replace("g", "g")
+            .Replace("�", "u")
+            .Replace("s", "s")
+            .Replace("�", "o")
+            .Replace("�", "c")
             .Replace("&", string.Empty)
             .Replace("-", string.Empty)
             .Replace("_", string.Empty)

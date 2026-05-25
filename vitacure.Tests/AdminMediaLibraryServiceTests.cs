@@ -101,13 +101,13 @@ public class AdminMediaLibraryServiceTests
         var updated = await service.UpdateAsync(new MediaAssetUpdateInputModel
         {
             Id = 5,
-            Title = "Hero Gorseli",
+            Title = "Hero Görseli",
             AltText = "Uyku destek urun gorseli"
         });
 
         var entity = await dbContext.MediaAssets.FirstAsync(x => x.Id == 5);
         Assert.True(updated);
-        Assert.Equal("Hero Gorseli", entity.Title);
+        Assert.Equal("Hero Görseli", entity.Title);
         Assert.Equal("Uyku destek urun gorseli", entity.AltText);
     }
 
@@ -118,7 +118,7 @@ public class AdminMediaLibraryServiceTests
         dbContext.Products.Add(new Product
         {
             Id = 1,
-            Name = "Test Urun",
+            Name = "Test Ürün",
             Slug = "test-urun",
             Description = "A",
             Price = 10m,
