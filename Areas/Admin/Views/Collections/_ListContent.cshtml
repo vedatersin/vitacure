@@ -8,7 +8,7 @@
         Description = "Tema, kampanya ve editor seçimi tabanli ürün gruplarini bu panelde yönet.",
         IconClass = "fa-solid fa-box-archive",
         AsideTitle = "Koleksiyon Özeti",
-        AsideText = "Koleksiyonlar vitrinden ayridir; daha uzun omurlu merchandising ve filtreleme bloklari için kullanilir.",
+        AsideText = "Koleksiyonlar vitrinden ayrıdir; daha uzun omurlu merchandising ve filtreleme bloklari için kullanilir.",
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Toplam", Value = Model.TotalCount.ToString() },
@@ -96,7 +96,7 @@
                         <td>@(collection.ShowOnHome ? "Açık" : "Kapalı")</td>
                         <td>@collection.SortOrder</td>
                         <td class="text-end">
-                            <a href="/admin/collections/edit/@collection.Id" class="btn auth-table-link">D�zenle</a>
+                            <a href="/admin/collections/edit/@collection.Id" class="btn auth-table-link">Düzenle</a>
                         </td>
                     </tr>
                 }

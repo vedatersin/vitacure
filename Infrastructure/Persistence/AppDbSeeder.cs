@@ -34,12 +34,12 @@ public class AppDbSeeder
         var definitions = new[]
         {
             "Bavullar ve Cantalar",
-            "Bebek ve Kucuk Cocuk ?r?nleri",
+            "Bebek ve Kucuk Cocuk Ürünleri",
             "Buro Malzemeleri",
             "Din ve Torenler",
             "Elektronik",
             "Ev ve Bahce",
-            "Hayvanlar ve Evcil Hayvan ?r?nleri",
+            "Hayvanlar ve Evcil Hayvan Ürünleri",
             "Hirdavat",
             "Kameralar ve Optik Malzemeler",
             "Kiyafet ve Aksesuarlar",
@@ -51,7 +51,7 @@ public class AppDbSeeder
             "Spor Malzemeleri",
             "Tasitlar ve Parcalar",
             "Yazilim",
-            "Yetiskinlere Yonelik ?r?nler",
+            "Yetiskinlere Yonelik Ürünler",
             "Yiyecek, Icecekler ve Tutun Mamulleri",
             "Is ve Endustri"
         };
@@ -79,8 +79,8 @@ public class AppDbSeeder
 
         _dbContext.CustomFieldDefinitions.AddRange(
             new CustomFieldDefinition { Name = "Yikama Talimatlari", Slug = "yikama-talimatlari", FieldType = "HTML", IsFilterable = false, IsActive = true },
-            new CustomFieldDefinition { Name = "Teknik ?zellikler", Slug = "teknik-ozellikler", FieldType = "Table", IsFilterable = true, IsActive = true },
-            new CustomFieldDefinition { Name = "?l?? Tablosu", Slug = "olcu-tablosu", FieldType = "Table", IsFilterable = false, IsActive = true });
+            new CustomFieldDefinition { Name = "Teknik Özellikler", Slug = "teknik-ozellikler", FieldType = "Table", IsFilterable = true, IsActive = true },
+            new CustomFieldDefinition { Name = "Ölçü Tablosu", Slug = "olcu-tablosu", FieldType = "Table", IsFilterable = false, IsActive = true });
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -193,9 +193,9 @@ public class AppDbSeeder
     {
         return new List<Feature>
         {
-            new() { Name = "?r?n Formu", Slug = "urun-formu", GroupName = "Form", OptionsContent = string.Join(Environment.NewLine, new[] { "Kapsul", "Tablet", "Sase", "Damla" }), IsActive = true },
+            new() { Name = "Ürün Formu", Slug = "urun-formu", GroupName = "Form", OptionsContent = string.Join(Environment.NewLine, new[] { "Kapsul", "Tablet", "Sase", "Damla" }), IsActive = true },
             new() { Name = "Hedef Destek", Slug = "hedef-destek", GroupName = "Hedef", OptionsContent = string.Join(Environment.NewLine, new[] { "Uyku", "Enerji", "Bagisiklik", "Sindirim" }), IsActive = true },
-            new() { Name = "I?erik Tipi", Slug = "icerik-tipi", GroupName = "I?erik", OptionsContent = string.Join(Environment.NewLine, new[] { "Vitamin", "Mineral", "Bitkisel", "Probiyotik" }), IsActive = true }
+            new() { Name = "??erik Tipi", Slug = "icerik-tipi", GroupName = "??erik", OptionsContent = string.Join(Environment.NewLine, new[] { "Vitamin", "Mineral", "Bitkisel", "Probiyotik" }), IsActive = true }
         };
     }
 
@@ -239,12 +239,12 @@ public class AppDbSeeder
     private static string Slugify(string value)
     {
         return value.Trim().ToLowerInvariant()
-            .Replace("�", "c")
+            .Replace("ç", "c")
             .Replace("g", "g")
             .Replace("i", "i")
-            .Replace("�", "o")
+            .Replace("ö", "o")
             .Replace("s", "s")
-            .Replace("�", "u")
+            .Replace("ü", "u")
             .Replace("&", string.Empty)
             .Replace("+", "plus")
             .Replace("  ", " ")
@@ -521,7 +521,7 @@ public class AppDbSeeder
         {
             new DefaultShowcaseDefinition("Uyku Sagligi", "uyku-rutini", "uyku-sagligi", "uyku-sagligi", "fa-solid fa-moon"),
             new DefaultShowcaseDefinition("Multivitamin & Enerji", "multivitamin-enerji-plani", "multivitamin-enerji", "multivitamin-enerji", "fa-solid fa-sun"),
-            new DefaultShowcaseDefinition("Zihin & Hafiza G��lendirme", "zihin-hafiza-rotasi", "zihin-hafiza-guclendirme", "zihin-hafiza-guclendirme", "fa-solid fa-brain"),
+            new DefaultShowcaseDefinition("Zihin & Hafiza Güçlendirme", "zihin-hafiza-rotasi", "zihin-hafiza-guclendirme", "zihin-hafiza-guclendirme", "fa-solid fa-brain"),
             new DefaultShowcaseDefinition("Hastaliklara Karsi Koruma", "bagisiklik-koruma-plani", "hastaliklara-karsi-koruma", "hastaliklara-karsi-koruma", "fa-solid fa-shield-heart"),
             new DefaultShowcaseDefinition("Kas ve Iskelet Sagligi", "kas-iskelet-destegi", "kas-ve-iskelet-sagligi", "kas-ve-iskelet-sagligi", "fa-solid fa-bone"),
             new DefaultShowcaseDefinition("Zayiflama Destegi", "zayiflama-rotasi", "zayiflama-destegi", "zayiflama-destegi", "fa-solid fa-person-running")
@@ -578,7 +578,7 @@ public class AppDbSeeder
         return slug switch
         {
             "uyku-sagligi" => string.Join(Environment.NewLine, new[] { "Melatonin", "Gece Rutini", "Rahatlama" }),
-            "multivitamin-enerji" => string.Join(Environment.NewLine, new[] { "Enerji", "G�nl�k Destek", "B12" }),
+            "multivitamin-enerji" => string.Join(Environment.NewLine, new[] { "Enerji", "Günlük Destek", "B12" }),
             "zihin-hafiza-guclendirme" => string.Join(Environment.NewLine, new[] { "Odak", "Hafiza", "Zihinsel Performans" }),
             "hastaliklara-karsi-koruma" => string.Join(Environment.NewLine, new[] { "Bagisiklik", "Koruma", "C Vitamini" }),
             "kas-ve-iskelet-sagligi" => string.Join(Environment.NewLine, new[] { "Kemik", "Eklem", "Kas Destegi" }),
@@ -718,10 +718,10 @@ public class AppDbSeeder
             .Replace("i", "i")
             .Replace("I", "i")
             .Replace("g", "g")
-            .Replace("�", "u")
+            .Replace("ü", "u")
             .Replace("s", "s")
-            .Replace("�", "o")
-            .Replace("�", "c")
+            .Replace("ö", "o")
+            .Replace("ç", "c")
             .Replace("&", string.Empty)
             .Replace("-", string.Empty)
             .Replace("_", string.Empty)

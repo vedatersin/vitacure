@@ -9,19 +9,19 @@
         <div class="auth-card">
             <div class="auth-eyebrow">E-posta Dogrulama</div>
             <h1 class="auth-title">Hesabin olusturuldu</h1>
-            <p class="auth-subtitle">@Model.Email adresi i�in dogrulama gerekiyor.</p>
+            <p class="auth-subtitle">@Model.Email adresi için dogrulama gerekiyor.</p>
 
             <div class="alert alert-info">@Model.Message</div>
 
             @if (!string.IsNullOrWhiteSpace(Model.ConfirmationUrl))
             {
                 <div class="auth-footer-link mt-3">
-                    Hesabi dogrula: <a href="@Model.ConfirmationUrl">Baglantiyi a�</a>
+                    Hesabi dogrula: <a href="@Model.ConfirmationUrl">Baglantiyi aç</a>
                 </div>
             }
 
             <div class="auth-footer-link mt-3">
-                Dogrulama sonrasi <a href="/login">giris ekranina d�nebilirsin</a>.
+                Dogrulama sonrasi <a href="/login">giris ekranina dönebilirsin</a>.
             </div>
         </div>
     </div>

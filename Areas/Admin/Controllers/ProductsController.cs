@@ -72,14 +72,14 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = createModel.TagOptions;
             model.VariantPresets = createModel.VariantPresets;
             model.BundleProductOptions = createModel.BundleProductOptions;
-            SetValidationToast("?r?n kaydi guncellenemedi");
+            SetValidationToast("Ürün kaydi guncellenemedi");
             return View(model);
         }
 
         try
         {
             await _adminProductService.CreateAsync(model, cancellationToken);
-            SetRedirectToast("success", "Kayit basariyla eklendi", "?r?n kaydi olusturuldu.");
+            SetRedirectToast("success", "Kayit basariyla eklendi", "Ürün kaydi olusturuldu.");
         }
         catch (SlugConflictException ex)
         {
@@ -94,12 +94,12 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = createModel.TagOptions;
             model.VariantPresets = createModel.VariantPresets;
             model.BundleProductOptions = createModel.BundleProductOptions;
-            SetValidationToast("?r?n kaydi guncellenemedi");
+            SetValidationToast("Ürün kaydi guncellenemedi");
             return View(model);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "?r?n olusturma sirasinda beklenmedik hata.");
+            _logger.LogError(ex, "Ürün olusturma sirasinda beklenmedik hata.");
             var createModel = await _adminProductService.GetCreateModelAsync(model.CreateMode, cancellationToken);
             model.BrandOptions = createModel.BrandOptions;
             model.CategoryOptions = createModel.CategoryOptions;
@@ -110,7 +110,7 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = createModel.TagOptions;
             model.VariantPresets = createModel.VariantPresets;
             model.BundleProductOptions = createModel.BundleProductOptions;
-            SetUnexpectedErrorToast("?r?n kaydi guncellenemedi", ex);
+            SetUnexpectedErrorToast("Ürün kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -130,7 +130,7 @@ public class ProductsController : AdminControllerBase
         var normalizedFilters = NormalizeRules(request.Filters);
         if (normalizedFilters.Count == 0)
         {
-            return BadRequest(new { message = "Kaydedilecek en az bir ge�erli filtre se�melisiniz." });
+            return BadRequest(new { message = "Kaydedilecek en az bir geçerli filtre seçmelisiniz." });
         }
 
         var maxSortOrder = await _dbContext.ProductSavedFilters
@@ -167,7 +167,7 @@ public class ProductsController : AdminControllerBase
         var normalizedFilters = NormalizeRules(request.Filters);
         if (normalizedFilters.Count == 0)
         {
-            return BadRequest(new { message = "Kaydedilecek en az bir ge�erli filtre se�melisiniz." });
+            return BadRequest(new { message = "Kaydedilecek en az bir geçerli filtre seçmelisiniz." });
         }
 
         entity.Name = NormalizeFilterName(request.Name, entity.Name);
@@ -230,7 +230,7 @@ public class ProductsController : AdminControllerBase
         var incomingIds = (request.FilterIds ?? Array.Empty<int>()).Distinct().ToArray();
         if (incomingIds.Length != filters.Count || incomingIds.Except(filters.Select(x => x.Id)).Any())
         {
-            return BadRequest(new { message = "Filtre siralama listesi ge�ersiz." });
+            return BadRequest(new { message = "Filtre siralama listesi geçersiz." });
         }
 
         for (var index = 0; index < incomingIds.Length; index += 1)
@@ -287,7 +287,7 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             model.VariantPresets = editModel?.VariantPresets ?? Array.Empty<ProductVariantPresetViewModel>();
             model.BundleProductOptions = editModel?.BundleProductOptions ?? Array.Empty<ProductBundleProductOptionViewModel>();
-            SetValidationToast("?r?n kaydi guncellenemedi");
+            SetValidationToast("Ürün kaydi guncellenemedi");
             return View(model);
         }
 
@@ -309,12 +309,12 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             model.VariantPresets = editModel?.VariantPresets ?? Array.Empty<ProductVariantPresetViewModel>();
             model.BundleProductOptions = editModel?.BundleProductOptions ?? Array.Empty<ProductBundleProductOptionViewModel>();
-            SetValidationToast("?r?n kaydi guncellenemedi");
+            SetValidationToast("Ürün kaydi guncellenemedi");
             return View(model);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "?r?n guncelleme sirasinda beklenmedik hata. ProductId: {ProductId}", id);
+            _logger.LogError(ex, "Ürün guncelleme sirasinda beklenmedik hata. ProductId: {ProductId}", id);
             var editModel = await _adminProductService.GetEditModelAsync(id, cancellationToken);
             model.BrandOptions = editModel?.BrandOptions ?? Array.Empty<ProductBrandOptionViewModel>();
             model.CategoryOptions = editModel?.CategoryOptions ?? Array.Empty<ProductCategoryOptionViewModel>();
@@ -325,7 +325,7 @@ public class ProductsController : AdminControllerBase
             model.TagOptions = editModel?.TagOptions ?? Array.Empty<ProductTagOptionViewModel>();
             model.VariantPresets = editModel?.VariantPresets ?? Array.Empty<ProductVariantPresetViewModel>();
             model.BundleProductOptions = editModel?.BundleProductOptions ?? Array.Empty<ProductBundleProductOptionViewModel>();
-            SetUnexpectedErrorToast("?r?n kaydi guncellenemedi", ex);
+            SetUnexpectedErrorToast("Ürün kaydi guncellenemedi", ex);
             return View(model);
         }
 
@@ -334,7 +334,7 @@ public class ProductsController : AdminControllerBase
             return NotFound();
         }
 
-        SetRedirectToast("success", "Kayit basariyla guncellendi", "?r?n kaydi guncellendi.");
+        SetRedirectToast("success", "Kayit basariyla guncellendi", "Ürün kaydi guncellendi.");
         return RedirectToAction(nameof(Index));
     }
 
@@ -353,8 +353,8 @@ public class ProductsController : AdminControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "?r?n gorseli yuklenirken beklenmedik hata.");
-            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "G?rsel yuklenemedi." });
+            _logger.LogError(ex, "Ürün gorseli yuklenirken beklenmedik hata.");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Görsel yuklenemedi." });
         }
     }
 
@@ -365,7 +365,7 @@ public class ProductsController : AdminControllerBase
         var name = request.Name?.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            return BadRequest(new { errors = new Dictionary<string, string[]> { ["Name"] = new[] { "?zel alan adi zorunludur." } } });
+            return BadRequest(new { errors = new Dictionary<string, string[]> { ["Name"] = new[] { "Özel alan adi zorunludur." } } });
         }
 
         var slug = Slugify(string.IsNullOrWhiteSpace(request.Slug) ? name : request.Slug!);
@@ -406,7 +406,7 @@ public class ProductsController : AdminControllerBase
         var name = request.Name?.Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            return BadRequest(new { errors = new Dictionary<string, string[]> { ["Name"] = new[] { "?zellestirme adi zorunludur." } } });
+            return BadRequest(new { errors = new Dictionary<string, string[]> { ["Name"] = new[] { "Özelleştirme adi zorunludur." } } });
         }
 
         var slug = Slugify(string.IsNullOrWhiteSpace(request.Slug) ? name : request.Slug!);
@@ -675,12 +675,12 @@ public class ProductsController : AdminControllerBase
     private static string Slugify(string value)
     {
         return value.Trim().ToLowerInvariant()
-            .Replace("�", "c")
+            .Replace("ç", "c")
             .Replace("g", "g")
             .Replace("i", "i")
-            .Replace("�", "o")
+            .Replace("ö", "o")
             .Replace("s", "s")
-            .Replace("�", "u")
+            .Replace("ü", "u")
             .Replace("&", string.Empty)
             .Replace("+", "plus")
             .Replace("  ", " ")

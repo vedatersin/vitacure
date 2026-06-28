@@ -23,7 +23,7 @@
             <div class="cart-empty-state">
                 <h2>Sepetiniz su an bos</h2>
                 <p>Begendiginiz urunleri sepete eklediginizde burada listelenecek.</p>
-                <a href="/" class="btn btn-primary cart-continue-btn">�r�nleri Kesfet</a>
+                <a href="/" class="btn btn-primary cart-continue-btn">Ürünleri Kesfet</a>
             </div>
         }
         else
@@ -58,7 +58,7 @@
                                                    min="1"
                                                    value="@item.Quantity"
                                                    class="form-control cart-quantity-input" />
-                                            <button type="submit" class="btn btn-outline-secondary cart-update-btn">G�ncelle</button>
+                                            <button type="submit" class="btn btn-outline-secondary cart-update-btn">Güncelle</button>
                                         </form>
                                         <div class="cart-item-total">&#8378; @item.LineTotal</div>
                                         <form method="post" action="/cart/items/@item.ProductSlug/remove">

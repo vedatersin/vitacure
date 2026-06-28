@@ -46,7 +46,7 @@ public class SlugService : ISlugService
         {
             throw new SlugConflictException(
                 normalizedSlug,
-                $"'{normalizedSlug}' sistem route'u icin ayrildi. Farkli bir slug girin.");
+                $"'{normalizedSlug}' sistem route'u icin ayrıldi. Farkli bir slug girin.");
         }
 
         await EnsureEntityConflictFreeAsync(

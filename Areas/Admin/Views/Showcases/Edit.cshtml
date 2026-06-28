@@ -1,7 +1,7 @@
 @model vitacure.Models.ViewModels.Admin.ShowcaseFormViewModel
 
 @{
-    ViewData["Title"] = "Vitrin D�zenle";
+    ViewData["Title"] = "Vitrin Düzenle";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
@@ -20,7 +20,7 @@
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Vitrinler", Url = "/admin/showcases" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "D�zenle", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Düzenle", IsActive = true }
         }
     };
 }

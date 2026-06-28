@@ -8,7 +8,7 @@
 @{
     var addressFormAction = Model.EditingAddressId.HasValue ? "/account/addresses/update" : "/account/addresses/create";
     var addressFormTitle = Model.EditingAddressId.HasValue ? "Adresi duzenle" : "Yeni adres ekle";
-    var addressFormButton = Model.EditingAddressId.HasValue ? "Adresi G�ncelle" : "Adresi Kaydet";
+    var addressFormButton = Model.EditingAddressId.HasValue ? "Adresi Güncelle" : "Adresi Kaydet";
     var addressModel = Model.EditingAddressId.HasValue ? Model.EditAddress : Model.NewAddress;
     var currentSection = (ViewData["AccountSection"] as string ?? "profile").ToLowerInvariant();
     var sectionItems = new[]
@@ -140,7 +140,7 @@
                                 </div>
 
                                 <div class="auth-admin-actions mt-4">
-                                    <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Profili G�ncelle</button>
+                                    <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Profili Güncelle</button>
                                 </div>
                             </form>
                         </section>
@@ -164,7 +164,7 @@
                                                 <th>Durum</th>
                                                 <th>Adet</th>
                                                 <th>Tutar</th>
-                                                <th>I�erik</th>
+                                                <th>İçerik</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -185,7 +185,7 @@
                             }
                             else
                             {
-                                <p class="auth-empty-state">Hen�z siparis olusturmadin. Sepet sayfasindan kayitli adresinle siparis olusturabilirsin.</p>
+                                <p class="auth-empty-state">Henüz siparis olusturmadin. Sepet sayfasindan kayitli adresinle siparis olusturabilirsin.</p>
                             }
                         </section>
 
@@ -210,7 +210,7 @@
                             }
                             else
                             {
-                                <p class="auth-empty-state">Hen�z favori urun eklemedin. �r�n kartlarindaki kalp butonu ile burada bir liste olusturabilirsin.</p>
+                                <p class="auth-empty-state">Henüz favori urun eklemedin. Ürün kartlarindaki kalp butonu ile burada bir liste olusturabilirsin.</p>
                             }
                         </section>
 
@@ -238,7 +238,7 @@
                                             }
 
                                             <div class="auth-admin-actions mt-3">
-                                                <a href="/account?section=addresses&editAddressId=@address.Id#addresses" class="btn auth-submit-btn auth-tertiary-btn">D�zenle</a>
+                                                <a href="/account?section=addresses&editAddressId=@address.Id#addresses" class="btn auth-submit-btn auth-tertiary-btn">Düzenle</a>
                                                 <form method="post" action="/account/addresses/delete">
                                                     @Html.AntiForgeryToken()
                                                     <input type="hidden" name="addressId" value="@address.Id" />

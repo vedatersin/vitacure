@@ -15,7 +15,7 @@
         Stats = new[]
         {
             new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "Aktif", Value = Model.ActiveProviderLabel },
-            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "CDN", Value = Model.IsCdnEnabled ? "A�ik" : "Kapali" }
+            new vitacure.Models.ViewModels.Admin.AdminHeroStatViewModel { Label = "CDN", Value = Model.IsCdnEnabled ? "Açık" : "Kapali" }
         },
         Breadcrumbs = new[]
         {
@@ -42,7 +42,7 @@
                             <div>
                                 <span class="admin-editor-kicker">Storage</span>
                                 <h2>Aktif depolama davranisi</h2>
-                                <p class="admin-editor-note">CDN kapaliysa t�m upload islemleri local disk uzerinden devam eder.</p>
+                                <p class="admin-editor-note">CDN kapaliysa tüm upload islemleri local disk uzerinden devam eder.</p>
                             </div>
                         </div>
 
@@ -69,7 +69,7 @@
                             <div>
                                 <span class="admin-editor-kicker">S3 Uyumlu Ayarlar</span>
                                 <h2>Provider bilgileri</h2>
-                                <p class="admin-editor-note">Cloudflare R2, DigitalOcean Spaces, MinIO veya AWS S3 benzeri servisler i�in kullanilir.</p>
+                                <p class="admin-editor-note">Cloudflare R2, DigitalOcean Spaces, MinIO veya AWS S3 benzeri servisler için kullanilir.</p>
                             </div>
                         </div>
 

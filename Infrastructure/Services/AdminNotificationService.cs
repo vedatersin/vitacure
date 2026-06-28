@@ -312,7 +312,7 @@ public class AdminNotificationService : IAdminNotificationService
             {
                 Title = "Sepette biriken urunler artis gosterdi",
                 Summary = "3 farkli kullanici ayni urunu sepete ekledi ancak odeme tamamlanmadi.",
-                Body = "Sepet akisinda ayni urun icin kisa surede tekrar eden ekleme goruldu. Stok ve kampanya etkisini izlemek icin Bildirim Merkezi'nde ayrintilar gorunuyor.",
+                Body = "Sepet akisinda ayni urun icin kisa surede tekrar eden ekleme goruldu. Stok ve kampanya etkisini izlemek icin Bildirim Merkezi'nde ayrıntilar gorunuyor.",
                 Actor = "Sepet Takibi",
                 Source = "Storefront",
                 CategoryKey = "cart",

@@ -18,7 +18,7 @@
                     <div>
                         <span class="admin-editor-kicker">Temel Bilgiler</span>
                         <h2>Koleksiyon kimligi</h2>
-                        <p class="admin-editor-note">Koleksiyonlar kategori ve vitrinden ayri bir merchandising katmani olarak davranir.</p>
+                        <p class="admin-editor-note">Koleksiyonlar kategori ve vitrinden ayrı bir merchandising katmani olarak davranir.</p>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
 
                     <div class="col-12">
                         <label asp-for="Description" class="form-label"></label>
-                        <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Koleksiyonun ne i�in var oldugunu kisaca anlatin..."></textarea>
+                        <textarea asp-for="Description" class="form-control auth-textarea" rows="4" placeholder="Koleksiyonun ne için var oldugunu kisaca anlatin..."></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
@@ -46,9 +46,9 @@
             <section class="admin-editor-card">
                 <div class="admin-editor-section-head">
                     <div>
-                        <span class="admin-editor-kicker">�r�n Havuzu</span>
-                        <h2>Koleksiyona �r�n bagla</h2>
-                        <p class="admin-editor-note">Bu iliski ileride storefront landing, kampanya bloklari ve merchandising kurallari i�in kullanilabilir.</p>
+                        <span class="admin-editor-kicker">Ürün Havuzu</span>
+                        <h2>Koleksiyona Ürün bagla</h2>
+                        <p class="admin-editor-note">Bu iliski ileride storefront landing, kampanya bloklari ve merchandising kurallari için kullanilabilir.</p>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
                     </button>
                     <a href="/admin/collections" class="admin-editor-secondary">
                         <i class="fa-solid fa-arrow-left"></i>
-                        <span>Listeye D�n</span>
+                        <span>Listeye Dön</span>
                     </a>
                 </div>
             </section>
@@ -107,7 +107,7 @@
             <section class="admin-editor-card">
                 <div class="admin-editor-section-head">
                     <div>
-                        <span class="admin-editor-kicker">Se�ili �r�nler</span>
+                        <span class="admin-editor-kicker">Seçili Ürünler</span>
                         <h2>Hizli ozet</h2>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                 <div class="admin-editor-tag-summary">
                     @if (selectedProducts.Count == 0)
                     {
-                        <span class="admin-editor-tag-pill">�r�n se�ilmedi</span>
+                        <span class="admin-editor-tag-pill">Ürün seçilmedi</span>
                     }
                     else
                     {

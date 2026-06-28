@@ -1,11 +1,11 @@
 @model vitacure.Models.ViewModels.Admin.CategoryFormViewModel
 
 @{
-    ViewData["Title"] = "Kategori D?zenle";
+    ViewData["Title"] = "Kategori Düzenle";
 
     var hero = new vitacure.Models.ViewModels.Admin.AdminPageHeroViewModel
     {
-        Eyebrow = "Katalog Y�netimi",
+        Eyebrow = "Katalog Yönetimi",
         Title = "Kategori duzenle",
         Description = "Slug degisikligi storefront URL'lerini dogrudan etkiler; bu nedenle kontrollu ilerliyoruz.",
         IconClass = "fa-solid fa-pen-to-square",
@@ -20,7 +20,7 @@
         {
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Dashboard", Url = "/admin/dashboard" },
             new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Kategoriler", Url = "/admin/categories" },
-            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "D?zenle", IsActive = true }
+            new vitacure.Models.ViewModels.Admin.AdminBreadcrumbItemViewModel { Label = "Düzenle", IsActive = true }
         }
     };
 }

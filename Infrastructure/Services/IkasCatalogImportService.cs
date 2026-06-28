@@ -516,7 +516,7 @@ public class IkasCatalogImportService
     }
 
     private static string NormalizeProductName(string rawValue)
-        => NormalizeOptional(rawValue) ?? "Adsiz ?r?n";
+        => NormalizeOptional(rawValue) ?? "Adsiz Ürün";
 
     private static string? NormalizeOptional(string? value)
     {

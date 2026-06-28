@@ -58,7 +58,7 @@ public class AuthController : Controller
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (!_accountAccessService.CanAccessBackOffice(user))
         {
-            ModelState.AddModelError(string.Empty, "Ge�erli bir y�netim hesabi bulunamadi.");
+            ModelState.AddModelError(string.Empty, "Geçerli bir yönetim hesabi bulunamadi.");
             return View(model);
         }
 

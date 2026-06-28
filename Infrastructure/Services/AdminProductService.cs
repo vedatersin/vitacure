@@ -1049,7 +1049,7 @@ public class AdminProductService : IAdminProductService
                     Url = linkedAsset?.Url ?? item.Url,
                     SortOrder = item.SortOrder,
                     IsPrimary = item.IsPrimary,
-                    AltText = linkedAsset?.AltText ?? (string.IsNullOrWhiteSpace(entity.Name) ? "�r�n gorseli" : entity.Name),
+                    AltText = linkedAsset?.AltText ?? (string.IsNullOrWhiteSpace(entity.Name) ? "Ürün gorseli" : entity.Name),
                     UpdatedAt = DateTime.UtcNow
                 });
                 continue;

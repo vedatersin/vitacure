@@ -48,8 +48,8 @@ public class UsersController : Controller
 
         query = normalizedAccountType switch
         {
-            "customer" => query.Where(item => item.AccountTypeLabel is "M�steri" or "Musteri"),
-            "backoffice" => query.Where(item => item.AccountTypeLabel is "Y�netim" or "Yonetim"),
+            "customer" => query.Where(item => item.AccountTypeLabel is "Müşteri" or "Musteri"),
+            "backoffice" => query.Where(item => item.AccountTypeLabel is "Yönetim" or "Yonetim"),
             _ => query
         };
 
@@ -68,8 +68,8 @@ public class UsersController : Controller
             AccountTypeFilter = normalizedAccountType,
             StatusFilter = normalizedStatus,
             TotalCount = items.Count,
-            CustomerCount = items.Count(item => item.AccountTypeLabel is "M�steri" or "Musteri"),
-            BackOfficeCount = items.Count(item => item.AccountTypeLabel is "Y�netim" or "Yonetim"),
+            CustomerCount = items.Count(item => item.AccountTypeLabel is "Müşteri" or "Musteri"),
+            BackOfficeCount = items.Count(item => item.AccountTypeLabel is "Yönetim" or "Yonetim"),
             Users = items
         };
     }

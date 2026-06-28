@@ -7,8 +7,8 @@
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
     <div class="admin-operator-card mb-4">
         <span>Katalog Notu</span>
-        <strong>�zellikler filtre, teknik detay ve varyant mantiginin cekirdek katmanidir</strong>
-        <small>Grup isimleri ve se�enek listeleri �r�n edit�r�nde tekrar kullanilir.</small>
+        <strong>Özellikler filtre, teknik detay ve varyant mantiginin cekirdek katmanidir</strong>
+        <small>Grup isimleri ve seçenek listeleri ürün editöründe tekrar kullanılır.</small>
     </div>
 
     <div class="row g-3">
@@ -26,27 +26,27 @@
 
         <div class="col-md-6">
             <label asp-for="GroupName" class="form-label"></label>
-            <input asp-for="GroupName" class="form-control auth-input" placeholder="Orn. Form, I�erik, Hedef" />
+            <input asp-for="GroupName" class="form-control auth-input" placeholder="Orn. Form, İçerik, Hedef" />
             <span asp-validation-for="GroupName" class="text-danger"></span>
         </div>
 
         <div class="col-12">
             <label asp-for="OptionsContent" class="form-label"></label>
-            <textarea asp-for="OptionsContent" class="form-control auth-textarea" rows="6" placeholder="Her satira bir se�enek yazin. Orn. Kapsul&#10;Tablet&#10;Sase"></textarea>
+            <textarea asp-for="OptionsContent" class="form-control auth-textarea" rows="6" placeholder="Her satira bir seçenek yazin. Orn. Kapsul&#10;Tablet&#10;Sase"></textarea>
             <span asp-validation-for="OptionsContent" class="text-danger"></span>
         </div>
 
         <div class="col-12">
             <label class="auth-checkbox-card">
                 <input asp-for="IsActive" />
-                <span>�zellik aktif</span>
-                <small>Aktif �zellikler �r�n formunda se�ilebilir olur.</small>
+                <span>Özellik aktif</span>
+                <small>Aktif Özellikler Ürün formunda seçilebilir olur.</small>
             </label>
         </div>
     </div>
 
     <div class="auth-admin-actions mt-4">
         <button type="submit" class="btn auth-submit-btn auth-secondary-btn">Kaydet</button>
-        <a href="/admin/features" class="btn auth-submit-btn auth-tertiary-btn">Listeye D�n</a>
+        <a href="/admin/features" class="btn auth-submit-btn auth-tertiary-btn">Listeye Dön</a>
     </div>
 </form>

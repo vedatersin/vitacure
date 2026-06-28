@@ -14,7 +14,7 @@ public class BrandFormViewModel
     [Display(Name = "Slug")]
     public string Slug { get; set; } = string.Empty;
 
-    [Display(Name = "A�iklama")]
+    [Display(Name = "Açıklama")]
     public string? Description { get; set; }
 
     [Display(Name = "Aktif")]

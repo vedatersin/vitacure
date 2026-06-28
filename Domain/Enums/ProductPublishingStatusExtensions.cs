@@ -17,7 +17,7 @@ public static class ProductPublishingStatusExtensions
         return status switch
         {
             ProductPublishingStatus.PublishedClosed => "Satisa Kapali Yayin",
-            ProductPublishingStatus.PublishedOpen => "Satisa A�ik Yayin",
+            ProductPublishingStatus.PublishedOpen => "Satışa Açık Yayın",
             ProductPublishingStatus.Archived => "Arsiv",
             _ => "Taslak"
         };

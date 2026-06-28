@@ -14,19 +14,19 @@ public class ProductFormViewModel : IValidatableObject
     public decimal? BundleAdjustmentAmount { get; set; }
     public int? BundleTotalQuantity { get; set; }
 
-    [Display(Name = "�r�n Adi")]
+    [Display(Name = "Ürün Adi")]
     public string Name { get; set; } = string.Empty;
 
     [Display(Name = "Slug")]
     public string Slug { get; set; } = string.Empty;
 
-    [Display(Name = "A�iklama")]
+    [Display(Name = "Açıklama")]
     public string Description { get; set; } = string.Empty;
 
     [Display(Name = "SEO Basligi")]
     public string? MetaTitle { get; set; }
 
-    [Display(Name = "Meta A�iklama")]
+    [Display(Name = "Meta Açıklama")]
     public string? MetaDescription { get; set; }
 
     [Display(Name = "Fiyat")]
@@ -44,10 +44,10 @@ public class ProductFormViewModel : IValidatableObject
     [Display(Name = "Degerlendirme Sayisi")]
     public int ReviewCount { get; set; }
 
-    [Display(Name = "G�rsel URL")]
+    [Display(Name = "Görsel URL")]
     public string ImageUrl { get; set; } = string.Empty;
 
-    [Display(Name = "Galeri G�rselleri")]
+    [Display(Name = "Galeri Görselleri")]
     public string? GalleryImageUrls { get; set; }
 
     public string? MediaItemsJson { get; set; }
@@ -67,7 +67,7 @@ public class ProductFormViewModel : IValidatableObject
     [Display(Name = "HS Kodu")]
     public string? HsCode { get; set; }
 
-    [Display(Name = "Tedarik�i")]
+    [Display(Name = "Tedarikçi")]
     public string? SupplierName { get; set; }
 
     public ProductVariantFieldVisibilityViewModel VariantFieldVisibility { get; set; } = new();
@@ -75,10 +75,10 @@ public class ProductFormViewModel : IValidatableObject
     [Display(Name = "Birim Fiyat Goster")]
     public bool ShowUnitPrice { get; set; }
 
-    [Display(Name = "�r�n�n Birim �l��s�")]
+    [Display(Name = "Ürünün Birim Ölçüsü")]
     public decimal? UnitContentAmount { get; set; }
 
-    [Display(Name = "�r�n�n Birim Tipi")]
+    [Display(Name = "Ürünün Birim Tipi")]
     public string? UnitContentType { get; set; }
 
     [Display(Name = "Satilan Birim")]
@@ -93,7 +93,7 @@ public class ProductFormViewModel : IValidatableObject
     [Display(Name = "Marka")]
     public int? BrandId { get; set; }
 
-    [Display(Name = "Google �r�n Kategorisi")]
+    [Display(Name = "Google Ürün Kategorisi")]
     public int? GoogleProductCategoryId { get; set; }
 
     [Display(Name = "Kategori")]
@@ -164,7 +164,7 @@ public class ProductFormViewModel : IValidatableObject
 
         if (UnitContentAmount is < 0)
         {
-            yield return new ValidationResult("�r�n�n birim olcusu sifirdan kucuk olamaz.", new[] { nameof(UnitContentAmount) });
+            yield return new ValidationResult("Ürünün birim olcusu sifirdan kucuk olamaz.", new[] { nameof(UnitContentAmount) });
         }
 
         if (UnitComparisonAmount is < 0)
@@ -186,12 +186,12 @@ public class ProductFormViewModel : IValidatableObject
         {
             if (UnitContentAmount is null or <= 0)
             {
-                yield return new ValidationResult("�r�n�n birim olcusunu girmelisiniz.", new[] { nameof(UnitContentAmount) });
+                yield return new ValidationResult("Ürünün birim olcusunu girmelisiniz.", new[] { nameof(UnitContentAmount) });
             }
 
             if (string.IsNullOrWhiteSpace(UnitContentType))
             {
-                yield return new ValidationResult("�r�n�n birim tipini secmelisiniz.", new[] { nameof(UnitContentType) });
+                yield return new ValidationResult("Ürünün birim tipini secmelisiniz.", new[] { nameof(UnitContentType) });
             }
 
             if (UnitComparisonAmount is null or <= 0)
@@ -218,7 +218,7 @@ public class ProductFormViewModel : IValidatableObject
 
         if (string.IsNullOrWhiteSpace(Name))
         {
-            yield return new ValidationResult("�r�n adi zorunludur.", new[] { nameof(Name) });
+            yield return new ValidationResult("Ürün adi zorunludur.", new[] { nameof(Name) });
         }
 
         if (string.IsNullOrWhiteSpace(Slug))
@@ -228,12 +228,12 @@ public class ProductFormViewModel : IValidatableObject
 
         if (string.IsNullOrWhiteSpace(Description))
         {
-            yield return new ValidationResult("A�iklama zorunludur.", new[] { nameof(Description) });
+            yield return new ValidationResult("Açıklama zorunludur.", new[] { nameof(Description) });
         }
 
         if (string.IsNullOrWhiteSpace(ImageUrl))
         {
-            yield return new ValidationResult("�r�n gorseli zorunludur.", new[] { nameof(ImageUrl) });
+            yield return new ValidationResult("Ürün gorseli zorunludur.", new[] { nameof(ImageUrl) });
         }
 
         if (Price <= 0)

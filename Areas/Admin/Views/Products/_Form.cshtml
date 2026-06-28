@@ -35,11 +35,11 @@
     var initialTab = isBundleMode ? "bundle-type" : "basic";
     var pageTitle = Model.Id.HasValue
         ? isBundleMode
-            ? (isBundleVariantMode ? "Varyantli Paket ?r?nu D?zenle" : "Paket ?r?nu D?zenle")
-            : (isVariantMode ? "Varyantli ?r?n? D?zenle" : "Basit ?r?n? D?zenle")
+            ? (isBundleVariantMode ? "Varyantli Paket Ürünü Düzenle" : "Paket Ürünü Düzenle")
+            : (isVariantMode ? "Varyantli Ürünü Düzenle" : "Basit Ürünü Düzenle")
         : isBundleMode
-            ? (isBundleVariantMode ? "Varyantli Paket ?r?n Ekle" : "Paket ?r?n Ekle")
-            : (isVariantMode ? "Varyantli ?r?n Ekle" : "Basit ?r?n Ekle");
+            ? (isBundleVariantMode ? "Varyantli Paket Ürün Ekle" : "Paket Ürün Ekle")
+            : (isVariantMode ? "Varyantli Ürün Ekle" : "Basit Ürün Ekle");
     var hasReviewSummary = Model.ReviewCount > 0;
     var roundedRating = (int)Math.Round(Math.Clamp(Model.Rating, 0m, 5m), MidpointRounding.AwayFromZero);
     var categorySelectorPayload = JsonSerializer.Serialize(allCategories.Select(option => new
@@ -176,7 +176,7 @@
         <header class="admin-product-page-intro" data-product-page-intro>
             <div class="admin-product-page-copy">
                 <div class="admin-product-page-breadcrumb">
-                    <a href="/admin/products">?r?nler</a>
+                    <a href="/admin/products">Ürünler</a>
                     <span>@pageTitle</span>
                 </div>
             </div>
@@ -187,10 +187,10 @@
                 <button type="button" class="admin-product-tab-arrow is-left" data-product-tab-arrow="left" aria-label="Sekmeleri sola kaydir">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <nav class="admin-product-tab-nav admin-product-tab-nav-top" data-product-tab-nav aria-label="?r?n duzenleme sekmeleri">
+                <nav class="admin-product-tab-nav admin-product-tab-nav-top" data-product-tab-nav aria-label="Ürün duzenleme sekmeleri">
                     @if (isBundleMode)
                     {
-                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-type">Paket ?r?n T?r?</button>
+                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-type">Paket Ürün Türü</button>
                     }
                     <button type="button" class="admin-product-tab-button" data-product-tab="basic">Temel Bilgi</button>
                     @if (shouldRenderVariantSection)
@@ -199,16 +199,16 @@
                     }
                     @if (isBundleMode)
                     {
-                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-items">Paketteki ?r?nler</button>
+                        <button type="button" class="admin-product-tab-button" data-product-tab="bundle-items">Paketteki Ürünler</button>
                         <button type="button" class="admin-product-tab-button" data-product-tab="price">Fiyat</button>
                     }
                     <button type="button" class="admin-product-tab-button" data-product-tab="media">Medya</button>
-                    <button type="button" class="admin-product-tab-button" data-product-tab="details">?r?n Detayi</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="details">Ürün Detayi</button>
                     <button type="button" class="admin-product-tab-button" data-product-tab="inventory">Envanter</button>
                     <button type="button" class="admin-product-tab-button" data-product-tab="seo">SEO</button>
                     <button type="button" class="admin-product-tab-button" data-product-tab="features">Filtreler</button>
-                    <button type="button" class="admin-product-tab-button" data-product-tab="custom-fields">?zel Alanlar</button>
-                    <button type="button" class="admin-product-tab-button" data-product-tab="personalization">?r?n ?zellestirmesi</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="custom-fields">Özel Alanlar</button>
+                    <button type="button" class="admin-product-tab-button" data-product-tab="personalization">Ürün Özelleştirmesi</button>
                 </nav>
                 <button type="button" class="admin-product-tab-arrow is-right" data-product-tab-arrow="right" aria-label="Sekmeleri saga kaydir">
                     <i class="fa-solid fa-chevron-right"></i>
@@ -216,7 +216,7 @@
             </div>
 
             <div class="admin-product-topbar-actions">
-                <label class="admin-product-status-wrap" aria-label="?r?n durumu">
+                <label class="admin-product-status-wrap" aria-label="Ürün durumu">
                     <select class="form-select auth-input" data-product-status-select>
                         @if (Model.Status == ProductPublishingStatus.Draft)
                         {
@@ -236,11 +236,11 @@
                         }
                         @if (Model.Status == ProductPublishingStatus.PublishedOpen)
                         {
-                            <option value="PublishedOpen" selected>Satisa A?ik Yayinla</option>
+                            <option value="PublishedOpen" selected>Satışa Açık Yayınla</option>
                         }
                         else
                         {
-                            <option value="PublishedOpen">Satisa A?ik Yayinla</option>
+                            <option value="PublishedOpen">Satışa Açık Yayınla</option>
                         }
                         @if (Model.Status == ProductPublishingStatus.Archived)
                         {
@@ -265,12 +265,12 @@
             <section class="admin-editor-card admin-bundle-mode-card" data-bundle-editor data-product-tab-panel="bundle-type">
                 <div class="admin-editor-section-head">
                     <div class="admin-product-inline-heading" data-inline-info-wrap>
-                        <h2>Paket �r�n T�r�</h2>
+                        <h2>Paket Ürün Türü</h2>
                         <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Paket urun turu aciklamasini goster">
                             <span>i</span>
                         </button>
                         <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                            <strong>Paket �r�n T�r�</strong>
+                            <strong>Paket Ürün Türü</strong>
                             <span>Basit paket tek set mantigiyla calisir. Varyantli paket ise her kombinasyon icin farkli paket icerigi tanimlamanizi saglar.</span>
                         </div>
                     </div>
@@ -278,11 +278,11 @@
 
                 <div class="admin-bundle-mode-grid">
                     <button type="button" class="admin-bundle-mode-option" data-bundle-mode-option="simple">
-                        <strong>Basit Paket �r�n�</strong>
+                        <strong>Basit Paket Ürünü</strong>
                         <span>Paketinizde tek bir kombinasyon sunmak isterseniz</span>
                     </button>
                     <button type="button" class="admin-bundle-mode-option" data-bundle-mode-option="variant">
-                        <strong>Varyantli Paket �r�n�</strong>
+                        <strong>Varyantli Paket Ürünü</strong>
                         <span>Paketinizde alt farkli kombinasyonlar sunmak isterseniz</span>
                     </button>
                 </div>
@@ -314,11 +314,11 @@
                 </div>
 
                 <div>
-                    <label asp-for="ProductKind" class="form-label">?r?n Turu</label>
+                    <label asp-for="ProductKind" class="form-label">Ürün Turu</label>
                     <select asp-for="ProductKind" class="form-select auth-input">
-                        <option value="@ProductKind.Physical">Fiziksel ?r?n</option>
-                        <option value="@ProductKind.Digital">Dijital ?r?n</option>
-                        <option value="@ProductKind.Bundle">Paket ?r?n</option>
+                        <option value="@ProductKind.Physical">Fiziksel Ürün</option>
+                        <option value="@ProductKind.Digital">Dijital Ürün</option>
+                        <option value="@ProductKind.Bundle">Paket Ürün</option>
                     </select>
                     <span class="admin-editor-note">Dijital urunlerde odeme akisi kargo ve adres adimlarini atlayabilir. Paket urunlerde stok ve fiyat akisi bundle alanlarindan yonetilir.</span>
                 </div>
@@ -375,11 +375,11 @@
                 <div class="admin-product-field-span admin-product-unit-price-panel" data-unit-price-panel @(Model.ShowUnitPrice ? null : "hidden")>
                     <div class="admin-product-unit-price-grid">
                         <div class="admin-variant-empty-copy">
-                            <label asp-for="UnitContentAmount" class="form-label">?r?n?n Birim ?l??s?</label>
+                            <label asp-for="UnitContentAmount" class="form-label">Ürünün Birim Ölçüsü</label>
                             <div class="admin-product-unit-input-row">
                                 <input asp-for="UnitContentAmount" class="form-control auth-input" type="number" min="0" step="0.0001" data-unit-content-amount />
                                 <select asp-for="UnitContentType" class="form-select auth-input" data-unit-content-type>
-                                    <option value="">Se?iniz</option>
+                                    <option value="">Seçiniz</option>
                                     <optgroup label="Hacim">
                                         <option value="ml">ml</option>
                                         <option value="cl">cl</option>
@@ -410,7 +410,7 @@
                             <div class="admin-product-unit-input-row">
                                 <input asp-for="UnitComparisonAmount" class="form-control auth-input" type="number" min="0" step="0.0001" data-unit-comparison-amount />
                                 <select asp-for="UnitComparisonType" class="form-select auth-input" data-unit-comparison-type>
-                                    <option value="">Se?iniz</option>
+                                    <option value="">Seçiniz</option>
                                     <optgroup label="Hacim">
                                         <option value="ml">ml</option>
                                         <option value="cl">cl</option>
@@ -474,7 +474,7 @@
                         <img src="@Model.ImageUrl" alt="@Model.Name" data-gallery-main-preview @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "hidden" : null) />
                         <span class="admin-product-media-preview-empty" data-gallery-main-empty @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? null : "hidden")>
                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <strong>?r?n fotografini yukleyin</strong>
+                            <strong>Ürün fotografini yukleyin</strong>
                             <small>Maksimum 10 MB. PNG, JPG, WEBP veya GIF kullanabilirsiniz.</small>
                         </span>
                         <span class="admin-product-media-preview-overlay">Onizle</span>
@@ -499,13 +499,13 @@
         <section class="admin-editor-card admin-product-step-card" data-product-tab-panel="details">
             <div class="admin-editor-section-head">
                 <div class="admin-product-inline-heading" data-inline-info-wrap>
-                    <h2>?r?n Detayi</h2>
-                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?r?n detayi aciklamasini goster">
+                    <h2>Ürün Detayi</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Ürün detayi aciklamasini goster">
                         <span>i</span>
                     </button>
                     <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                        <strong>?r?n Detayi</strong>
-                        <span>G?rsel7-8-9 filtre altyapisini besleyecek urun siniflandirmasini burada tamamlayin.</span>
+                        <strong>Ürün Detayi</strong>
+                        <span>Görsel7-8-9 filtre altyapisini besleyecek urun siniflandirmasini burada tamamlayin.</span>
                     </div>
                 </div>
             </div>
@@ -514,7 +514,7 @@
                 <div>
                     <label asp-for="BrandId" class="form-label"></label>
                     <select asp-for="BrandId" class="form-select auth-input">
-                        <option value="">Se?iniz</option>
+                        <option value="">Seçiniz</option>
                         @foreach (var option in Model.BrandOptions)
                         {
                             <option value="@option.Id">@option.Name</option>
@@ -565,9 +565,9 @@
                 </div>
 
                 <div>
-                    <label asp-for="GoogleProductCategoryId" class="form-label">Google ?r?n Kategorisi</label>
+                    <label asp-for="GoogleProductCategoryId" class="form-label">Google Ürün Kategorisi</label>
                     <select asp-for="GoogleProductCategoryId" class="form-select auth-input">
-                        <option value="">Se?iniz</option>
+                        <option value="">Seçiniz</option>
                         @foreach (var option in Model.GoogleProductCategoryOptions)
                         {
                             <option value="@option.Id">@option.Name</option>
@@ -586,15 +586,15 @@
                     <script type="application/json" data-product-category-options>@Html.Raw(categorySelectorPayload)</script>
                     <div class="admin-product-category-panel" data-product-category-panel>
                         <div class="admin-product-category-empty" data-product-category-empty @(selectedCategoryIds.Count > 0 ? "hidden" : null)>
-                            <strong>Hen?z bir kategori eklemediniz.</strong>
-                            <p>?r?nlerinize ait kategorileri girin.</p>
+                            <strong>Henüz bir kategori eklemediniz.</strong>
+                            <p>Ürünlerinize ait kategorileri girin.</p>
                             <button type="button" class="admin-editor-primary admin-product-category-open-button" data-category-selector-open>Kategori Ekle</button>
                         </div>
 
                         <div class="admin-product-category-selected" data-product-category-selected @(selectedCategoryIds.Count == 0 ? "hidden" : null)>
                             <div class="admin-product-selection-head">
                                 <h3>Kategori</h3>
-                                <button type="button" class="admin-editor-ghost" data-category-selector-open>Kategorileri D?zenle</button>
+                                <button type="button" class="admin-editor-ghost" data-category-selector-open>Kategorileri Düzenle</button>
                             </div>
                             <div class="admin-product-selected-list" data-product-selected-category-list>
                                 @foreach (var option in allCategories.OrderBy(option => option.ParentId.HasValue ? 1 : 0).ThenBy(option => option.Name))
@@ -619,7 +619,7 @@
                                                 <i class="fa-solid fa-ellipsis"></i>
                                             </summary>
                                             <div class="admin-product-item-menu-panel">
-                                                <button type="button" data-category-action="edit" data-category-id="@option.Id">D?zenle</button>
+                                                <button type="button" data-category-action="edit" data-category-id="@option.Id">Düzenle</button>
                                                 @if (!isPrimary)
                                                 {
                                                     <button type="button" data-category-action="make-primary" data-category-id="@option.Id">Ana Kategori Yap</button>
@@ -666,7 +666,7 @@
                         </button>
                         <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
                             <strong>Varyant</strong>
-                            <span>Varyant turu, secim stili ve uye listelerini yoneterek her kombinasyon icin ayri fiyat, stok ve medya tanimlayin.</span>
+                            <span>Varyant turu, secim stili ve uye listelerini yoneterek her kombinasyon icin ayrı fiyat, stok ve medya tanimlayin.</span>
                         </div>
                     </div>
                     <button type="button" class="admin-editor-secondary admin-variant-add-button" data-variant-add>
@@ -687,8 +687,8 @@
                 <div class="admin-variant-builder">
                     <div class="admin-product-empty-state admin-variant-empty-state" data-variant-empty>
                         <div>
-                            <strong>Hen�z varyant eklenmedi.</strong>
-                            <p>Varyant eklemek i�in ilk olarak Varyant Ekle butonuna tiklayin.</p>
+                            <strong>Henüz varyant eklenmedi.</strong>
+                            <p>Varyant eklemek için ilk olarak Varyant Ekle butonuna tiklayin.</p>
                         </div>
                         <button type="button" class="admin-editor-primary admin-variant-empty-cta" data-variant-add>Varyant Ekle</button>
                     </div>
@@ -702,7 +702,7 @@
                                         <i class="fa-solid fa-sliders"></i>
                                     </summary>
                                     <div class="admin-product-item-menu-panel admin-variant-settings-panel">
-                                        <label><input type="checkbox" data-variant-column-toggle="showImage" /> �r�n G�rseli</label>
+                                        <label><input type="checkbox" data-variant-column-toggle="showImage" /> Ürün Görseli</label>
                                         <label><input type="checkbox" data-variant-column-toggle="showPurchasePrice" /> Alis Fiyati</label>
                                         <label><input type="checkbox" data-variant-column-toggle="showBarcode" /> Barkod</label>
                                         <label><input type="checkbox" data-variant-column-toggle="showDesi" /> Desi</label>
@@ -740,7 +740,7 @@
                         <div class="admin-product-dialog-head">
                             <div class="admin-variant-group-dialog-copy">
                                 <h3 data-variant-group-modal-title>Varyant Ekle</h3>
-                                <span>Varyant adini, g�sterim stilini ve se�eneklerini ayni panelde hizlica tanimlayin.</span>
+                                <span>Varyant adini, gösterim stilini ve seçeneklerini ayni panelde hizlica tanimlayin.</span>
                             </div>
                             <button type="button" class="admin-icon-button" data-variant-group-close aria-label="Kapat">
                                 <i class="fa-solid fa-xmark"></i>
@@ -749,13 +749,13 @@
 
                         <div class="admin-variant-group-form">
                             <section class="admin-variant-group-form-section">
-                                <label class="form-label">Varyant T�r� Adi</label>
-                                <input type="text" class="form-control auth-input" placeholder="�rn. Renk, Boyut" data-variant-group-name />
+                                <label class="form-label">Varyant Türü Adi</label>
+                                <input type="text" class="form-control auth-input" placeholder="Örn. Renk, Boyut" data-variant-group-name />
                                 <div class="admin-variant-preset-list" data-variant-preset-list hidden></div>
                             </section>
 
                             <section class="admin-variant-group-form-section">
-                                <label class="form-label">Se�im Stili</label>
+                                <label class="form-label">Seçim Stili</label>
                                 <div class="admin-variant-style-switch">
                                     <button type="button" class="admin-variant-style-card" data-variant-style-option="list">
                                         <span class="admin-variant-style-card-title">Liste</span>
@@ -766,7 +766,7 @@
                                         </span>
                                     </button>
                                     <button type="button" class="admin-variant-style-card" data-variant-style-option="visual">
-                                        <span class="admin-variant-style-card-title">Renk / G�rsel</span>
+                                        <span class="admin-variant-style-card-title">Renk / Görsel</span>
                                         <span class="admin-variant-style-card-preview admin-variant-style-card-preview-visual">
                                             <span></span>
                                             <span></span>
@@ -779,32 +779,32 @@
                             <section class="admin-variant-group-form-section">
                                 <div class="admin-variant-options-head">
                                     <label class="form-label">Varyantlar</label>
-                                    <button type="button" class="admin-variant-options-clear" data-variant-option-clear-all hidden>T�m�n� Sil</button>
+                                    <button type="button" class="admin-variant-options-clear" data-variant-option-clear-all hidden>Tümünü Sil</button>
                                 </div>
                                 <div class="admin-variant-option-entry">
-                                    <input type="text" class="form-control auth-input" placeholder="�rnegin: Kirmizi" data-variant-group-option-entry />
+                                    <input type="text" class="form-control auth-input" placeholder="Örneğin: Kirmizi" data-variant-group-option-entry />
                                     <button type="button" class="admin-variant-option-enter" data-variant-option-submit hidden>
                                         <i class="fa-solid fa-turn-down-left"></i>
                                         <span>Enter</span>
                                     </button>
                                 </div>
                                 <div class="admin-variant-option-list" data-variant-option-list hidden></div>
-                                <span class="admin-editor-note">Yazmaya baslayin, `Enter` ile satir ekleyin. Virg�l ya da satir sonu i�eren yapistirmalar da ayri �yeler olarak b�l�n�r.</span>
+                                <span class="admin-editor-note">Yazmaya baslayin, `Enter` ile satir ekleyin. Virgül ya da satir sonu içeren yapistirmalar da ayrı üyeler olarak bölünür.</span>
                             </section>
 
                             <label class="admin-product-check-row admin-variant-check-row">
                                 <input class="form-check-input" type="checkbox" data-variant-group-show-on-card />
-                                <span>Bu �r�n i�in varyant degerlerini marka ve kategori sayfalarinda ayri g�ster.</span>
+                                <span>Bu Ürün için varyant degerlerini marka ve kategori sayfalarinda ayrı göster.</span>
                             </label>
 
                             <label class="admin-product-check-row admin-variant-check-row">
                                 <input class="form-check-input" type="checkbox" data-variant-group-primary />
-                                <span>Bu grubu ana se�enek olarak kullan.</span>
+                                <span>Bu grubu ana seçenek olarak kullan.</span>
                             </label>
                         </div>
 
                         <div class="admin-product-confirm-actions admin-variant-group-actions">
-                            <button type="button" class="admin-editor-secondary" data-variant-group-close>Vazge�</button>
+                            <button type="button" class="admin-editor-secondary" data-variant-group-close>Vazgeç</button>
                             <button type="button" class="admin-editor-primary" data-variant-group-save>Kaydet</button>
                         </div>
                     </div>
@@ -815,7 +815,7 @@
                     <div class="admin-product-dialog admin-variant-row-dialog">
                         <div class="admin-product-dialog-head">
                             <div>
-                                <h3 data-variant-row-modal-title>�r�n Varyanti</h3>
+                                <h3 data-variant-row-modal-title>Ürün Varyanti</h3>
                                 <span class="admin-editor-note" data-variant-row-modal-subtitle></span>
                             </div>
                             <button type="button" class="admin-icon-button" data-variant-row-close aria-label="Kapat">
@@ -827,14 +827,14 @@
                             <button type="button" data-variant-row-tab="media">Medya</button>
                             <button type="button" data-variant-row-tab="price">Fiyat</button>
                             <button type="button" data-variant-row-tab="inventory">Envanter</button>
-                            <button type="button" data-variant-row-tab="extra">�zel Alan</button>
+                            <button type="button" data-variant-row-tab="extra">Özel Alan</button>
                         </div>
 
                         <div class="admin-variant-row-panels">
                             <section class="admin-variant-row-panel" data-variant-row-panel="media">
                                 <h4>Medya</h4>
                                 <div class="admin-variant-media-field">
-                                    <label class="form-label">G�rsel URL</label>
+                                    <label class="form-label">Görsel URL</label>
                                     <input type="text" class="form-control auth-input" placeholder="/img/urun.png" data-variant-row-image />
                                 </div>
                             </section>
@@ -876,7 +876,7 @@
                             </section>
 
                             <section class="admin-variant-row-panel" data-variant-row-panel="extra">
-                                <h4>�zel Alan</h4>
+                                <h4>Özel Alan</h4>
                                 <div class="admin-variant-row-grid">
                                     <div>
                                         <label class="form-label">Desi</label>
@@ -889,7 +889,7 @@
                                     <div class="admin-variant-toggle-wrap">
                                         <label class="form-check">
                                             <input class="form-check-input" type="checkbox" data-variant-row-active />
-                                            <span class="form-check-label">Satisa a�ik</span>
+                                            <span class="form-check-label">Satışa açık</span>
                                         </label>
                                         <label class="form-check">
                                             <input class="form-check-input" type="checkbox" data-variant-row-default />
@@ -901,7 +901,7 @@
                         </div>
 
                         <div class="admin-product-confirm-actions">
-                            <button type="button" class="admin-editor-secondary" data-variant-row-close>Vazge�</button>
+                            <button type="button" class="admin-editor-secondary" data-variant-row-close>Vazgeç</button>
                             <button type="button" class="admin-editor-primary" data-variant-row-save>Kaydet</button>
                         </div>
                     </div>
@@ -914,12 +914,12 @@
             <section class="admin-editor-card admin-bundle-items-card" data-bundle-builder data-product-tab-panel="bundle-items">
                 <div class="admin-editor-section-head">
                     <div class="admin-product-inline-heading" data-inline-info-wrap>
-                        <h2>Paketteki �r�nler</h2>
+                        <h2>Paketteki Ürünler</h2>
                         <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Paketteki urunler aciklamasini goster">
                             <span>i</span>
                         </button>
                         <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                            <strong>Paketteki �r�nler</strong>
+                            <strong>Paketteki Ürünler</strong>
                             <span>Paketinize tekil urun, spesifik varyant veya asorti ekleyebilirsiniz. Min-maks adet ve toplam adet sinirlari da bu alandan yonetilir.</span>
                         </div>
                     </div>
@@ -931,22 +931,22 @@
 
                 <div class="admin-bundle-items-empty" data-bundle-empty @(bundleItems.Count > 0 ? "hidden" : null)>
                     <div>
-                        <strong>Paketinizde hen�z bir �r�n�n�z yok.</strong>
+                        <strong>Paketinizde henüz bir Ürününüz yok.</strong>
                         <p>Paketinize icerik eklemek icin urun ekleyebilirsiniz.</p>
                     </div>
-                    <button type="button" class="admin-editor-primary admin-bundle-add-button" data-bundle-add>�r�n Ekle</button>
+                    <button type="button" class="admin-editor-primary admin-bundle-add-button" data-bundle-add>Ürün Ekle</button>
                 </div>
 
                 <div class="admin-bundle-items-content" data-bundle-content @(bundleItems.Count == 0 ? "hidden" : null)>
                     <div class="admin-product-selection-head">
-                        <h3>Paket I�erigi</h3>
-                        <button type="button" class="admin-editor-ghost" data-bundle-add>�r�n Ekle</button>
+                        <h3>Paket İçeriği</h3>
+                        <button type="button" class="admin-editor-ghost" data-bundle-add>Ürün Ekle</button>
                     </div>
 
                     <div class="admin-bundle-variant-groups" data-bundle-groups></div>
 
                     <div class="admin-bundle-total-row">
-                        <strong>Paketteki �r�nlerin Toplam Adedi</strong>
+                        <strong>Paketteki Ürünlerin Toplam Adedi</strong>
                         <div class="admin-bundle-total-inline">
                             <input asp-for="BundleTotalQuantity" class="form-control auth-input" type="number" min="0" step="1" />
                             <span class="admin-editor-note">Belirle</span>
@@ -959,7 +959,7 @@
                     <div class="admin-product-dialog admin-bundle-dialog">
                         <div class="admin-product-dialog-head">
                             <div>
-                                <h3>�r�n Ekle</h3>
+                                <h3>Ürün Ekle</h3>
                             </div>
                             <button type="button" class="admin-icon-button" data-bundle-mode-close aria-label="Kapat">
                                 <i class="fa-solid fa-xmark"></i>
@@ -967,7 +967,7 @@
                         </div>
                         <div class="admin-bundle-mode-choice-list">
                             <button type="button" class="admin-bundle-mode-choice" data-bundle-entry-mode="product">
-                                <strong>�r�n Olarak Ekle</strong>
+                                <strong>Ürün Olarak Ekle</strong>
                                 <span>Kullanicilar varyantlar arasinda secim yapabilir.</span>
                             </button>
                             <button type="button" class="admin-bundle-mode-choice" data-bundle-entry-mode="assortment">
@@ -983,7 +983,7 @@
                     <div class="admin-product-dialog admin-bundle-picker-dialog">
                         <div class="admin-product-dialog-head">
                             <div>
-                                <h3>�r�n Ekle</h3>
+                                <h3>Ürün Ekle</h3>
                             </div>
                             <button type="button" class="admin-icon-button" data-bundle-picker-close aria-label="Kapat">
                                 <i class="fa-solid fa-xmark"></i>
@@ -1011,7 +1011,7 @@
                     <div class="admin-product-dialog admin-bundle-settings-dialog">
                         <div class="admin-product-dialog-head">
                             <div>
-                                <h3>�r�n Ayarlarini �zellestir</h3>
+                                <h3>Ürün Ayarlarini Özellestir</h3>
                             </div>
                             <button type="button" class="admin-icon-button" data-bundle-settings-close aria-label="Kapat">
                                 <i class="fa-solid fa-xmark"></i>
@@ -1030,7 +1030,7 @@
                         </div>
 
                         <div class="admin-product-confirm-actions admin-bundle-picker-actions">
-                            <button type="button" class="admin-editor-secondary" data-bundle-settings-close>Vazge�</button>
+                            <button type="button" class="admin-editor-secondary" data-bundle-settings-close>Vazgeç</button>
                             <button type="button" class="admin-editor-primary" data-bundle-settings-save>Kaydet</button>
                         </div>
                     </div>
@@ -1057,7 +1057,7 @@
                         <span>Paketin satis ve indirimli fiyatini manuel belirleyin.</span>
                     </button>
                     <button type="button" class="admin-bundle-price-mode" data-bundle-pricing-mode="sum">
-                        <strong>�r�nlerin Fiyatini Paket Fiyatina Ekle</strong>
+                        <strong>Ürünlerin Fiyatini Paket Fiyatina Ekle</strong>
                         <span>Paket fiyatini icerikteki urunlerin toplamindan hesaplayin.</span>
                     </button>
                 </div>
@@ -1084,7 +1084,7 @@
                                 <select asp-for="BundleAdjustmentType" class="form-select auth-input" data-bundle-adjustment-type-select>
                                     <option value="none">Yok</option>
                                     <option value="increase">Ilave Fiyat Ekle</option>
-                                    <option value="discount">�r�nlere Indirim Ekle</option>
+                                    <option value="discount">Ürünlere Indirim Ekle</option>
                                 </select>
                                 <input asp-for="BundleAdjustmentAmount" class="form-control auth-input" type="number" min="0" step="0.01" />
                             </div>
@@ -1111,7 +1111,7 @@
             <div class="admin-product-field-grid admin-product-field-grid-single admin-product-field-grid-spaced">
                 <div>
                     <label asp-for="Sku" class="form-label"></label>
-                    <input asp-for="Sku" class="form-control auth-input" placeholder="?r?n SKU" />
+                    <input asp-for="Sku" class="form-control auth-input" placeholder="Ürün SKU" />
                     <span asp-validation-for="Sku" class="text-danger"></span>
                 </div>
 
@@ -1203,12 +1203,12 @@
         <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="features">
             <div class="admin-editor-section-head">
                 <div class="admin-product-inline-heading" data-inline-info-wrap>
-                    <h2>Filtrelenebilir ?zellikler</h2>
+                    <h2>Filtrelenebilir Özellikler</h2>
                     <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Filtrelenebilir ozellikler aciklamasini goster">
                         <span>i</span>
                     </button>
                     <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                        <strong>Filtrelenebilir ?zellikler</strong>
+                        <strong>Filtrelenebilir Özellikler</strong>
                         <span>Cilt tipi, urun formu, etken, koruma faktoru ve benzeri filtre gruplarini bu alan uzerinden urune baglayabilirsiniz.</span>
                     </div>
                 </div>
@@ -1218,16 +1218,16 @@
             <div class="admin-product-feature-panel" data-product-feature-panel>
                 <div class="admin-product-empty-state" data-product-feature-empty @(selectedFeatures.Count > 0 ? "hidden" : null)>
                     <div>
-                        <strong>Hen?z filtre eklemediniz.</strong>
-                        <p>?r?nlerinizin kategori sayfalarinda filtrelenmesini saglayacak ozellikleri secin.</p>
+                        <strong>Henüz filtre eklemediniz.</strong>
+                        <p>Ürünlerinizin kategori sayfalarinda filtrelenmesini saglayacak ozellikleri secin.</p>
                     </div>
                     <button type="button" class="admin-editor-primary admin-product-category-open-button" data-feature-selector-open>Filtre Ekle</button>
                 </div>
 
                 <div class="admin-product-feature-selected" data-product-feature-selected @(selectedFeatures.Count == 0 ? "hidden" : null)>
                     <div class="admin-product-selection-head">
-                        <h3>Se?ilen Filtreler</h3>
-                        <button type="button" class="admin-editor-ghost" data-feature-selector-open>Filtreleri D?zenle</button>
+                        <h3>Seçilen Filtreler</h3>
+                        <button type="button" class="admin-editor-ghost" data-feature-selector-open>Filtreleri Düzenle</button>
                     </div>
                     <div class="admin-product-selected-list" data-product-selected-feature-list>
                         @foreach (var item in selectedFeatures)
@@ -1243,7 +1243,7 @@
                                         <i class="fa-solid fa-ellipsis"></i>
                                     </summary>
                                     <div class="admin-product-item-menu-panel">
-                                        <button type="button" data-feature-action="edit" data-feature-id="@item.Id">D?zenle</button>
+                                        <button type="button" data-feature-action="edit" data-feature-id="@item.Id">Düzenle</button>
                                         <button type="button" class="is-danger" data-feature-action="remove" data-feature-id="@item.Id">Kaldir</button>
                                     </div>
                                 </details>
@@ -1257,13 +1257,13 @@
         <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="custom-fields">
             <div class="admin-editor-section-head">
                 <div class="admin-product-inline-heading" data-inline-info-wrap>
-                    <h2>?zel Alanlar</h2>
-                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?zel alanlar aciklamasini goster">
+                    <h2>Özel Alanlar</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Özel alanlar aciklamasini goster">
                         <span>i</span>
                     </button>
                     <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                        <strong>?zel Alanlar</strong>
-                        <span>?r?n sayfalarinizda urun aciklamasinin altinda ek bilgi bloklari yayinlayabilir ve kategori sayfalarinda filtrelenebilir alanlar tanimlayabilirsiniz.</span>
+                        <strong>Özel Alanlar</strong>
+                        <span>Ürün sayfalarinizda urun aciklamasinin altinda ek bilgi bloklari yayinlayabilir ve kategori sayfalarinda filtrelenebilir alanlar tanimlayabilirsiniz.</span>
                     </div>
                 </div>
                 <span class="admin-product-aside-count">@selectedCustomFields.Count secili</span>
@@ -1273,16 +1273,16 @@
                 <script type="application/json" data-product-custom-field-options>@Html.Raw(customFieldPayload)</script>
                 <div class="admin-product-empty-state" data-product-custom-field-empty @(selectedCustomFields.Count > 0 ? "hidden" : null)>
                     <div>
-                        <strong>Hen?z ozel alan eklemediniz.</strong>
-                        <p>A?iklama altinda yayinlanacak ek bilgi bloklarini ya da filtre alanlarini secin.</p>
+                        <strong>Henüz ozel alan eklemediniz.</strong>
+                        <p>Açıklama altinda yayinlanacak ek bilgi bloklarini ya da filtre alanlarini secin.</p>
                     </div>
-                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-custom-field-selector-open>?zel Alan Ekle</button>
+                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-custom-field-selector-open>Özel Alan Ekle</button>
                 </div>
 
                 <div class="admin-product-feature-selected" data-product-custom-field-selected @(selectedCustomFields.Count == 0 ? "hidden" : null)>
                     <div class="admin-product-selection-head">
-                        <h3>?zel Alanlar</h3>
-                        <button type="button" class="admin-editor-ghost" data-custom-field-selector-open>?zel Alanlari D?zenle</button>
+                        <h3>Özel Alanlar</h3>
+                        <button type="button" class="admin-editor-ghost" data-custom-field-selector-open>Özel Alanlari Düzenle</button>
                     </div>
                     <div class="admin-product-selected-list" data-product-selected-custom-field-list>
                         @foreach (var item in selectedCustomFields)
@@ -1290,7 +1290,7 @@
                             <div class="admin-product-selected-row">
                                 <div class="admin-product-selected-copy">
                                     <strong>@item.Name</strong>
-                                    <small>@item.FieldType@(item.IsFilterable ? " � Filtrelenebilir" : string.Empty)</small>
+                                    <small>@item.FieldType@(item.IsFilterable ? " • Filtrelenebilir" : string.Empty)</small>
                                 </div>
                             </div>
                         }
@@ -1308,12 +1308,12 @@
         <section class="admin-editor-card admin-product-selection-card" data-product-tab-panel="personalization">
             <div class="admin-editor-section-head">
                 <div class="admin-product-inline-heading" data-inline-info-wrap>
-                    <h2>?r?n ?zellestirmesi</h2>
-                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="?r?n ozellestirmesi aciklamasini goster">
+                    <h2>Ürün Özelleştirmesi</h2>
+                    <button type="button" class="admin-product-inline-info-button" data-inline-info-toggle aria-label="Ürün ozellestirmesi aciklamasini goster">
                         <span>i</span>
                     </button>
                     <div class="admin-product-inline-info-tooltip" data-inline-info-tooltip hidden>
-                        <strong>?r?n ?zellestirmesi</strong>
+                        <strong>Ürün Özelleştirmesi</strong>
                         <span>Metin, secenek veya dosya yukleme gibi kisisellestirme alanlari ekleyerek siparis sirasinda musteriden ek bilgi toplayabilirsiniz.</span>
                     </div>
                 </div>
@@ -1324,16 +1324,16 @@
                 <script type="application/json" data-product-personalization-options>@Html.Raw(personalizationPayload)</script>
                 <div class="admin-product-empty-state" data-product-personalization-empty @(selectedPersonalizations.Count > 0 ? "hidden" : null)>
                     <div>
-                        <strong>Hen?z urun ozellestirmesi eklemediniz.</strong>
+                        <strong>Henüz urun ozellestirmesi eklemediniz.</strong>
                         <p>Hediye notu, paket secimi veya kisiye ozel alanlari buradan secin.</p>
                     </div>
-                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-personalization-selector-open>?zellestirme Ekle</button>
+                    <button type="button" class="admin-editor-primary admin-product-category-open-button" data-personalization-selector-open>Özelleştirme Ekle</button>
                 </div>
 
                 <div class="admin-product-feature-selected" data-product-personalization-selected @(selectedPersonalizations.Count == 0 ? "hidden" : null)>
                     <div class="admin-product-selection-head">
-                        <h3>Se?ilen ?zellestirmeler</h3>
-                        <button type="button" class="admin-editor-ghost" data-personalization-selector-open>?zellestirmeleri D?zenle</button>
+                        <h3>Seçilen Özelleştirmeler</h3>
+                        <button type="button" class="admin-editor-ghost" data-personalization-selector-open>Özelleştirmeleri Düzenle</button>
                     </div>
                     <div class="admin-product-selected-list" data-product-selected-personalization-list>
                         @foreach (var item in selectedPersonalizations)
@@ -1361,7 +1361,7 @@
             <div class="admin-product-dialog admin-product-feature-dialog">
                 <div class="admin-product-dialog-head">
                     <div>
-                        <h3>?zel Alan Ekle</h3>
+                        <h3>Özel Alan Ekle</h3>
                     </div>
                     <button type="button" class="admin-icon-button" data-custom-field-modal-close aria-label="Kapat">
                         <i class="fa-solid fa-xmark"></i>
@@ -1390,7 +1390,7 @@
             <div class="admin-product-dialog admin-product-feature-dialog">
                 <div class="admin-product-dialog-head">
                     <div>
-                        <h3>?r?n ?zellestirmesi Ekle</h3>
+                        <h3>Ürün Özelleştirmesi Ekle</h3>
                     </div>
                     <button type="button" class="admin-icon-button" data-personalization-modal-close aria-label="Kapat">
                         <i class="fa-solid fa-xmark"></i>
@@ -1541,7 +1541,7 @@
             </div>
 
             <div class="admin-product-field-span">
-                <label class="form-label">A?iklama</label>
+                <label class="form-label">Açıklama</label>
                 <textarea class="form-control auth-textarea admin-category-create-description"
                           rows="8"
                           data-category-create-description
@@ -1550,7 +1550,7 @@
             </div>
 
             <div class="admin-product-field-span">
-                <label class="form-label">G?rsel</label>
+                <label class="form-label">Görsel</label>
                 <div class="admin-category-image-uploader" data-category-image-upload="true" data-upload-url="/admin/categories/upload-image">
                     <input type="hidden" data-category-image-input data-category-create-image />
                     <input type="file" class="d-none" accept="image/png,image/jpeg,image/webp,image/gif" data-category-file-input />
@@ -1558,20 +1558,20 @@
                         <img src="" alt="Kategori gorseli" data-category-image-preview hidden />
                         <span class="admin-category-image-empty" data-category-image-empty>
                             <i class="fa-regular fa-image"></i>
-                            <strong>G?rsel Ekle</strong>
+                            <strong>Görsel Ekle</strong>
                             <small>Maksimum 10 MB boyutunda jpg, jpeg, png, webp ya da gif.</small>
                         </span>
                     </button>
                     <div class="admin-product-media-toolbar">
                         <button type="button" class="admin-editor-secondary" data-category-image-clear hidden>
-                            <span>G?rseli Kaldir</span>
+                            <span>Görseli Kaldir</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="form-label">Siralama ?l??tu</label>
+                <label class="form-label">Siralama Ölçütü</label>
                 <select class="form-select auth-input" data-category-create-sort>
                     <option value="">Siralama olcutu seciniz</option>
                     @foreach (var option in new[] { "One Cikanlar", "En Yeniler", "Fiyat Artan", "Fiyat Azalan", "En Cok Satanlar", "Puana Gore" })
@@ -1593,7 +1593,7 @@
             </div>
 
             <div>
-                <label class="form-label">Meta A?iklama</label>
+                <label class="form-label">Meta Açıklama</label>
                 <textarea class="form-control auth-textarea" rows="3" data-category-create-meta-description></textarea>
             </div>
 
@@ -1617,7 +1617,7 @@
     <div class="admin-product-dialog admin-product-definition-create-dialog">
         <div class="admin-product-dialog-head">
             <div>
-                <h3>Yeni ?zel Alan Ekle</h3>
+                <h3>Yeni Özel Alan Ekle</h3>
             </div>
             <button type="button" class="admin-icon-button" data-custom-field-create-close aria-label="Kapat">
                 <i class="fa-solid fa-xmark"></i>
@@ -1626,7 +1626,7 @@
 
         <div class="admin-product-field-grid admin-product-field-grid-single admin-product-category-create-grid">
             <div>
-                <label class="form-label">?zel Alan Adi</label>
+                <label class="form-label">Özel Alan Adi</label>
                 <input type="text" class="form-control auth-input" data-custom-field-create-name />
                 <small class="text-danger" data-custom-field-create-error="Name"></small>
             </div>
@@ -1662,7 +1662,7 @@
     <div class="admin-product-dialog admin-product-definition-create-dialog">
         <div class="admin-product-dialog-head">
             <div>
-                <h3>Yeni ?r?n ?zellestirmesi Olustur</h3>
+                <h3>Yeni Ürün Özelleştirmesi Olustur</h3>
             </div>
             <button type="button" class="admin-icon-button" data-personalization-create-close aria-label="Kapat">
                 <i class="fa-solid fa-xmark"></i>
@@ -1671,7 +1671,7 @@
 
         <div class="admin-product-field-grid admin-product-field-grid-single admin-product-category-create-grid">
             <div>
-                <label class="form-label">?zellestirme Adi</label>
+                <label class="form-label">Özelleştirme Adi</label>
                 <input type="text" class="form-control auth-input" data-personalization-create-name />
                 <small class="text-danger" data-personalization-create-error="Name"></small>
             </div>
@@ -1680,7 +1680,7 @@
                 <label class="form-label">Giris Tipi</label>
                 <select class="form-select auth-input" data-personalization-create-type>
                     <option value="Text">Metin</option>
-                    <option value="Select">Se?enek</option>
+                    <option value="Select">Seçenek</option>
                     <option value="File">Dosya Yukleme</option>
                     <option value="Date">Tarih</option>
                 </select>
@@ -1700,7 +1700,7 @@
         <button type="button" class="admin-icon-button admin-product-media-modal-dismiss" data-gallery-modal-close aria-label="Kapat">
             <i class="fa-solid fa-xmark"></i>
         </button>
-        <img src="" alt="?r?n gorsel onizleme" data-gallery-modal-image />
+        <img src="" alt="Ürün gorsel onizleme" data-gallery-modal-image />
     </div>
 </div>
 

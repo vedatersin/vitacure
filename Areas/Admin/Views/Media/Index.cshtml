@@ -1,18 +1,18 @@
 @model vitacure.Models.ViewModels.Admin.MediaLibraryViewModel
 
 @{
-    ViewData["Title"] = "Medya K�t�phanesi";
+    ViewData["Title"] = "Medya Kütüphanesi";
 }
 
 <section class="admin-page-grid">
     <section class="admin-page-header-simple admin-page-header-simple-title-only">
-        <h1 class="admin-page-header-simple-title">Medya k�t�phanesi</h1>
+        <h1 class="admin-page-header-simple-title">Medya kütüphanesi</h1>
     </section>
 
     <div class="admin-editor-card">
         @if (Model.Items.Count == 0)
         {
-            <div class="admin-media-library-empty">K�t�phane hen�z bos.</div>
+            <div class="admin-media-library-empty">Kütüphane henüz bos.</div>
         }
         else
         {

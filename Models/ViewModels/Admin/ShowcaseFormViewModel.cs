@@ -29,7 +29,7 @@ public class ShowcaseFormViewModel : IValidatableObject
     public string Title { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "A�iklama")]
+    [Display(Name = "Açıklama")]
     public string Description { get; set; } = string.Empty;
 
     [Display(Name = "Etiketler")]
@@ -38,7 +38,7 @@ public class ShowcaseFormViewModel : IValidatableObject
     [Display(Name = "Ornek Sohbet Cumleleri")]
     public string ExamplePromptsContent { get; set; } = string.Empty;
 
-    [Display(Name = "Arkaplan G�rseli")]
+    [Display(Name = "Arkaplan Görseli")]
     public string BackgroundImageUrl { get; set; } = string.Empty;
 
     [Display(Name = "Arkaplan Dosyasi")]
@@ -50,7 +50,7 @@ public class ShowcaseFormViewModel : IValidatableObject
     [Display(Name = "SEO Basligi")]
     public string? SeoTitle { get; set; }
 
-    [Display(Name = "Meta A�iklama")]
+    [Display(Name = "Meta Açıklama")]
     public string? MetaDescription { get; set; }
 
     [Display(Name = "Ana Sayfada Goster")]
@@ -79,14 +79,14 @@ public class ShowcaseFormViewModel : IValidatableObject
         if ((BackgroundImageFile is null || BackgroundImageFile.Length == 0) && string.IsNullOrWhiteSpace(BackgroundImageUrl))
         {
             yield return new ValidationResult(
-                "The Arkaplan G�rseli field is required.",
+                "The Arkaplan Görseli field is required.",
                 new[] { nameof(BackgroundImageUrl) });
         }
 
         if (!string.IsNullOrWhiteSpace(Description) && Description.Length > MaxDescriptionLength)
         {
             yield return new ValidationResult(
-                $"A�iklama en fazla {MaxDescriptionLength} karakter olabilir.",
+                $"Açıklama en fazla {MaxDescriptionLength} karakter olabilir.",
                 new[] { nameof(Description) });
         }
     }

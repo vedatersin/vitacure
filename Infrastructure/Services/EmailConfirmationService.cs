@@ -22,7 +22,7 @@ public class EmailConfirmationService : IEmailConfirmationService
 
         return new EmailConfirmationRequestResultViewModel
         {
-            Message = "E-posta servisi hen�z aktif degil. Hesabinizi dogrulamak i�in asagidaki baglantiyi kullanin.",
+            Message = "E-posta servisi henüz aktif degil. Hesabinizi dogrulamak için asagidaki baglantiyi kullanin.",
             ConfirmationUrl = buildConfirmationUrl(user.Email!, token)
         };
     }
@@ -34,7 +34,7 @@ public class EmailConfirmationService : IEmailConfirmationService
         {
             return IdentityResult.Failed(new IdentityError
             {
-                Description = "Ge�erli bir kullanici bulunamadi."
+                Description = "Geçerli bir kullanici bulunamadi."
             });
         }
 

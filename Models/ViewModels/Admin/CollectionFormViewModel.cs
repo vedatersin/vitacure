@@ -14,7 +14,7 @@ public class CollectionFormViewModel
     [Display(Name = "Slug")]
     public string Slug { get; set; } = string.Empty;
 
-    [Display(Name = "A�iklama")]
+    [Display(Name = "Açıklama")]
     [StringLength(500)]
     public string? Description { get; set; }
 
